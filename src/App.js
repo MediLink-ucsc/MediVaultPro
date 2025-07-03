@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Auth/Login';
 import DoctorDashboard from './components/Doctor/DoctorDashboard';
+import NurseDashboard from './components/Nurse/NurseDashboard';
+import LabDashboard from './components/Lab/LabDashboard';
 import Layout from './components/Layout/Layout';
 import './App.css';
 
@@ -42,8 +44,21 @@ function App() {
             element={user.role === 'doctor' ? <DoctorDashboard /> : <Navigate to="/" />} 
           />
           <Route 
+            path="/nurse/*" 
+            element={user.role === 'nurse' ? <NurseDashboard /> : <Navigate to="/" />} 
+          />
+          <Route 
+            path="/lab/*" 
+            element={user.role === 'lab' ? <LabDashboard /> : <Navigate to="/" />} 
+          />
+          <Route 
             path="/" 
-            element={<Navigate to="/doctor" />} 
+            element={
+              <Navigate to={
+                user.role === 'doctor' ? '/doctor' : 
+                user.role === 'nurse' ? '/nurse' : '/lab'
+              } />
+            } 
           />
         </Routes>
       </Layout>
