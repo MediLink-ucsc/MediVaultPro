@@ -41,7 +41,7 @@ const Sidebar = ({ user }) => {
         return [
           { icon: LayoutDashboard, label: 'Dashboard', path: '/lab' },
           { icon: FlaskConical, label: 'Samples', path: '/lab/samples' },
-          { icon: TestTube, label: 'Results', path: '/lab/results' },
+          { icon: TestTube, label: 'Reports', path: '/lab/reports' },
           { icon: BarChart3, label: 'Analytics', path: '/lab/analytics' },
           { icon: Settings, label: 'Settings', path: '/lab/settings' }
         ];
