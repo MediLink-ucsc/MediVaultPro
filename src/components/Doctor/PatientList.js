@@ -7,17 +7,18 @@ const PatientList = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [showNewPatientModal, setShowNewPatientModal] = useState(false);
+  const [patients, setPatients] = useState([
+    { id: 1, name: 'Hansaja Boss', age: 45, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-25', condition: 'Hypertension' },
+    { id: 2, name: 'Greatest Dulmini', age: 32, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-24', condition: 'Diabetes' },
+    { id: 3, name: 'Cute Anji', age: 58, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-23', condition: 'Arthritis' },
+    { id: 4, name: 'Moda Sathya', age: 29, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-22', condition: 'Allergy' }
+  ]);
 
   const toggleDropdown = (id) => {
     setActiveDropdown(activeDropdown === id ? null : id);
   };
 
-  const patients = [
-    { id: 1, name: 'Hansaja Boss', age: 45, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-25', condition: 'Hypertension' },
-    { id: 2, name: 'Greatest Dulmini', age: 32, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-24', condition: 'Diabetes' },
-    { id: 3, name: 'Cute Anji', age: 58, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-23', condition: 'Arthritis' },
-    { id: 4, name: 'Moda Sathya', age: 29, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-22', condition: 'Allergy' }
-  ];
+
 
   const handleEdit = (patientId) => {
     console.log('Edit patient:', patientId);
@@ -26,6 +27,8 @@ const PatientList = () => {
 
   const handleDelete = (patientId) => {
     console.log('Delete patient:', patientId);
+    // Remove the patient from the state
+    setPatients(patients.filter(patient => patient.id !== patientId));
     setActiveDropdown(null);
   };
 
@@ -49,9 +52,23 @@ const PatientList = () => {
 
   const handleSubmitNewPatient = (patientData) => {
     console.log('New patient data:', patientData);
-    // Here you would typically add the patient to your state or send to API
+    // Add the new patient to the state
+    const newPatient = {
+      id: patients.length + 1,
+      name: patientData.name,
+      age: patientData.age,
+      phone: patientData.phone,
+      lastVisit: new Date().toISOString().split('T')[0],
+      condition: patientData.condition || 'General'
+    };
+    setPatients([...patients, newPatient]);
     setShowNewPatientModal(false);
   };
+
+  const filteredPatients = patients.filter(patient =>
+    patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    patient.condition.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="space-y-6 relative">
@@ -101,7 +118,7 @@ const PatientList = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {patients.map((patient) => (
+              {filteredPatients.map((patient) => (
                 <tr key={patient.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="font-medium text-gray-900">{patient.name}</div>

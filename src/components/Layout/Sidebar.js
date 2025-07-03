@@ -1,12 +1,12 @@
 // src/components/Layout/Sidebar.js
 import React from 'react';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Calendar, 
-  FileText, 
-  TestTube, 
-  BarChart3, 
+import {
+  LayoutDashboard,
+  Users,
+  Calendar,
+  FileText,
+  TestTube,
+  BarChart3,
   Settings,
   Stethoscope,
   Pill,
@@ -23,7 +23,7 @@ const Sidebar = ({ user }) => {
           { icon: LayoutDashboard, label: 'Dashboard', path: '/doctor' },
           { icon: Users, label: 'Patients', path: '/doctor/patients' },
           { icon: Calendar, label: 'Calendar', path: '/doctor/appointments' },
-{ icon: FileText, label: 'Documentation', path: '/doctor/documentation' },
+          { icon: FileText, label: 'Documentation', path: '/doctor/documentation' },
           { icon: TestTube, label: 'Diagnostics', path: '/doctor/diagnostics' },
           { icon: BarChart3, label: 'Analytics', path: '/doctor/analytics' },
           { icon: Settings, label: 'Settings', path: '/doctor/settings' }

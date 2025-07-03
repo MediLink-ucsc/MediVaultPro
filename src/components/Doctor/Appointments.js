@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, Plus, X, Edit2, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, X, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const DoctorCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(null);
   const [events, setEvents] = useState([
     { id: 1, date: '2025-06-29', time: '10:00', title: 'Team Meeting', description: 'Weekly team sync', color: 'bg-blue-500' },
     { id: 2, date: '2025-06-30', time: '14:30', title: 'Medical Conference', description: 'Cardiology updates', color: 'bg-green-500' },

@@ -1,6 +1,6 @@
 // src/components/Doctor/Diagnostics.js
 import React from 'react';
-import { FlaskConical, Activity, Scan, Stethoscope, Plus } from 'lucide-react';
+import { FlaskConical, Scan, Plus } from 'lucide-react';
 
 const Diagnostics = () => {
   const tests = [

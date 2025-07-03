@@ -1,6 +1,6 @@
 // src/components/Doctor/Analytics.js
 import React from 'react';
-import { BarChart3, Activity, TrendingUp, Users } from 'lucide-react';
+import { BarChart3, Activity, Users } from 'lucide-react';
 
 const Analytics = () => {
   const metrics = [
