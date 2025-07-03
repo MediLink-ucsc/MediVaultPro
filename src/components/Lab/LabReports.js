@@ -1,22 +1,25 @@
 // src/components/LabOperator/LabReports.js
 import React, { useState } from 'react';
 import { Search, Filter, Download, Eye, Upload, FileText, Calendar, User } from 'lucide-react';
+import Modal from '../Common/Modal';
+import UploadReportForm from './UploadReportForm';
 
 const LabReports = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterDateRange, setFilterDateRange] = useState('all');
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
 
   // Mock data for lab reports
   const reports = [
     {
       id: 'R001',
       patientId: 'P001',
-      patientName: 'John Doe',
+      patientName: 'Hansaja',
       testType: 'Complete Blood Count',
       status: 'completed',
       uploadDate: '2024-01-15',
-      technician: 'Sarah Johnson',
+      technician: 'Saranga',
       urgency: 'normal',
       fileSize: '2.1 MB',
       fileType: 'PDF'
@@ -24,11 +27,11 @@ const LabReports = () => {
     {
       id: 'R002',
       patientId: 'P002',
-      patientName: 'Jane Smith',
+      patientName: 'Likitha',
       testType: 'Urinalysis',
       status: 'pending-review',
       uploadDate: '2024-01-15',
-      technician: 'Mike Chen',
+      technician: 'Dulmini',
       urgency: 'urgent',
       fileSize: '1.8 MB',
       fileType: 'PDF'
@@ -36,11 +39,11 @@ const LabReports = () => {
     {
       id: 'R003',
       patientId: 'P003',
-      patientName: 'Bob Wilson',
+      patientName: 'Anji',
       testType: 'Lipid Panel',
       status: 'completed',
       uploadDate: '2024-01-14',
-      technician: 'Sarah Johnson',
+      technician: 'Dulmini',
       urgency: 'stat',
       fileSize: '2.3 MB',
       fileType: 'PDF'
@@ -48,11 +51,11 @@ const LabReports = () => {
     {
       id: 'R004',
       patientId: 'P004',
-      patientName: 'Alice Brown',
+      patientName: 'Sathya',
       testType: 'X-Ray Chest',
       status: 'in-progress',
       uploadDate: '2024-01-14',
-      technician: 'David Lee',
+      technician: 'Changumi',
       urgency: 'normal',
       fileSize: '5.2 MB',
       fileType: 'DICOM'
@@ -60,16 +63,31 @@ const LabReports = () => {
     {
       id: 'R005',
       patientId: 'P005',
-      patientName: 'Charlie Davis',
+      patientName: 'Gujumpio',
       testType: 'Blood Culture',
       status: 'completed',
       uploadDate: '2024-01-13',
-      technician: 'Sarah Johnson',
+      technician: 'Saranga',
       urgency: 'normal',
       fileSize: '1.9 MB',
       fileType: 'PDF'
     }
   ];
+
+  const handleUploadSubmit = (formData) => {
+    if (formData === null) {
+      // User cancelled
+      setIsUploadModalOpen(false);
+      return;
+    }
+
+    // In a real application, this would make an API call to upload the report
+    console.log('Uploading report:', formData);
+    
+    // For now, we'll just show a success message and close the modal
+    alert('Report uploaded successfully!');
+    setIsUploadModalOpen(false);
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -102,7 +120,10 @@ const LabReports = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-800">Lab Reports</h1>
-        <button className="flex items-center space-x-2 px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700">
+        <button
+          onClick={() => setIsUploadModalOpen(true)}
+          className="flex items-center space-x-2 px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
+        >
           <Upload className="w-4 h-4" />
           <span>Upload Report</span>
         </button>
@@ -306,6 +327,15 @@ const LabReports = () => {
           </div>
         </div>
       </div>
+
+      {/* Upload Report Modal */}
+      <Modal
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        title="Upload Lab Report"
+      >
+        <UploadReportForm onSubmit={handleUploadSubmit} />
+      </Modal>
     </div>
   );
 };

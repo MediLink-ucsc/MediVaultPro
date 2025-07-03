@@ -1,5 +1,6 @@
 // src/components/Layout/Sidebar.js
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
   Users,
@@ -12,10 +13,58 @@ import {
   Pill,
   Activity,
   ClipboardList,
-  FlaskConical
+  FlaskConical,
+  ChevronRight
 } from 'lucide-react';
 
 const Sidebar = ({ user }) => {
+  const getRoleColors = () => {
+    switch (user.role) {
+      case 'doctor':
+        return {
+          primary: 'from-[#0d9488] to-[#0d9488]',
+          primaryLight: 'from-[#14b8a6] to-[#5eead4]',
+          secondary: 'from-teal-50 to-teal-100',
+          accent: '#0d9488',
+          accentLight: '#14b8a6',
+          hover: 'hover:bg-teal-50',
+          hoverText: 'hover:text-[#0d9488]'
+        };
+      case 'nurse':
+        return {
+          primary: 'from-[#ea580c] to-[#ea580c]',
+          primaryLight: 'from-[#f97316] to-[#fdba74]',
+          secondary: 'from-orange-50 to-orange-100',
+          accent: '#ea580c',
+          accentLight: '#f97316',
+          hover: 'hover:bg-orange-50',
+          hoverText: 'hover:text-[#ea580c]'
+        };
+      case 'lab':
+        return {
+          primary: 'from-[#0d9488] to-[#0d9488]',
+          primaryLight: 'from-[#14b8a6] to-[#5eead4]',
+          secondary: 'from-teal-50 to-teal-100',
+          accent: '#0d9488',
+          accentLight: '#14b8a6',
+          hover: 'hover:bg-teal-50',
+          hoverText: 'hover:text-[#0d9488]'
+        };
+      default:
+        return {
+          primary: 'from-[#0d9488] to-[#0d9488]',
+          primaryLight: 'from-[#14b8a6] to-[#5eead4]',
+          secondary: 'from-teal-50 to-teal-100',
+          accent: '#0d9488',
+          accentLight: '#14b8a6',
+          hover: 'hover:bg-teal-50',
+          hoverText: 'hover:text-[#0d9488]'
+        };
+    }
+  };
+
+  const colors = getRoleColors();
+
   const getMenuItems = () => {
     switch (user.role) {
       case 'doctor':
@@ -53,34 +102,58 @@ const Sidebar = ({ user }) => {
   const menuItems = getMenuItems();
 
   return (
-    <div className="w-64 bg-white border-r border-gray-200">
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-teal-600 rounded-lg flex items-center justify-center">
-            <Stethoscope className="w-6 h-6 text-white" />
+    <div className="w-64 bg-gradient-to-b from-slate-50 to-white border-r border-gray-200 shadow-lg relative">
+      {/* Header */}
+      <div className="p-6 border-b border-gray-200 bg-white relative overflow-hidden">
+        <div className={`absolute inset-0 bg-gradient-to-r ${colors.secondary} opacity-30`} />
+        <div className="relative flex items-center space-x-3">
+          <div className={`w-12 h-12 bg-gradient-to-br ${colors.primary} rounded-xl flex items-center justify-center shadow-lg hover-lift`}>
+            <Stethoscope className="w-7 h-7 text-white" />
           </div>
           <div>
-            <div className="font-bold text-gray-800">MedivaultPro</div>
-            <div className="text-xs text-gray-600">Medical Center</div>
+            <div className="font-bold text-gray-800 text-lg">MedivaultPro</div>
+            <div className="text-xs text-gray-600 font-medium capitalize">{user.role} Portal</div>
           </div>
         </div>
       </div>
 
-      <nav className="p-4">
-        <ul className="space-y-2">
-          {menuItems.map((item, index) => (
-            <li key={index}>
-              <a
-                href={item.path}
-                className="flex items-center space-x-3 px-4 py-3 text-gray-700 rounded-lg hover:bg-teal-50 hover:text-teal-700 transition duration-200"
-              >
-                <item.icon className="w-5 h-5" />
-                <span>{item.label}</span>
-              </a>
-            </li>
-          ))}
-        </ul>
+      {/* Navigation */}
+      <nav className="p-4 space-y-1">
+        {menuItems.map((item, index) => (
+          <NavLink
+            key={index}
+            to={item.path}
+            className={({ isActive }) => `
+              group flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 
+              ${isActive 
+                ? `bg-gradient-to-r ${colors.primaryLight} text-white shadow-lg transform scale-105 pulse-glow` 
+                : `text-gray-700 ${colors.hover} hover:shadow-md hover:transform hover:scale-105`
+              }
+              relative overflow-hidden sidebar-nav-item
+            `}
+          >
+            {({ isActive }) => (
+              <>
+                <div className={`absolute inset-0 bg-gradient-to-r ${colors.primaryLight} opacity-0 ${isActive ? 'opacity-100' : 'group-hover:opacity-10'} transition-opacity duration-300 rounded-xl`} />
+                <div className="relative flex items-center space-x-3 z-10">
+                  <div className={`p-1 rounded-lg ${isActive ? 'bg-white/20' : 'bg-transparent group-hover:bg-white/10'} transition-all duration-300`}>
+                    <item.icon className={`w-5 h-5 ${isActive ? 'text-white' : `text-gray-600 ${colors.hoverText}`} transition-colors duration-300`} />
+                  </div>
+                  <span className={`font-medium ${isActive ? 'text-white' : `text-gray-700 ${colors.hoverText}`} transition-colors duration-300`}>
+                    {item.label}
+                  </span>
+                </div>
+                <ChevronRight className={`relative z-10 w-4 h-4 ${isActive ? 'text-white opacity-100' : 'text-gray-400 opacity-0 group-hover:opacity-100'} transition-all duration-300 ${isActive ? 'transform translate-x-0' : 'transform translate-x-2 group-hover:translate-x-0'}`} />
+                {isActive && (
+                  <div className={`absolute left-0 top-0 w-1 h-full bg-white rounded-r-full shadow-lg`} />
+                )}
+              </>
+            )}
+          </NavLink>
+        ))}
       </nav>
+
+      <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[${colors.accentLight}] to-transparent opacity-50`} />
     </div>
   );
 };
