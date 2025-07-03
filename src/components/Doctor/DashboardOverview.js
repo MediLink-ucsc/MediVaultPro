@@ -3,7 +3,11 @@ import React, { useState } from 'react';
 import { Users, Calendar, FileText, Pill, UserPlus, Clipboard, FlaskConical, Stethoscope } from 'lucide-react';
 import StatsCard from '../Common/StatsCard';
 import Modal from '../Common/Modal';
-
+import NewPatientForm from './QuickActions/NewPatientForm';
+import PrescriptionForm from './QuickActions/PrescriptionForm';
+import LabOrderForm from './QuickActions/LabOrderForm';
+import SOAPForm from './QuickActions/SOAPForm';
+import QuickExamForm from './QuickActions/QuickExamForm';
 
 const DashboardOverview = () => {
   const [activeModal, setActiveModal] = useState(null);
@@ -12,6 +16,14 @@ const DashboardOverview = () => {
     { title: 'Total Patients', value: '1,234', icon: Users, color: 'teal', trend: '+12%' },
     { title: 'Today\'s Appointments', value: '24', icon: Calendar, color: 'orange', trend: '+3%' },
     { title: 'Pending Reports', value: '8', icon: FileText, color: 'teal', trend: '-2%' },
+  ];
+
+  const quickActions = [
+    { title: 'New Patient', icon: UserPlus, color: 'teal', description: 'Register new patient' },
+    { title: 'Prescribe', icon: Pill, color: 'orange', description: 'Write prescription' },
+    { title: 'Order Lab', icon: FlaskConical, color: 'blue', description: 'Laboratory tests' },
+    { title: 'SOAP Note', icon: Clipboard, color: 'purple', description: 'Create medical note' },
+    { title: 'Quick Exam', icon: Stethoscope, color: 'green', description: 'Patient examination' },
   ];
 
   const getColorClasses = (color) => {
@@ -42,7 +54,22 @@ const DashboardOverview = () => {
     setActiveModal(null);
   };
 
-  
+  const getModalContent = () => {
+    switch (activeModal) {
+      case 'New Patient':
+        return <NewPatientForm onSubmit={handleSubmit} />;
+      case 'Prescribe':
+        return <PrescriptionForm onSubmit={handleSubmit} />;
+      case 'Order Lab':
+        return <LabOrderForm onSubmit={handleSubmit} />;
+      case 'SOAP Note':
+        return <SOAPForm onSubmit={handleSubmit} />;
+      case 'Quick Exam':
+        return <QuickExamForm onSubmit={handleSubmit} />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -57,7 +84,30 @@ const DashboardOverview = () => {
         ))}
       </div>
 
-      
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {quickActions.map((action, index) => {
+            const IconComponent = action.icon;
+            return (
+              <button
+                key={index}
+                onClick={() => setActiveModal(action.title)}
+                className={`p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${getColorClasses(action.color)}`}
+              >
+                <div className="text-center">
+                  <div className="mb-2 flex justify-center">
+                    <IconComponent className={`w-6 h-6 ${getIconColorClasses(action.color)}`} />
+                  </div>
+                  <div className="font-medium text-sm">{action.title}</div>
+                  <div className="text-xs opacity-80 mt-1">{action.description}</div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Patients</h3>
@@ -99,6 +149,7 @@ const DashboardOverview = () => {
         onClose={() => setActiveModal(null)}
         title={activeModal}
       >
+        {getModalContent()}
       </Modal>
     </div>
   );
