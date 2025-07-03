@@ -3,6 +3,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import DashboardOverview from './DashboardOverview';
 import Appointments from './Appointments';
+// import PatientList from './PatientList'; 
 
 
 const DoctorDashboard = () => {
