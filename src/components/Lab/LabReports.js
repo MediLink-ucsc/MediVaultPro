@@ -129,6 +129,71 @@ const LabReports = () => {
         </button>
       </div>
 
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                <FileText className="w-4 h-4 text-teal-600" />
+              </div>
+            </div>
+            <div className="ml-3">
+              <div className="text-sm font-medium text-gray-500">Total Reports</div>
+              <div className="text-lg font-semibold text-gray-900">{reports.length}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                <FileText className="w-4 h-4 text-orange-600" />
+              </div>
+            </div>
+            <div className="ml-3">
+              <div className="text-sm font-medium text-gray-500">Pending Review</div>
+              <div className="text-lg font-semibold text-gray-900">
+                {reports.filter(r => r.status === 'pending-review').length}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
+                <FileText className="w-4 h-4 text-teal-600" />
+              </div>
+            </div>
+            <div className="ml-3">
+              <div className="text-sm font-medium text-gray-500">Completed</div>
+              <div className="text-lg font-semibold text-gray-900">
+                {reports.filter(r => r.status === 'completed').length}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                <FileText className="w-4 h-4 text-orange-600" />
+              </div>
+            </div>
+            <div className="ml-3">
+              <div className="text-sm font-medium text-gray-500">Urgent</div>
+              <div className="text-lg font-semibold text-gray-900">
+                {reports.filter(r => r.urgency === 'urgent' || r.urgency === 'stat').length}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Search and Filter Bar */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
@@ -260,71 +325,6 @@ const LabReports = () => {
               ))}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
-                <FileText className="w-4 h-4 text-teal-600" />
-              </div>
-            </div>
-            <div className="ml-3">
-              <div className="text-sm font-medium text-gray-500">Total Reports</div>
-              <div className="text-lg font-semibold text-gray-900">{reports.length}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                <FileText className="w-4 h-4 text-orange-600" />
-              </div>
-            </div>
-            <div className="ml-3">
-              <div className="text-sm font-medium text-gray-500">Pending Review</div>
-              <div className="text-lg font-semibold text-gray-900">
-                {reports.filter(r => r.status === 'pending-review').length}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
-                <FileText className="w-4 h-4 text-teal-600" />
-              </div>
-            </div>
-            <div className="ml-3">
-              <div className="text-sm font-medium text-gray-500">Completed</div>
-              <div className="text-lg font-semibold text-gray-900">
-                {reports.filter(r => r.status === 'completed').length}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
-                <FileText className="w-4 h-4 text-orange-600" />
-              </div>
-            </div>
-            <div className="ml-3">
-              <div className="text-sm font-medium text-gray-500">Urgent</div>
-              <div className="text-lg font-semibold text-gray-900">
-                {reports.filter(r => r.urgency === 'urgent' || r.urgency === 'stat').length}
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
