@@ -22,7 +22,6 @@ const LabDashboardOverview = () => {
     { title: 'Upload Report', icon: Upload, color: 'teal', description: 'Upload lab results' },
     { title: 'Create Template', icon: Plus, color: 'orange', description: 'New report template' },
     { title: 'Process Test', icon: TestTube, color: 'teal', description: 'Mark test complete' },
-    { title: 'Quality Check', icon: Microscope, color: 'orange', description: 'Verify results' },
   ];
 
   const getColorClasses = (color) => {
@@ -126,9 +125,8 @@ const LabDashboardOverview = () => {
               { type: 'upload', patient: 'Patient D', test: 'X-Ray Results', time: '1 hour ago' },
             ].map((activity, i) => (
               <div key={i} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                  activity.type === 'upload' ? 'bg-teal-100' : 'bg-orange-100'
-                }`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${activity.type === 'upload' ? 'bg-teal-100' : 'bg-orange-100'
+                  }`}>
                   {activity.type === 'upload' ? (
                     <Upload className={`w-5 h-5 ${activity.type === 'upload' ? 'text-teal-600' : 'text-orange-600'}`} />
                   ) : (
