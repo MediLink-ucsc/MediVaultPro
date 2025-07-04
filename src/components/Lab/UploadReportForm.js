@@ -1,4 +1,4 @@
-// src/components/LabOperator/QuickActions/UploadReportForm.js
+// src/components/Lab/UploadReportForm.js
 import React, { useState, useEffect } from 'react';
 import { Upload, FileText, X, CheckCircle, AlertCircle, Calendar, User, Activity, FileCheck } from 'lucide-react';
 

@@ -1,4 +1,4 @@
-// src/components/LabOperator/QuickActions/CreateTemplateForm.js
+// src/components/Lab/CreateTemplateForm.js
 import React, { useState } from 'react';
 import { Plus, Minus, FileText } from 'lucide-react';
 

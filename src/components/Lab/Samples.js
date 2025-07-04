@@ -293,14 +293,14 @@ const Samples = () => {
               <input
                 type="text"
                 placeholder="Search samples..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             
             <select
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
             >
@@ -312,7 +312,7 @@ const Samples = () => {
             </select>
 
             <select
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
               value={filterPriority}
               onChange={(e) => setFilterPriority(e.target.value)}
             >
@@ -323,9 +323,14 @@ const Samples = () => {
             </select>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <Filter className="w-4 h-4 text-gray-400" />
-            <span className="text-sm text-gray-600">{filteredSamples.length} samples found</span>
+          <div className="flex items-center space-x-3">
+            <button className="flex items-center space-x-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors duration-200">
+              <Filter className="w-4 h-4" />
+              <span>More Filters</span>
+            </button>
+            <div className="text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
+              {filteredSamples.length} samples found
+            </div>
           </div>
         </div>
       </div>
@@ -336,72 +341,93 @@ const Samples = () => {
           <table className="w-full">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Sample ID</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Patient</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Test Type</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Sample Type</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Status</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Priority</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Received</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Expected</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Actions</th>
+                <th className="text-left py-4 px-6 font-medium text-gray-600 text-sm">Sample Details</th>
+                <th className="text-left py-4 px-6 font-medium text-gray-600 text-sm">Patient</th>
+                <th className="text-left py-4 px-6 font-medium text-gray-600 text-sm">Test & Sample</th>
+                <th className="text-left py-4 px-6 font-medium text-gray-600 text-sm">Status</th>
+                <th className="text-left py-4 px-6 font-medium text-gray-600 text-sm">Timing</th>
+                <th className="text-left py-4 px-6 font-medium text-gray-600 text-sm">Collection</th>
+                <th className="text-left py-4 px-6 font-medium text-gray-600 text-sm">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredSamples.map((sample) => (
-                <tr key={sample.id} className="hover:bg-gray-50">
-                  <td className="py-4 px-4">
+                <tr key={sample.id} className="hover:bg-gray-50 transition-colors duration-150">
+                  <td className="py-4 px-6">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
                         {getSampleTypeIcon(sample.sampleType)}
                       </div>
                       <div>
-                        <div className="font-medium text-gray-800">{sample.id}</div>
+                        <div className="font-semibold text-gray-800">{sample.id}</div>
                         <div className="text-sm text-gray-500">{sample.barcode}</div>
+                        <div className="text-xs text-gray-400">Container: {sample.container}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="py-4 px-4">
+                  <td className="py-4 px-6">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                        <User className="w-4 h-4 text-gray-600" />
+                      </div>
+                      <div>
+                        <div className="font-medium text-gray-800">{sample.patientName}</div>
+                        <div className="text-sm text-gray-500">{sample.patientId}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="py-4 px-6">
                     <div>
-                      <div className="font-medium text-gray-800">{sample.patientName}</div>
-                      <div className="text-sm text-gray-500">{sample.patientId}</div>
+                      <div className="font-medium text-gray-800">{sample.testType}</div>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <span className="text-sm text-gray-600">{sample.sampleType}</span>
+                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">{sample.volume}</span>
+                      </div>
                     </div>
                   </td>
-                  <td className="py-4 px-4">
-                    <div className="font-medium text-gray-800">{sample.testType}</div>
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex items-center space-x-2">
-                      <span className="font-medium text-gray-800">{sample.sampleType}</span>
-                      <span className="text-sm text-gray-500">({sample.volume})</span>
+                  <td className="py-4 px-6">
+                    <div className="space-y-2">
+                      <div className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(sample.status)}`}>
+                        {getStatusIcon(sample.status)}
+                        <span className="capitalize">{sample.status.replace('-', ' ')}</span>
+                      </div>
+                      <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border ${getPriorityColor(sample.priority)}`}>
+                        <span className="uppercase">{sample.priority}</span>
+                      </div>
                     </div>
                   </td>
-                  <td className="py-4 px-4">
-                    <div className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(sample.status)}`}>
-                      {getStatusIcon(sample.status)}
-                      <span className="capitalize">{sample.status.replace('-', ' ')}</span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(sample.priority)}`}>
-                      <span className="uppercase">{sample.priority}</span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
+                  <td className="py-4 px-6">
                     <div>
-                      <div className="text-sm font-medium text-gray-800">{sample.receivedTime}</div>
+                      <div className="text-sm font-medium text-gray-800">Received</div>
+                      <div className="text-xs text-gray-600">{sample.receivedTime}</div>
                       <div className="text-xs text-gray-500">{sample.receivedDate}</div>
+                      <div className="text-sm font-medium text-gray-800 mt-2">Expected</div>
+                      <div className="text-xs text-gray-600">{sample.expectedTime}</div>
                     </div>
                   </td>
-                  <td className="py-4 px-4">
-                    <div className="text-sm text-gray-600">{sample.expectedTime}</div>
+                  <td className="py-4 px-6">
+                    <div>
+                      <div className="text-sm text-gray-800">{sample.collectedBy}</div>
+                      <div className="text-xs text-gray-500">{sample.location}</div>
+                      {sample.notes && (
+                        <div className="text-xs text-blue-600 mt-1" title={sample.notes}>
+                          Note available
+                        </div>
+                      )}
+                    </div>
                   </td>
-                  <td className="py-4 px-4">
+                  <td className="py-4 px-6">
                     <div className="flex items-center space-x-2">
-                      <button className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors">
+                      <button 
+                        className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors duration-200"
+                        title="View Details"
+                      >
                         <Eye className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
+                      <button 
+                        className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                        title="Generate Report"
+                      >
                         <FileText className="w-4 h-4" />
                       </button>
                     </div>

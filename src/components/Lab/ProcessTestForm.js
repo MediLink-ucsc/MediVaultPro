@@ -1,4 +1,4 @@
-// src/components/LabOperator/QuickActions/ProcessTestForm.js
+// src/components/Lab/ProcessTestForm.js
 import React, { useState } from 'react';
 import { Search, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 

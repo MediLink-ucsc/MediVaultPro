@@ -7,7 +7,9 @@ import {
   Save,
   Info,
   Eye,
-  EyeOff
+  EyeOff,
+  Check,
+  AlertCircle
 } from 'lucide-react';
 
 const Settings = () => {
