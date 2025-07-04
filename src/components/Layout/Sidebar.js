@@ -123,6 +123,7 @@ const Sidebar = ({ user }) => {
           <NavLink
             key={index}
             to={item.path}
+            end
             className={({ isActive }) => `
               group flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 
               ${isActive 
