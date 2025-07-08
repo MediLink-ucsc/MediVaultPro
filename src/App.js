@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Auth/Login';
+import Signup from './components/Auth/Signup';
 import DoctorDashboard from './components/Doctor/DoctorDashboard';
 import NurseDashboard from './components/Nurse/NurseDashboard';
 import LabDashboard from './components/Lab/LabDashboard';
@@ -10,6 +11,7 @@ import './App.css';
 
 function App() {
   const [user, setUser] = useState(null);
+  const [isSignup, setIsSignup] = useState(false);
 
   // Check for user in localStorage when app loads
   useEffect(() => {
@@ -25,14 +27,33 @@ function App() {
     localStorage.setItem('medivaultpro_user', JSON.stringify(userData));
   };
 
+  const handleSignup = (userData) => {
+    // In a real app, this would make an API call to create the user
+    setUser(userData);
+    // Store user in localStorage
+    localStorage.setItem('medivaultpro_user', JSON.stringify(userData));
+  };
+
   const handleLogout = () => {
     setUser(null);
     // Remove user from localStorage
     localStorage.removeItem('medivaultpro_user');
   };
 
+  const switchToSignup = () => {
+    setIsSignup(true);
+  };
+
+  const switchToLogin = () => {
+    setIsSignup(false);
+  };
+
   if (!user) {
-    return <Login onLogin={handleLogin} />;
+    return isSignup ? (
+      <Signup onSignup={handleSignup} onSwitchToLogin={switchToLogin} />
+    ) : (
+      <Login onLogin={handleLogin} onSwitchToSignup={switchToSignup} />
+    );
   }
 
   return (

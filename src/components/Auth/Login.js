@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { User, Lock, Stethoscope } from 'lucide-react';
 
-const Login = ({ onLogin }) => {
+const Login = ({ onLogin, onSwitchToSignup }) => {
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
@@ -14,7 +14,7 @@ const Login = ({ onLogin }) => {
   onLogin({
     id: 1,
     name: credentials.role === 'doctor' ? 'Dr.Dulmini Chathubhashini' : 
-          credentials.role === 'nurse' ? 'Nurse Johnson' : 'Lab Operator',
+          credentials.role === 'nurse' ? 'Nurse Likitha' : 'Lab Operator',
     email: credentials.email || 'demo@medivaultpro.com',
     role: credentials.role
   });
@@ -89,10 +89,19 @@ const Login = ({ onLogin }) => {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
-          <a href="#" className="text-teal-600 hover:text-teal-700 text-sm">
+        <div className="mt-6 text-center space-y-3">
+          <a href="#" className="text-teal-600 hover:text-teal-700 text-sm block">
             Forgot your password?
           </a>
+          <p className="text-gray-600 text-sm">
+            Don't have an account?{' '}
+            <button 
+              onClick={onSwitchToSignup}
+              className="text-teal-600 hover:text-teal-700 font-medium"
+            >
+              Sign up here
+            </button>
+          </p>
         </div>
       </div>
     </div>
