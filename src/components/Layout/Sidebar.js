@@ -1,4 +1,3 @@
-// src/components/Layout/Sidebar.js
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
@@ -9,7 +8,6 @@ import {
   TestTube,
   BarChart3,
   Settings,
-  Stethoscope,
   Pill,
   Activity,
   ClipboardList,
@@ -18,6 +16,7 @@ import {
   Building2,
   UserPlus
 } from 'lucide-react';
+import MediLinkLogo from '../resources/MediLinkLogo.jpeg';
 
 const Sidebar = ({ user }) => {
   const getRoleColors = () => {
@@ -126,8 +125,12 @@ const Sidebar = ({ user }) => {
       <div className="p-6 border-b border-gray-200 bg-white relative overflow-hidden">
         <div className={`absolute inset-0 bg-gradient-to-r ${colors.secondary} opacity-30`} />
         <div className="relative flex items-center space-x-3">
-          <div className={`w-12 h-12 bg-gradient-to-br ${colors.primary} rounded-xl flex items-center justify-center shadow-lg hover-lift`}>
-            <Stethoscope className="w-7 h-7 text-white" />
+          <div className={`w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg hover-lift overflow-hidden`}>
+            <img 
+              src={MediLinkLogo} 
+              alt="MediLink Logo" 
+              className="w-10 h-10 object-contain"
+            />
           </div>
           <div>
             <div className="font-bold text-gray-800 text-lg">MedivaultPro</div>

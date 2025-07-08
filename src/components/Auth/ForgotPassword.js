@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Mail, ArrowLeft, Stethoscope, CheckCircle } from 'lucide-react';
+import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
+import MediLinkLogo from '../resources/MediLinkLogo.jpeg';
 
 const ForgotPassword = ({ onBackToLogin }) => {
   const [email, setEmail] = useState('');
@@ -38,8 +39,12 @@ const ForgotPassword = ({ onBackToLogin }) => {
     <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-teal-600 rounded-full flex items-center justify-center mb-4">
-            <Stethoscope className="w-8 h-8 text-white" />
+          <div className="mx-auto w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-lg">
+            <img 
+              src={MediLinkLogo} 
+              alt="MediLink Logo" 
+              className="w-12 h-12 object-contain"
+            />
           </div>
           <h1 className="text-2xl font-bold text-gray-800">MedivaultPro</h1>
           <p className="text-gray-600 mt-2">
