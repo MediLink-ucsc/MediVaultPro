@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { User, Lock, Stethoscope } from 'lucide-react';
 
-const Login = ({ onLogin, onSwitchToSignup }) => {
+const Login = ({ onLogin, onSwitchToSignup, onSwitchToForgotPassword }) => {
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
@@ -90,9 +90,12 @@ const Login = ({ onLogin, onSwitchToSignup }) => {
         </form>
 
         <div className="mt-6 text-center space-y-3">
-          <a href="#" className="text-teal-600 hover:text-teal-700 text-sm block">
+          <button 
+            onClick={onSwitchToForgotPassword}
+            className="text-teal-600 hover:text-teal-700 text-sm block mx-auto"
+          >
             Forgot your password?
-          </a>
+          </button>
           <p className="text-gray-600 text-sm">
             Don't have an account?{' '}
             <button 
