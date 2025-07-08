@@ -1,6 +1,6 @@
 // src/components/Lab/CreateTemplateForm.js
 import React, { useState } from 'react';
-import { Plus, Minus, FileText } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
 
 const CreateTemplateForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -93,7 +93,27 @@ const CreateTemplateForm = ({ onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    
+    // Basic validation
+    if (!formData.templateName || !formData.testType || !formData.category) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    // Create template object with additional metadata
+    const templateData = {
+      ...formData,
+      name: formData.templateName,
+      estimatedTime: calculateEstimatedTime(formData.fields.length),
+    };
+
+    onSubmit(templateData);
+  };
+
+  const calculateEstimatedTime = (fieldCount) => {
+    // Simple estimation: 1 minute per field + 5 minutes base time
+    const minutes = Math.max(5, fieldCount + 5);
+    return `${minutes} min`;
   };
 
   return (

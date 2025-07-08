@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Upload, FileText, X, CheckCircle, AlertCircle, Calendar, User, Activity, FileCheck } from 'lucide-react';
 
-const UploadReportForm = ({ onSubmit }) => {
+const UploadReportForm = ({ onSubmit, sampleData }) => {
   const [formData, setFormData] = useState({
     patientId: '',
     patientName: '',
@@ -10,12 +10,13 @@ const UploadReportForm = ({ onSubmit }) => {
     reportFile: null,
     urgency: 'normal',
     notes: '',
-    resultDate: '',
+    resultDate: new Date().toISOString().split('T')[0],
     technician: '',
     department: '',
     referringPhysician: '',
     criticalValues: false,
     followUpRequired: false,
+    sampleId: '',
   });
 
   const [dragActive, setDragActive] = useState(false);
@@ -129,6 +130,22 @@ const UploadReportForm = ({ onSubmit }) => {
       }
     }
   }, [formData.testType]);
+
+  // Populate form with sample data when provided
+  useEffect(() => {
+    if (sampleData) {
+      setFormData(prev => ({
+        ...prev,
+        patientId: sampleData.patientId || '',
+        patientName: sampleData.patientName || '',
+        testType: testTypes.find(test => test.label === sampleData.testType)?.value || '',
+        urgency: sampleData.priority === 'stat' ? 'stat' : 
+                 sampleData.priority === 'urgent' ? 'urgent' : 'normal',
+        notes: sampleData.notes || '',
+        sampleId: sampleData.id || '',
+      }));
+    }
+  }, [sampleData]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -313,6 +330,50 @@ const UploadReportForm = ({ onSubmit }) => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-8">
+        {/* Sample Information Section - Only show when sample data is provided */}
+        {sampleData && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+              <FileCheck className="w-5 h-5 mr-2 text-blue-600" />
+              Sample Information
+            </h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Sample ID</label>
+                <p className="text-sm font-semibold text-gray-900">{sampleData.id}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Sample Type</label>
+                <p className="text-sm font-semibold text-gray-900">{sampleData.sampleType}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Volume</label>
+                <p className="text-sm font-semibold text-gray-900">{sampleData.volume}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Collected By</label>
+                <p className="text-sm font-semibold text-gray-900">{sampleData.collectedBy}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Received Date</label>
+                <p className="text-sm font-semibold text-gray-900">{sampleData.receivedDate}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                  sampleData.status === 'pending' ? 'bg-orange-100 text-orange-700' :
+                  sampleData.status === 'in-progress' ? 'bg-blue-100 text-blue-700' :
+                  sampleData.status === 'completed' ? 'bg-green-100 text-green-700' : 
+                  'bg-gray-100 text-gray-700'
+                }`}>
+                  {sampleData.status.replace('-', ' ').toUpperCase()}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Patient Information Section */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
@@ -332,9 +393,10 @@ const UploadReportForm = ({ onSubmit }) => {
                 onChange={handlePatientIdChange}
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 ${
                   errors.patientId ? 'border-red-500' : 'border-gray-300'
-                }`}
+                } ${sampleData ? 'bg-gray-50' : ''}`}
                 placeholder="AB123456"
                 maxLength={8}
+                readOnly={!!sampleData}
                 required
               />
               {errors.patientId && (
@@ -356,8 +418,9 @@ const UploadReportForm = ({ onSubmit }) => {
                 onChange={handleInputChange}
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 ${
                   errors.patientName ? 'border-red-500' : 'border-gray-300'
-                }`}
+                } ${sampleData ? 'bg-gray-50' : ''}`}
                 placeholder="Enter patient name"
+                readOnly={!!sampleData}
                 required
               />
               {errors.patientName && (
@@ -388,7 +451,8 @@ const UploadReportForm = ({ onSubmit }) => {
                 onChange={handleInputChange}
                 className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 ${
                   errors.testType ? 'border-red-500' : 'border-gray-300'
-                }`}
+                } ${sampleData ? 'bg-gray-50' : ''}`}
+                disabled={!!sampleData}
                 required
               >
                 <option value="">Select test type</option>

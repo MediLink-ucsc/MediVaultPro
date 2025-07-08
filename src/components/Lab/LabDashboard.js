@@ -6,6 +6,7 @@ import LabReports from './LabReports';
 import Settings from './Settings';
 import Analytics from './Analytics';
 import Samples from './Samples';
+import Templates from './Templates';
 
 const LabDashboard = () => {
   return (
@@ -14,6 +15,7 @@ const LabDashboard = () => {
       <Route path="/samples" element={<Samples />} />
       <Route path="/analytics" element={<Analytics />} />
       <Route path="/reports" element={<LabReports />} />
+      <Route path="/templates" element={<Templates />} />
       <Route path="/settings" element={<Settings />} />
     </Routes>
   );

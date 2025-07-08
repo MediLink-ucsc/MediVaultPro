@@ -1,11 +1,10 @@
 // src/components/Lab/LabDashboardOverview.js
 import React, { useState } from 'react';
-import { FlaskConical, Upload, FileText, Clock, Plus, TestTube, Microscope, FileCheck, AlertCircle, TrendingUp } from 'lucide-react';
+import { FlaskConical, Upload, FileText, Clock, TestTube, Microscope, FileCheck, AlertCircle, TrendingUp } from 'lucide-react';
 import StatsCard from '../Common/StatsCard';
 import Modal from '../Common/Modal';
-import UploadReportForm from './UploadReportForm';
-import CreateTemplateForm from './CreateTemplateForm';
 import ProcessTestForm from './ProcessTestForm';
+import UploadReportForm from './UploadReportForm';
 
 
 const LabDashboardOverview = () => {
@@ -18,11 +17,7 @@ const LabDashboardOverview = () => {
     { title: 'Urgent Tests', value: '5', icon: AlertCircle, color: 'orange', trend: '-3%', description: 'High priority items' },
   ];
 
-  const quickActions = [
-    { title: 'Upload Report', icon: Upload, color: 'teal', description: 'Upload lab results' },
-    { title: 'Create Template', icon: Plus, color: 'orange', description: 'New report template' },
-    { title: 'Process Test', icon: TestTube, color: 'teal', description: 'Mark test complete' },
-  ];
+  
 
   const getColorClasses = (color) => {
     const colorMap = {
@@ -48,12 +43,10 @@ const LabDashboardOverview = () => {
 
   const getModalContent = () => {
     switch (activeModal) {
-      case 'Upload Report':
-        return <UploadReportForm onSubmit={handleSubmit} />;
-      case 'Create Template':
-        return <CreateTemplateForm onSubmit={handleSubmit} />;
       case 'Process Test':
         return <ProcessTestForm onSubmit={handleSubmit} />;
+      case 'Upload Report':
+        return <UploadReportForm onSubmit={handleSubmit} />;
       default:
         return null;
     }
@@ -91,37 +84,6 @@ const LabDashboardOverview = () => {
             </div>
           </div>
         ))}
-      </div>
-
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-800">Quick Actions</h3>
-          <p className="text-sm text-gray-500">Frequently used functions</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {quickActions.map((action, index) => {
-            const IconComponent = action.icon;
-            return (
-              <button
-                key={index}
-                onClick={() => setActiveModal(action.title)}
-                className={`p-6 rounded-xl border-2 transition-all duration-200 hover:shadow-lg hover:scale-105 ${getColorClasses(action.color)}`}
-              >
-                <div className="text-center">
-                  <div className="mb-3 flex justify-center">
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                      action.color === 'teal' ? 'bg-teal-100' : 'bg-orange-100'
-                    }`}>
-                      <IconComponent className={`w-6 h-6 ${getIconColorClasses(action.color)}`} />
-                    </div>
-                  </div>
-                  <div className="font-semibold text-sm mb-1">{action.title}</div>
-                  <div className="text-xs opacity-75">{action.description}</div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

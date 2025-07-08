@@ -16,17 +16,24 @@ import {
   FileText,
   Microscope,
   TestTube2,
-  Beaker
+  Beaker,
+  Upload
 } from 'lucide-react';
+import Modal from '../Common/Modal';
+import UploadReportForm from './UploadReportForm';
+import AddSample from './AddSample';
 
 const Samples = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterPriority, setFilterPriority] = useState('all');
   const [filterDate, setFilterDate] = useState('today');
-
-  // Mock data for samples
-  const samples = [
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [selectedSample, setSelectedSample] = useState(null);
+  const [viewModalOpen, setViewModalOpen] = useState(false);
+  const [viewSample, setViewSample] = useState(null);
+  const [addSampleModalOpen, setAddSampleModalOpen] = useState(false);
+  const [samples, setSamples] = useState([
     {
       id: 'S001',
       patientId: 'P001',
@@ -39,7 +46,6 @@ const Samples = () => {
       receivedTime: '09:30 AM',
       expectedTime: '02:30 PM',
       collectedBy: 'Nurse Likitha',
-      location: 'Ward A - Room 205',
       notes: 'Patient fasting for 12 hours',
       barcode: 'BC001234567',
       volume: '5ml',
@@ -57,7 +63,6 @@ const Samples = () => {
       receivedTime: '10:15 AM',
       expectedTime: '01:15 PM',
       collectedBy: 'Nurse Likitha',
-      location: 'Outpatient Clinic',
       notes: 'Mid-stream collection',
       barcode: 'BC001234568',
       volume: '50ml',
@@ -75,7 +80,6 @@ const Samples = () => {
       receivedTime: '08:45 AM',
       expectedTime: '11:45 AM',
       collectedBy: 'Nurse Dulmini',
-      location: 'Emergency Room',
       notes: 'STAT order - cardiac concern',
       barcode: 'BC001234569',
       volume: '3ml',
@@ -93,7 +97,6 @@ const Samples = () => {
       receivedTime: '11:20 AM',
       expectedTime: '48 hours',
       collectedBy: 'Nurse Dulmini',
-      location: 'ICU - Bed 3',
       notes: 'Fever investigation',
       barcode: 'BC001234570',
       volume: '10ml',
@@ -111,7 +114,6 @@ const Samples = () => {
       receivedTime: '12:00 PM',
       expectedTime: '03:00 PM',
       collectedBy: 'Nurse Likitha',
-      location: 'Diabetes Clinic',
       notes: 'Hemolyzed sample - recollection needed',
       barcode: 'BC001234571',
       volume: '2ml',
@@ -129,13 +131,12 @@ const Samples = () => {
       receivedTime: '01:30 PM',
       expectedTime: '24-48 hours',
       collectedBy: 'Nurse Likitha',
-      location: 'Pediatrics Ward',
       notes: 'Strep throat suspected',
       barcode: 'BC001234572',
       volume: 'N/A',
       container: 'Transport Media'
     }
-  ];
+  ]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -193,6 +194,37 @@ const Samples = () => {
     }
   };
 
+  const handleUploadReport = (sample) => {
+    setSelectedSample(sample);
+    setUploadModalOpen(true);
+  };
+
+  const handleViewDetails = (sample) => {
+    setViewSample(sample);
+    setViewModalOpen(true);
+  };
+
+  const handleUploadSubmit = (e) => {
+    e.preventDefault();
+    console.log('Report uploaded for sample:', selectedSample?.id);
+    setUploadModalOpen(false);
+    setSelectedSample(null);
+  };
+
+  const handleAddSample = () => {
+    setAddSampleModalOpen(true);
+  };
+
+  const handleAddSampleSubmit = (newSampleData) => {
+    setSamples(prev => [newSampleData, ...prev]);
+    setAddSampleModalOpen(false);
+    console.log('New sample added:', newSampleData);
+  };
+
+  const handleAddSampleCancel = () => {
+    setAddSampleModalOpen(false);
+  };
+
   const filteredSamples = samples.filter(sample => {
     const matchesSearch = sample.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          sample.testType.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -243,7 +275,10 @@ const Samples = () => {
           <p className="text-gray-600 mt-2">Track and manage laboratory samples</p>
         </div>
         <div className="flex items-center space-x-3">
-          <button className="flex items-center space-x-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors">
+          <button 
+            className="flex items-center space-x-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
+            onClick={handleAddSample}
+          >
             <Plus className="w-4 h-4" />
             <span>Add Sample</span>
           </button>
@@ -408,7 +443,6 @@ const Samples = () => {
                   <td className="py-4 px-6">
                     <div>
                       <div className="text-sm text-gray-800">{sample.collectedBy}</div>
-                      <div className="text-xs text-gray-500">{sample.location}</div>
                       {sample.notes && (
                         <div className="text-xs text-blue-600 mt-1" title={sample.notes}>
                           Note available
@@ -421,8 +455,16 @@ const Samples = () => {
                       <button 
                         className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors duration-200"
                         title="View Details"
+                        onClick={() => handleViewDetails(sample)}
                       >
                         <Eye className="w-4 h-4" />
+                      </button>
+                      <button 
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+                        title="Upload Report"
+                        onClick={() => handleUploadReport(sample)}
+                      >
+                        <Upload className="w-4 h-4" />
                       </button>
                       <button 
                         className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
@@ -489,8 +531,17 @@ const Samples = () => {
                 {sample.collectedBy}
               </div>
               <div className="flex items-center space-x-2">
-                <button className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors">
+                <button 
+                  className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                  onClick={() => handleViewDetails(sample)}
+                >
                   <Eye className="w-4 h-4" />
+                </button>
+                <button 
+                  className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  onClick={() => handleUploadReport(sample)}
+                >
+                  <Upload className="w-4 h-4" />
                 </button>
                 <button className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
                   <FileText className="w-4 h-4" />
@@ -500,6 +551,175 @@ const Samples = () => {
           </div>
         ))}
       </div>
+
+      {/* Upload Report Modal */}
+      <Modal
+        isOpen={uploadModalOpen}
+        onClose={() => {
+          setUploadModalOpen(false);
+          setSelectedSample(null);
+        }}
+        title={`Upload Report - ${selectedSample?.id || ''}`}
+      >
+        {selectedSample && (
+          <UploadReportForm 
+            onSubmit={handleUploadSubmit}
+            sampleData={selectedSample}
+          />
+        )}
+      </Modal>
+
+      {/* View Sample Details Modal */}
+      <Modal
+        isOpen={viewModalOpen}
+        onClose={() => {
+          setViewModalOpen(false);
+          setViewSample(null);
+        }}
+        title={`Sample Details - ${viewSample?.id || ''}`}
+      >
+        {viewSample && (
+          <div className="space-y-6">
+            {/* Sample Information */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Sample Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Sample ID</label>
+                  <p className="text-gray-800 font-medium">{viewSample.id}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Barcode</label>
+                  <p className="text-gray-800 font-medium">{viewSample.barcode}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Test Type</label>
+                  <p className="text-gray-800 font-medium">{viewSample.testType}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Sample Type</label>
+                  <p className="text-gray-800 font-medium">{viewSample.sampleType}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Volume</label>
+                  <p className="text-gray-800 font-medium">{viewSample.volume}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Container</label>
+                  <p className="text-gray-800 font-medium">{viewSample.container}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Patient Information */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Patient Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Patient Name</label>
+                  <p className="text-gray-800 font-medium">{viewSample.patientName}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Patient ID</label>
+                  <p className="text-gray-800 font-medium">{viewSample.patientId}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Status and Priority */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Status & Priority</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Status</label>
+                  <div className={`inline-flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium border mt-1 ${getStatusColor(viewSample.status)}`}>
+                    {getStatusIcon(viewSample.status)}
+                    <span className="capitalize">{viewSample.status.replace('-', ' ')}</span>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Priority</label>
+                  <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border mt-1 ${getPriorityColor(viewSample.priority)}`}>
+                    <span className="uppercase">{viewSample.priority}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Timing Information */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Timing Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Received Date</label>
+                  <p className="text-gray-800 font-medium">{viewSample.receivedDate}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Received Time</label>
+                  <p className="text-gray-800 font-medium">{viewSample.receivedTime}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Expected Time</label>
+                  <p className="text-gray-800 font-medium">{viewSample.expectedTime}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Collection Information */}
+            <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Collection Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-600">Collected By</label>
+                  <p className="text-gray-800 font-medium">{viewSample.collectedBy}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Notes */}
+            {viewSample.notes && (
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">Notes</h3>
+                <p className="text-gray-700 bg-white p-3 rounded border">{viewSample.notes}</p>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+              <button 
+                className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                onClick={() => {
+                  setViewModalOpen(false);
+                  setViewSample(null);
+                }}
+              >
+                Close
+              </button>
+              <button 
+                className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                onClick={() => {
+                  setViewModalOpen(false);
+                  handleUploadReport(viewSample);
+                }}
+              >
+                Upload Report
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Add Sample Modal */}
+      <Modal
+        isOpen={addSampleModalOpen}
+        onClose={() => setAddSampleModalOpen(false)}
+        title="Add New Sample"
+      >
+        <AddSample 
+          onSubmit={handleAddSampleSubmit}
+          onCancel={handleAddSampleCancel}
+        />
+      </Modal>
     </div>
   );
 };
