@@ -1,11 +1,43 @@
 // src/components/Common/Modal.js
 import { X } from 'lucide-react';
+import { useEffect } from 'react';
 
 const Modal = ({ isOpen, onClose, title, children }) => {
+  // Handle click outside to close
+  const handleBackdropClick = (e) => {
+    // Only close if clicking on the backdrop itself, not on the modal content
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  // Handle escape key to close
+  useEffect(() => {
+    const handleEscapeKey = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscapeKey);
+      // Prevent background scrolling when modal is open
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+      onClick={handleBackdropClick}
+    >
       <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
