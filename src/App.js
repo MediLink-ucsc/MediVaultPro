@@ -6,6 +6,7 @@ import ForgotPassword from './components/Auth/ForgotPassword';
 import DoctorDashboard from './components/Doctor/DoctorDashboard';
 import NurseDashboard from './components/Nurse/NurseDashboard';
 import LabDashboard from './components/Lab/LabDashboard';
+import SystemAdminDashboard from './components/SystemAdmin/SystemAdminDashboard';
 import Layout from './components/Layout/Layout';
 import './App.css';
 
@@ -89,11 +90,16 @@ function App() {
             element={user.role === 'lab' ? <LabDashboard /> : <Navigate to="/" />} 
           />
           <Route 
+            path="/systemadmin/*" 
+            element={user.role === 'systemadmin' ? <SystemAdminDashboard /> : <Navigate to="/" />} 
+          />
+          <Route 
             path="/" 
             element={
               <Navigate to={
                 user.role === 'doctor' ? '/doctor' : 
-                user.role === 'nurse' ? '/nurse' : '/lab'
+                user.role === 'nurse' ? '/nurse' : 
+                user.role === 'systemadmin' ? '/systemadmin' : '/lab'
               } />
             } 
           />

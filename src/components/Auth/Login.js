@@ -14,7 +14,8 @@ const Login = ({ onLogin, onSwitchToSignup, onSwitchToForgotPassword }) => {
   onLogin({
     id: 1,
     name: credentials.role === 'doctor' ? 'Dr.Dulmini Chathubhashini' : 
-          credentials.role === 'nurse' ? 'Nurse Likitha' : 'Lab Operator',
+          credentials.role === 'nurse' ? 'Nurse Likitha' : 
+          credentials.role === 'systemadmin' ? 'System Admin' : 'Lab Operator',
     email: credentials.email || 'demo@medivaultpro.com',
     role: credentials.role
   });
@@ -78,6 +79,7 @@ const Login = ({ onLogin, onSwitchToSignup, onSwitchToForgotPassword }) => {
               <option value="doctor">Doctor</option>
               <option value="nurse">Nurse</option>
               <option value="lab">Lab Operator</option>
+              <option value="systemadmin">System Admin</option>
             </select>
           </div>
 

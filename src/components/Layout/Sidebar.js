@@ -14,7 +14,9 @@ import {
   Activity,
   ClipboardList,
   FlaskConical,
-  ChevronRight
+  ChevronRight,
+  Building2,
+  UserPlus
 } from 'lucide-react';
 
 const Sidebar = ({ user }) => {
@@ -49,6 +51,16 @@ const Sidebar = ({ user }) => {
           accentLight: '#14b8a6',
           hover: 'hover:bg-teal-50',
           hoverText: 'hover:text-[#0d9488]'
+        };
+      case 'systemadmin':
+        return {
+          primary: 'from-[#7c3aed] to-[#7c3aed]',
+          primaryLight: 'from-[#8b5cf6] to-[#c4b5fd]',
+          secondary: 'from-purple-50 to-purple-100',
+          accent: '#7c3aed',
+          accentLight: '#8b5cf6',
+          hover: 'hover:bg-purple-50',
+          hoverText: 'hover:text-[#7c3aed]'
         };
       default:
         return {
@@ -93,6 +105,13 @@ const Sidebar = ({ user }) => {
           { icon: TestTube, label: 'Reports', path: '/lab/reports' },
           { icon: BarChart3, label: 'Analytics', path: '/lab/analytics' },
           { icon: Settings, label: 'Settings', path: '/lab/settings' }
+        ];
+      case 'systemadmin':
+        return [
+          { icon: LayoutDashboard, label: 'Dashboard', path: '/systemadmin' },
+          { icon: Building2, label: 'Register Institute', path: '/systemadmin/register-institute' },
+          { icon: UserPlus, label: 'Manage Staff', path: '/systemadmin/manage-staff' },
+          { icon: Settings, label: 'Settings', path: '/systemadmin/settings' }
         ];
       default:
         return [];
