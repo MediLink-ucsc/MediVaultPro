@@ -9,10 +9,10 @@ import Diagnostics from './Diagnostics';
 import Analytics from './Analytics';
 import Settings from './Settings';
 
-const DoctorDashboard = () => {
+const DoctorDashboard = ({user}) => {
   return (
     <Routes>
-      <Route path="/" element={<DashboardOverview />} />
+      <Route path="/" element={<DashboardOverview user={user}/>} />
       <Route path="/patients" element={<PatientList />} />
       <Route path="/appointments" element={<Appointments />} />
       <Route path="/documentation" element={<Documentation />} />

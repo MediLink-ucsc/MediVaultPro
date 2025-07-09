@@ -20,7 +20,7 @@ import {
 const Sidebar = ({ user }) => {
   const getRoleColors = () => {
     switch (user.role) {
-      case 'doctor':
+      case 'DOCTOR':
         return {
           primary: 'from-[#0d9488] to-[#0d9488]',
           primaryLight: 'from-[#14b8a6] to-[#5eead4]',
@@ -30,7 +30,7 @@ const Sidebar = ({ user }) => {
           hover: 'hover:bg-teal-50',
           hoverText: 'hover:text-[#0d9488]'
         };
-      case 'nurse':
+      case 'NURSE':
         return {
           primary: 'from-[#ea580c] to-[#ea580c]',
           primaryLight: 'from-[#f97316] to-[#fdba74]',
@@ -40,7 +40,7 @@ const Sidebar = ({ user }) => {
           hover: 'hover:bg-orange-50',
           hoverText: 'hover:text-[#ea580c]'
         };
-      case 'lab':
+      case 'LAB':
         return {
           primary: 'from-[#0d9488] to-[#0d9488]',
           primaryLight: 'from-[#14b8a6] to-[#5eead4]',
@@ -67,7 +67,7 @@ const Sidebar = ({ user }) => {
 
   const getMenuItems = () => {
     switch (user.role) {
-      case 'doctor':
+      case 'DOCTOR':
         return [
           { icon: LayoutDashboard, label: 'Dashboard', path: '/doctor' },
           { icon: Users, label: 'Patients', path: '/doctor/patients' },
@@ -77,7 +77,7 @@ const Sidebar = ({ user }) => {
           { icon: BarChart3, label: 'Analytics', path: '/doctor/analytics' },
           { icon: Settings, label: 'Settings', path: '/doctor/settings' }
         ];
-      case 'nurse':
+      case 'MEDICAL_STAFF':
         return [
           { icon: LayoutDashboard, label: 'Dashboard', path: '/nurse' },
           { icon: Users, label: 'Patients', path: '/nurse/patients' },
@@ -86,7 +86,7 @@ const Sidebar = ({ user }) => {
           { icon: ClipboardList, label: 'Care Plans', path: '/nurse/care-plans' },
           { icon: Settings, label: 'Settings', path: '/nurse/settings' }
         ];
-      case 'lab':
+      case 'LAB_ASSISTANT':
         return [
           { icon: LayoutDashboard, label: 'Dashboard', path: '/lab' },
           { icon: FlaskConical, label: 'Samples', path: '/lab/samples' },

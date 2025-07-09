@@ -11,7 +11,6 @@ import './App.css';
 function App() {
   const [user, setUser] = useState(null);
 
-  // Check for user in localStorage when app loads
   useEffect(() => {
     const storedUser = localStorage.getItem('medivaultpro_user');
     if (storedUser) {
@@ -21,47 +20,72 @@ function App() {
 
   const handleLogin = (userData) => {
     setUser(userData);
-    // Store user in localStorage
     localStorage.setItem('medivaultpro_user', JSON.stringify(userData));
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    // Remove user from localStorage
-    localStorage.removeItem('medivaultpro_user');
-  };
+  // const handleLogout = () => {
+  //   setUser(null);
+  //   localStorage.removeItem('medivaultpro_user');
+  // }; 
 
-  if (!user) {
-    return <Login onLogin={handleLogin} />;
+  const handleLogout = async () => {
+  try {
+    const token = localStorage.getItem('medivaultpro_token');
+    const res = await fetch('http://localhost:3000/api/v1/auth/medvaultpro/logout', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,  
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',  
+    });
+    if (res.ok) {
+      localStorage.removeItem('medivaultpro_token');
+      localStorage.removeItem('medivaultpro_user');
+      setUser(null);
+    } else {
+      console.error('Logout failed', await res.text());
+    }
+  } catch (error) {
+    console.error('Logout error:', error);
   }
+};
 
   return (
     <Router>
-      <Layout user={user} onLogout={handleLogout}>
-        <Routes>
-          <Route 
-            path="/doctor/*" 
-            element={user.role === 'doctor' ? <DoctorDashboard /> : <Navigate to="/" />} 
-          />
-          <Route 
-            path="/nurse/*" 
-            element={user.role === 'nurse' ? <NurseDashboard /> : <Navigate to="/" />} 
-          />
-          <Route 
-            path="/lab/*" 
-            element={user.role === 'lab' ? <LabDashboard /> : <Navigate to="/" />} 
-          />
-          <Route 
-            path="/" 
-            element={
-              <Navigate to={
-                user.role === 'doctor' ? '/doctor' : 
-                user.role === 'nurse' ? '/nurse' : '/lab'
-              } />
-            } 
-          />
-        </Routes>
-      </Layout>
+      {!user ? (
+        // Show login if no user
+        <Login onLogin={handleLogin} />
+      ) : (
+        // Show app routes if logged in
+        <Layout user={user} onLogout={handleLogout}>
+          <Routes>
+            <Route 
+              path="/doctor/*" 
+              element={user.role === 'DOCTOR' ? <DoctorDashboard user={user}/> : <Navigate to="/" />} 
+            />
+            <Route 
+              path="/nurse/*" 
+              element={user.role === 'NURSE' || user.role === 'MEDICAL_STAFF' ? <NurseDashboard user={user}/> : <Navigate to="/" />} 
+            />
+            <Route 
+              path="/lab/*" 
+              element={user.role === 'LAB_ASSISTANT' ? <LabDashboard user={user}/> : <Navigate to="/" />} 
+            />
+            {/* Add admin route if needed */}
+            <Route 
+              path="/" 
+              element={
+                <Navigate to={
+                  user.role === 'DOCTOR' ? '/doctor' : 
+                  (user.role === 'NURSE' || user.role === 'MEDICAL_STAFF') ? '/nurse' : 
+                  user.role === 'LAB_ASSISTANT' ? '/lab' : '/'
+                } />
+              } 
+            />
+          </Routes>
+        </Layout>
+      )}
     </Router>
   );
 }

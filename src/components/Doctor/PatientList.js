@@ -10,8 +10,8 @@ const PatientList = () => {
   const [patients, setPatients] = useState([
     { id: 1, name: 'Hansaja Boss', age: 45, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-25', condition: 'Hypertension' },
     { id: 2, name: 'Greatest Dulmini', age: 32, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-24', condition: 'Diabetes' },
-    { id: 3, name: 'Cute Anji', age: 58, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-23', condition: 'Arthritis' },
-    { id: 4, name: 'Moda Sathya', age: 29, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-22', condition: 'Allergy' }
+    { id: 3, name: 'Moda Anji', age: 58, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-23', condition: 'Arthritis' },
+    { id: 4, name: 'Cute Sathya', age: 29, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-22', condition: 'Allergy' }
   ]);
 
   const toggleDropdown = (id) => {
