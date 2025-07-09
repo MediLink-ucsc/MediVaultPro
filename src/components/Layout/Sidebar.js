@@ -14,7 +14,8 @@ import {
   FlaskConical,
   ChevronRight,
   Building2,
-  UserPlus
+  UserPlus,
+  BookTemplate
 } from 'lucide-react';
 import MediLinkLogo from '../resources/MediLinkLogo.jpeg';
 
@@ -102,6 +103,7 @@ const Sidebar = ({ user }) => {
           { icon: LayoutDashboard, label: 'Dashboard', path: '/lab' },
           { icon: FlaskConical, label: 'Samples', path: '/lab/samples' },
           { icon: TestTube, label: 'Reports', path: '/lab/reports' },
+          { icon: BookTemplate, label: 'Templates', path: '/lab/templates' },
           { icon: BarChart3, label: 'Analytics', path: '/lab/analytics' },
           { icon: Settings, label: 'Settings', path: '/lab/settings' }
         ];
