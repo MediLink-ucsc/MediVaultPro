@@ -1,54 +1,73 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
-import { User, Lock, Stethoscope } from 'lucide-react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { User, Lock, Stethoscope } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
 
 const Login = ({ onLogin }) => {
   const [credentials, setCredentials] = useState({
-    username: '',
-    password: '',
-    role: 'DOCTOR',
+    email: "",
+    password: "",
+    role: "DOCTOR",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     try {
-      const res = await fetch('http://localhost:3000/api/v1/auth/medvaultpro/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(credentials),
-      });
+      console.log(credentials);
+      const res = await fetch(
+        "http://localhost:3000/api/v1/auth/medvaultpro/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(credentials),
+        }
+      );
 
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.message || 'Login failed');
+        throw new Error(errorData.message || "Login failed");
       }
 
       const data = await res.json();
+      console.log("Login successful:", data);
+
+      const decodedToken = jwtDecode(data.token);
+      console.log("Decoded token:", decodedToken);
 
       // Save token
-      localStorage.setItem('token', data.token);
+      localStorage.setItem("token", data.token);
+
+      const userInfo = {
+        token: data.token,
+        role: decodedToken.role,
+        email: decodedToken.email,
+        id: decodedToken.id,
+      };
 
       // Also save user info to localStorage
-      localStorage.setItem('medivaultpro_user', JSON.stringify(data));
+      localStorage.setItem("medivaultpro_user", JSON.stringify(userInfo));
 
       // Notify App about logged-in user
-      onLogin(data);
+      onLogin(userInfo);
 
       // Navigate based on role (use lowercase roles to match your App)
-      if (data.role === 'DOCTOR') {
-        navigate('/doctor');
-      } else if (data.role === 'LAB_ASSISTANT') {
-        navigate('/lab');
-      } else if (data.role === 'MEDICAL_STAFF' || data.role === 'NURSE') {
-        navigate('/nurse'); 
-      } else if (data.role === 'ADMIN') {
-        navigate('/admin'); // add admin route in App if needed
+      if (userInfo.role === "DOCTOR") {
+        navigate("/doctor");
+      } else if (userInfo.role === "LAB_ASSISTANT") {
+        navigate("/lab");
+      } else if (
+        userInfo.role === "MEDICAL_STAFF" ||
+        userInfo.role === "NURSE"
+      ) {
+        navigate("/nurse");
+      } else if (userInfo.role === "ADMIN") {
+        navigate("/admin"); // add admin route in App if needed
       } else {
-        setError('Unknown role');
+        setError("Unknown role");
       }
     } catch (err) {
       setError(err.message);
@@ -78,8 +97,10 @@ const Login = ({ onLogin }) => {
                 required
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 placeholder="Enter your username"
-                value={credentials.username}
-                onChange={(e) => setCredentials({...credentials, username: e.target.value})}
+                value={credentials.email}
+                onChange={(e) =>
+                  setCredentials({ ...credentials, email: e.target.value })
+                }
               />
             </div>
           </div>
@@ -96,7 +117,9 @@ const Login = ({ onLogin }) => {
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 placeholder="Enter your password"
                 value={credentials.password}
-                onChange={(e) => setCredentials({...credentials, password: e.target.value})}
+                onChange={(e) =>
+                  setCredentials({ ...credentials, password: e.target.value })
+                }
               />
             </div>
           </div>
