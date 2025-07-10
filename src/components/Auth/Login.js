@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { User, Lock, Stethoscope } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
-import { API_ENDPOINTS } from "../../config/api";
+import ApiService from "../../services/apiService";
 
 const Login = ({ onLogin }) => {
   const [credentials, setCredentials] = useState({
@@ -19,18 +19,8 @@ const Login = ({ onLogin }) => {
 
     try {
       console.log(credentials);
-      const res = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(credentials),
-      });
 
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.message || "Login failed");
-      }
-
-      const data = await res.json();
+      const data = await ApiService.login(credentials);
       console.log("Login successful:", data);
 
       const decodedToken = jwtDecode(data.token);

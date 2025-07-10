@@ -11,7 +11,7 @@ import DoctorDashboard from "./components/Doctor/DoctorDashboard";
 import NurseDashboard from "./components/Nurse/NurseDashboard";
 import LabDashboard from "./components/Lab/LabDashboard";
 import Layout from "./components/Layout/Layout";
-import { API_ENDPOINTS } from "./config/api";
+import ApiService from "./services/apiService";
 import "./App.css";
 
 function App() {
@@ -36,23 +36,14 @@ function App() {
 
   const handleLogout = async () => {
     try {
-      const token = localStorage.getItem("token");
-      console.log("Logging out with token:", token);
-      const res = await fetch(API_ENDPOINTS.AUTH.LOGOUT, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        // credentials: "include",
-      });
-      if (res.ok) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("medivaultpro_user");
-        setUser(null);
-      } else {
-        console.error("Logout failed", await res.text());
-      }
+      console.log("Logging out...");
+
+      // Use ApiService instead of direct fetch
+      await ApiService.logout();
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("medivaultpro_user");
+      setUser(null);
     } catch (error) {
       console.error("Logout error:", error);
     }
