@@ -14,10 +14,24 @@ import {
 import MediLinkLogo from '../resources/MediLinkLogo.jpeg';
 import AuthModal from '../Common/AuthModal';
 import Auth from '../Auth/Auth';
+import InstituteRegistration from './InstituteRegistration';
 
 const LandingPage = ({ onLogin, onSignup }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isSignupModalOpen, setIsSignupModalOpen] = useState(false);
+  const [showRegistration, setShowRegistration] = useState(false);
+  
+  // If showing registration, render the InstituteRegistration component
+  if (showRegistration) {
+    return (
+      <InstituteRegistration 
+        onBack={() => setShowRegistration(false)}
+        onComplete={() => {
+          setShowRegistration(false);
+          // You can add additional logic here, like redirecting to a dashboard
+        }}
+      />
+    );
+  }
   const features = [
     {
       icon: <Shield className="w-8 h-8" />,
@@ -102,7 +116,7 @@ const LandingPage = ({ onLogin, onSignup }) => {
                 Sign In
               </button>
               <button
-                onClick={() => setIsSignupModalOpen(true)}
+                onClick={() => setShowRegistration(true)}
                 className="bg-teal-600 text-white px-6 py-2 rounded-lg hover:bg-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 Get Started
@@ -139,7 +153,7 @@ const LandingPage = ({ onLogin, onSignup }) => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-xl text-gray-600 mb-6 max-w-3xl mx-auto"
             >
-              Powered by MediLink - Connect clinics, labs, and patients with our integrated platform
+              Powered by MediLink - Register your clinic or lab to join our integrated healthcare platform
             </motion.p>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
@@ -147,7 +161,7 @@ const LandingPage = ({ onLogin, onSignup }) => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-lg text-gray-500 mb-10 max-w-2xl mx-auto"
             >
-              MediVaultPro for healthcare professionals • HealthTracker for patients
+              MediVaultPro for healthcare facilities • HealthTracker for patients • Seamless integration
             </motion.p>
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
@@ -156,13 +170,13 @@ const LandingPage = ({ onLogin, onSignup }) => {
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
               <motion.button
-                onClick={() => setIsSignupModalOpen(true)}
+                onClick={() => setShowRegistration(true)}
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 className="bg-orange-600 text-white px-8 py-4 rounded-lg hover:bg-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2 text-lg font-semibold"
               >
                 <UserPlus className="w-5 h-5" />
-                <span>Start Free Trial</span>
+                <span>Register Your Institution</span>
               </motion.button>
               <motion.button
                 onClick={() => setIsLoginModalOpen(true)}
@@ -395,7 +409,7 @@ const LandingPage = ({ onLogin, onSignup }) => {
               viewport={{ once: true }}
               className="text-3xl lg:text-4xl font-bold text-white mb-6"
             >
-              Ready to Join the MediLink Ecosystem?
+              Ready to Transform Your Healthcare Facility?
             </motion.h2>
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
@@ -404,7 +418,7 @@ const LandingPage = ({ onLogin, onSignup }) => {
               viewport={{ once: true }}
               className="text-xl text-teal-100 mb-8 max-w-2xl mx-auto"
             >
-              Join thousands of healthcare professionals and patients who trust MediLink for comprehensive healthcare management.
+              Register your clinic or laboratory today and join thousands of healthcare professionals who trust MediLink for comprehensive healthcare management.
             </motion.p>
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
@@ -414,7 +428,7 @@ const LandingPage = ({ onLogin, onSignup }) => {
               className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
               <motion.button
-                onClick={() => setIsSignupModalOpen(true)}
+                onClick={() => setShowRegistration(true)}
                 whileHover={{ 
                   scale: 1.05, 
                   y: -3,
@@ -424,7 +438,7 @@ const LandingPage = ({ onLogin, onSignup }) => {
                 className="bg-white text-teal-600 px-8 py-4 rounded-lg hover:bg-gray-100 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center space-x-2 text-lg font-semibold"
               >
                 <UserPlus className="w-5 h-5" />
-                <span>Create Account</span>
+                <span>Register Institution</span>
               </motion.button>
               <motion.button
                 onClick={() => setIsLoginModalOpen(true)}
@@ -586,22 +600,21 @@ const LandingPage = ({ onLogin, onSignup }) => {
         </div>
       </footer>
 
-      {/* Auth Modal - handles both login and signup */}
+      {/* Auth Modal - only for login */}
       <AuthModal 
-        isOpen={isLoginModalOpen || isSignupModalOpen} 
-        onClose={() => {
-          setIsLoginModalOpen(false);
-          setIsSignupModalOpen(false);
-        }}
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)}
         maxWidth="max-w-lg"
       >
         <Auth 
           context="modal"
           onLogin={onLogin}
-          onSignup={onSignup}
+          onSignup={() => {
+            setIsLoginModalOpen(false);
+            setShowRegistration(true);
+          }}
           onSwitchToForgotPassword={() => {
             setIsLoginModalOpen(false);
-            setIsSignupModalOpen(false);
             // You can add forgot password modal here
           }}
         />
