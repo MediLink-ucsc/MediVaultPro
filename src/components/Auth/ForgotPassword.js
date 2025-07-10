@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import MediLinkLogo from '../resources/MediLinkLogo.jpeg';
 
-const ForgotPassword = ({ onBackToLogin, onResetPassword }) => {
+const ForgotPassword = ({ onBackToLogin, onResetPassword, context = 'page' }) => {
+  const isModal = context === 'modal';
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -36,17 +37,25 @@ const ForgotPassword = ({ onBackToLogin, onResetPassword }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+    <div className={`${isModal ? 'w-full' : 'min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center p-4'}`}>
+      <div className={`${isModal ? 'w-full' : 'bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md'}`}>
         <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-lg">
+          <div className={`mx-auto w-16 h-16 ${isModal 
+            ? 'bg-gradient-to-br from-teal-500 to-orange-500' 
+            : 'bg-white'
+          } rounded-full flex items-center justify-center mb-4 shadow-lg`}>
             <img 
               src={MediLinkLogo} 
               alt="MediLink Logo" 
-              className="w-12 h-12 object-contain"
+              className={`w-12 h-12 object-contain ${isModal ? 'rounded-full' : ''}`}
             />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800">MedivaultPro</h1>
+          <h1 className={`text-2xl font-bold ${isModal 
+            ? 'bg-gradient-to-r from-teal-600 to-orange-600 bg-clip-text text-transparent' 
+            : 'text-gray-800'
+          }`}>
+            {isModal ? 'MediVaultPro' : 'MedivaultPro'}
+          </h1>
           <p className="text-gray-600 mt-2">
             {isSubmitted ? 'Check your email' : 'Reset your password'}
           </p>
@@ -84,7 +93,13 @@ const ForgotPassword = ({ onBackToLogin, onResetPassword }) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-teal-600 text-white py-3 rounded-lg hover:bg-teal-700 transition duration-200 font-medium disabled:bg-teal-400 disabled:cursor-not-allowed flex items-center justify-center"
+              className={`w-full bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 px-4 rounded-lg font-semibold shadow-lg ${
+                isLoading 
+                  ? 'opacity-50 cursor-not-allowed' 
+                  : isModal 
+                    ? 'hover:shadow-xl transform transition-all duration-200 hover:scale-[1.02]' 
+                    : 'hover:from-teal-700 hover:to-teal-800 transition-colors'
+              }`}
             >
               {isLoading ? (
                 <>
@@ -124,7 +139,11 @@ const ForgotPassword = ({ onBackToLogin, onResetPassword }) => {
                 const mockToken = 'demo-reset-token-' + Date.now();
                 onResetPassword && onResetPassword(mockToken);
               }}
-              className="w-full bg-teal-600 text-white py-3 rounded-lg hover:bg-teal-700 transition duration-200 font-medium"
+              className={`w-full bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 px-4 rounded-lg font-semibold shadow-lg ${
+                isModal 
+                  ? 'hover:shadow-xl transform transition-all duration-200 hover:scale-[1.02]' 
+                  : 'hover:from-teal-700 hover:to-teal-800 transition-colors'
+              }`}
             >
               🔗 Click Reset Link (Demo)
             </button>
@@ -134,7 +153,11 @@ const ForgotPassword = ({ onBackToLogin, onResetPassword }) => {
                 setIsSubmitted(false);
                 setEmail('');
               }}
-              className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition duration-200 font-medium"
+              className={`w-full py-3 px-4 rounded-lg font-medium ${
+                isModal 
+                  ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 transition duration-200'
+              }`}
             >
               Try Different Email
             </button>
@@ -144,7 +167,9 @@ const ForgotPassword = ({ onBackToLogin, onResetPassword }) => {
         <div className="mt-6 text-center">
           <button 
             onClick={handleBackToLogin}
-            className="text-teal-600 hover:text-teal-700 text-sm font-medium flex items-center justify-center mx-auto"
+            className={`text-teal-600 hover:text-teal-700 text-sm font-medium flex items-center justify-center mx-auto ${
+              isModal ? 'hover:underline transition-colors' : ''
+            }`}
           >
             <ArrowLeft className="w-4 h-4 mr-1" />
             Back to Sign In

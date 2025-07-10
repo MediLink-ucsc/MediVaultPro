@@ -14,11 +14,51 @@ import {
 import MediLinkLogo from '../resources/MediLinkLogo.jpeg';
 import AuthModal from '../Common/AuthModal';
 import Auth from '../Auth/Auth';
+import ForgotPassword from '../Auth/ForgotPassword';
+import ResetPassword from '../Auth/ResetPassword';
 import InstituteRegistration from './InstituteRegistration';
 
-const LandingPage = ({ onLogin, onSignup, onSwitchToForgotPassword }) => {
+const LandingPage = ({ onLogin, onSignup }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] = useState(false);
+  const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
+  const [resetToken, setResetToken] = useState(null);
   const [showRegistration, setShowRegistration] = useState(false);
+  
+  // Modal navigation helpers
+  const switchToForgotPassword = () => {
+    setIsLoginModalOpen(false);
+    setIsForgotPasswordModalOpen(true);
+  };
+  
+  const switchToResetPassword = (token) => {
+    setIsForgotPasswordModalOpen(false);
+    setResetToken(token);
+    setIsResetPasswordModalOpen(true);
+  };
+  
+  const switchBackToLogin = () => {
+    setIsForgotPasswordModalOpen(false);
+    setIsResetPasswordModalOpen(false);
+    setResetToken(null);
+    setIsLoginModalOpen(true);
+  };
+  
+  const handlePasswordReset = (resetData) => {
+    // In a real app, this would make an API call to reset the password
+    console.log('Password reset with token:', resetData.token, 'New password:', resetData.newPassword);
+    // Close reset modal and show login
+    setIsResetPasswordModalOpen(false);
+    setResetToken(null);
+    setIsLoginModalOpen(true);
+  };
+  
+  const closeAllModals = () => {
+    setIsLoginModalOpen(false);
+    setIsForgotPasswordModalOpen(false);
+    setIsResetPasswordModalOpen(false);
+    setResetToken(null);
+  };
   
   // If showing registration, render the InstituteRegistration component
   if (showRegistration) {
@@ -600,23 +640,47 @@ const LandingPage = ({ onLogin, onSignup, onSwitchToForgotPassword }) => {
         </div>
       </footer>
 
-      {/* Auth Modal - only for login */}
+      {/* Auth Modal - Login */}
       <AuthModal 
         isOpen={isLoginModalOpen} 
-        onClose={() => setIsLoginModalOpen(false)}
+        onClose={closeAllModals}
         maxWidth="max-w-lg"
       >
         <Auth 
           context="modal"
           onLogin={onLogin}
-          onSwitchToForgotPassword={() => {
-            setIsLoginModalOpen(false);
-            onSwitchToForgotPassword && onSwitchToForgotPassword();
-          }}
+          onSwitchToForgotPassword={switchToForgotPassword}
           onSwitchToRegistration={() => {
-            setIsLoginModalOpen(false);
+            closeAllModals();
             setShowRegistration(true);
           }}
+        />
+      </AuthModal>
+
+      {/* Forgot Password Modal */}
+      <AuthModal 
+        isOpen={isForgotPasswordModalOpen} 
+        onClose={closeAllModals}
+        maxWidth="max-w-lg"
+      >
+        <ForgotPassword 
+          context="modal"
+          onBackToLogin={switchBackToLogin}
+          onResetPassword={switchToResetPassword}
+        />
+      </AuthModal>
+
+      {/* Reset Password Modal */}
+      <AuthModal 
+        isOpen={isResetPasswordModalOpen} 
+        onClose={closeAllModals}
+        maxWidth="max-w-lg"
+      >
+        <ResetPassword 
+          context="modal"
+          token={resetToken}
+          onPasswordReset={handlePasswordReset}
+          onBackToLogin={switchBackToLogin}
         />
       </AuthModal>
     </div>

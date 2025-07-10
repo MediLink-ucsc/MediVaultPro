@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './components/Landing/LandingPage';
 import Auth from './components/Auth/Auth';
-import ForgotPassword from './components/Auth/ForgotPassword';
-import ResetPassword from './components/Auth/ResetPassword';
 import DoctorDashboard from './components/Doctor/DoctorDashboard';
 import NurseDashboard from './components/Nurse/NurseDashboard';
 import LabDashboard from './components/Lab/LabDashboard';
@@ -13,8 +11,7 @@ import './App.css';
 
 function App() {
   const [user, setUser] = useState(null);
-  const [currentView, setCurrentView] = useState('landing'); // 'landing', 'login', 'signup', 'forgot-password', 'reset-password'
-  const [resetToken, setResetToken] = useState(null);
+  const [currentView, setCurrentView] = useState('landing'); // 'landing', 'login', 'signup'
 
   // Check for user in localStorage when app loads
   useEffect(() => {
@@ -48,42 +45,17 @@ function App() {
     setCurrentView('login');
   };
 
-  const switchToForgotPassword = () => {
-    setCurrentView('forgot-password');
-  };
-
-  const switchToResetPassword = (token) => {
-    setResetToken(token);
-    setCurrentView('reset-password');
-  };
-
-  const handlePasswordReset = (resetData) => {
-    // In a real app, this would make an API call to reset the password
-    console.log('Password reset with token:', resetData.token, 'New password:', resetData.newPassword);
-    // After successful reset, go back to login
-    switchToLogin();
-  };
-
   const switchToLanding = () => {
     setCurrentView('landing');
   };
 
   if (!user) {
-    if (currentView === 'forgot-password') {
-      return <ForgotPassword onBackToLogin={switchToLogin} onResetPassword={switchToResetPassword} />;
-    }
-    
-    if (currentView === 'reset-password') {
-      return <ResetPassword token={resetToken} onPasswordReset={handlePasswordReset} onBackToLogin={switchToLogin} />;
-    }
-    
     if (currentView === 'signup' || currentView === 'login') {
       return (
         <Auth 
           context="page"
           onLogin={handleLogin} 
           onSignup={handleSignup}
-          onSwitchToForgotPassword={switchToForgotPassword}
           onBackToLanding={switchToLanding}
         />
       );
@@ -94,7 +66,6 @@ function App() {
       <LandingPage 
         onLogin={handleLogin}
         onSignup={handleSignup}
-        onSwitchToForgotPassword={switchToForgotPassword}
       />
     );
   }
