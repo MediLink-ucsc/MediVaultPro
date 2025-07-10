@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
 import { User, Lock, Stethoscope } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
+import { API_ENDPOINTS } from "../../config/api";
 
 const Login = ({ onLogin }) => {
   const [credentials, setCredentials] = useState({
-    email: "",
+    username: "",
     password: "",
     role: "DOCTOR",
   });
@@ -18,14 +19,11 @@ const Login = ({ onLogin }) => {
 
     try {
       console.log(credentials);
-      const res = await fetch(
-        "http://localhost:3000/api/v1/auth/medvaultpro/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(credentials),
-        }
-      );
+      const res = await fetch(API_ENDPOINTS.AUTH.LOGIN, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+      });
 
       if (!res.ok) {
         const errorData = await res.json();
@@ -97,9 +95,9 @@ const Login = ({ onLogin }) => {
                 required
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 placeholder="Enter your username"
-                value={credentials.email}
+                value={credentials.username}
                 onChange={(e) =>
-                  setCredentials({ ...credentials, email: e.target.value })
+                  setCredentials({ ...credentials, username: e.target.value })
                 }
               />
             </div>

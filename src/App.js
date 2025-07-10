@@ -11,6 +11,7 @@ import DoctorDashboard from "./components/Doctor/DoctorDashboard";
 import NurseDashboard from "./components/Nurse/NurseDashboard";
 import LabDashboard from "./components/Lab/LabDashboard";
 import Layout from "./components/Layout/Layout";
+import { API_ENDPOINTS } from "./config/api";
 import "./App.css";
 
 function App() {
@@ -37,17 +38,14 @@ function App() {
     try {
       const token = localStorage.getItem("token");
       console.log("Logging out with token:", token);
-      const res = await fetch(
-        "http://localhost:3000/api/v1/auth/medvaultpro/logout",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          // credentials: "include",
-        }
-      );
+      const res = await fetch(API_ENDPOINTS.AUTH.LOGOUT, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        // credentials: "include",
+      });
       if (res.ok) {
         localStorage.removeItem("token");
         localStorage.removeItem("medivaultpro_user");
