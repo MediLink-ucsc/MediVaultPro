@@ -16,16 +16,20 @@ import {
 } from 'lucide-react';
 import Modal from '../Common/Modal';
 import StaffEditForm from './StaffEditForm';
+import AddStaffModal from './StaffForms/AddStaffModal';
 
 const ManageStaff = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterRole, setFilterRole] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedStaff, setSelectedStaff] = useState(null);
-  const [modalType, setModalType] = useState(null); // 'view', 'edit', 'delete'
+  const [modalType, setModalType] = useState(null); // 'view', 'edit', 'delete', 'add'
   const [actionMessage, setActionMessage] = useState(null);
 
   const itemsPerPage = 10;
+
+  // In a real app, this would come from the logged-in admin's data
+  const adminInstitute = "City General Hospital";
 
   // Mock data - in real app, this would come from API
   const [staffData, setStaffData] = useState([
@@ -98,13 +102,13 @@ const ManageStaff = () => {
     { value: 'lab', label: 'Lab Technician' }
   ];
 
-  // Filter and search logic
+  // Filter staff to show only those from the admin's institute
   const filteredStaff = staffData.filter(staff => {
     const matchesSearch = staff.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         staff.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         staff.institute.toLowerCase().includes(searchTerm.toLowerCase());
+                         staff.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = filterRole === '' || staff.role === filterRole;
-    return matchesSearch && matchesRole;
+    const matchesInstitute = staff.institute === adminInstitute; // Only show staff from admin's institute
+    return matchesSearch && matchesRole && matchesInstitute;
   });
 
   // Pagination logic
@@ -130,6 +134,22 @@ const ManageStaff = () => {
   const handleDelete = (staff) => {
     setSelectedStaff(staff);
     setModalType('delete');
+  };
+
+  const handleAddStaff = () => {
+    setModalType('add');
+  };
+
+  const handleAddStaffSubmit = (newStaff) => {
+    const staffWithId = {
+      ...newStaff,
+      id: staffData.length + 1,
+      institute: adminInstitute // Ensure staff is added to admin's institute
+    };
+    setStaffData(prev => [...prev, staffWithId]);
+    setModalType(null);
+    setActionMessage({ type: 'success', text: `${newStaff.role.charAt(0).toUpperCase() + newStaff.role.slice(1)} added successfully` });
+    setTimeout(() => setActionMessage(null), 3000);
   };
 
   const confirmDelete = () => {
@@ -176,10 +196,13 @@ const ManageStaff = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Manage Staff Data</h1>
-          <p className="text-gray-600 mt-1">View, edit, and manage staff members across all institutes</p>
+          <p className="text-gray-600 mt-1">View, edit, and manage staff members for {adminInstitute}</p>
         </div>
         <div className="flex items-center space-x-3">
-          <button className="px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg hover:from-teal-600 hover:to-teal-700 focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all flex items-center space-x-2">
+          <button 
+            onClick={handleAddStaff}
+            className="px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg hover:from-teal-600 hover:to-teal-700 focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all flex items-center space-x-2"
+          >
             <UserPlus className="w-4 h-4" />
             <span>Add Staff</span>
           </button>
@@ -215,7 +238,7 @@ const ManageStaff = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search by name, email, or institute..."
+                placeholder="Search by name or email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
@@ -376,6 +399,14 @@ const ManageStaff = () => {
       </div>
 
       {/* Modals */}
+      {/* Add Staff Modal */}
+      <AddStaffModal
+        isOpen={modalType === 'add'}
+        onClose={closeModal}
+        onSubmit={handleAddStaffSubmit}
+        adminInstitute={adminInstitute}
+      />
+
       {/* View Modal */}
       <Modal
         isOpen={modalType === 'view'}
