@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import LandingPage from './components/Landing/LandingPage';
 import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import ForgotPassword from './components/Auth/ForgotPassword';
@@ -12,8 +13,7 @@ import './App.css';
 
 function App() {
   const [user, setUser] = useState(null);
-  const [isSignup, setIsSignup] = useState(false);
-  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [currentView, setCurrentView] = useState('landing'); // 'landing', 'login', 'signup', 'forgot-password'
 
   // Check for user in localStorage when app loads
   useEffect(() => {
@@ -38,37 +38,47 @@ function App() {
 
   const handleLogout = () => {
     setUser(null);
+    setCurrentView('landing');
     // Remove user from localStorage
     localStorage.removeItem('medivaultpro_user');
   };
 
   const switchToSignup = () => {
-    setIsSignup(true);
-    setIsForgotPassword(false);
+    setCurrentView('signup');
   };
 
   const switchToLogin = () => {
-    setIsSignup(false);
-    setIsForgotPassword(false);
+    setCurrentView('login');
   };
 
   const switchToForgotPassword = () => {
-    setIsForgotPassword(true);
-    setIsSignup(false);
+    setCurrentView('forgot-password');
   };
 
   if (!user) {
-    if (isForgotPassword) {
+    if (currentView === 'forgot-password') {
       return <ForgotPassword onBackToLogin={switchToLogin} />;
     }
     
-    return isSignup ? (
-      <Signup onSignup={handleSignup} onSwitchToLogin={switchToLogin} />
-    ) : (
-      <Login 
-        onLogin={handleLogin} 
+    if (currentView === 'signup') {
+      return <Signup onSignup={handleSignup} onSwitchToLogin={switchToLogin} />;
+    }
+    
+    if (currentView === 'login') {
+      return (
+        <Login 
+          onLogin={handleLogin} 
+          onSwitchToSignup={switchToSignup}
+          onSwitchToForgotPassword={switchToForgotPassword}
+        />
+      );
+    }
+    
+    // Default to landing page
+    return (
+      <LandingPage 
+        onSwitchToLogin={switchToLogin}
         onSwitchToSignup={switchToSignup}
-        onSwitchToForgotPassword={switchToForgotPassword}
       />
     );
   }
