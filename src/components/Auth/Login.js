@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { User, Lock } from 'lucide-react';
+import { User, Lock, ArrowLeft } from 'lucide-react';
 import MediLinkLogo from '../resources/MediLinkLogo.jpeg';
 
-const Login = ({ onLogin, onSwitchToSignup, onSwitchToForgotPassword }) => {
+const Login = ({ onLogin, onSwitchToSignup, onSwitchToForgotPassword, onBackToLanding }) => {
   const [credentials, setCredentials] = useState({
     email: '',
     password: '',
@@ -24,7 +24,16 @@ const Login = ({ onLogin, onSwitchToSignup, onSwitchToForgotPassword }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+      {/* Back to Landing Button */}
+      <button
+        onClick={onBackToLanding}
+        className="fixed top-6 left-6 flex items-center space-x-2 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-700 px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 group z-10"
+      >
+        <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
+        <span className="text-sm font-medium">Back to Home</span>
+      </button>
+
+      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative">
         <div className="text-center mb-8">
           <div className="mx-auto w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-lg">
             <img 

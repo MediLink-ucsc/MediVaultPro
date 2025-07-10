@@ -55,13 +55,17 @@ function App() {
     setCurrentView('forgot-password');
   };
 
+  const switchToLanding = () => {
+    setCurrentView('landing');
+  };
+
   if (!user) {
     if (currentView === 'forgot-password') {
       return <ForgotPassword onBackToLogin={switchToLogin} />;
     }
     
     if (currentView === 'signup') {
-      return <Signup onSignup={handleSignup} onSwitchToLogin={switchToLogin} />;
+      return <Signup onSignup={handleSignup} onSwitchToLogin={switchToLogin} onBackToLanding={switchToLanding} />;
     }
     
     if (currentView === 'login') {
@@ -70,6 +74,7 @@ function App() {
           onLogin={handleLogin} 
           onSwitchToSignup={switchToSignup}
           onSwitchToForgotPassword={switchToForgotPassword}
+          onBackToLanding={switchToLanding}
         />
       );
     }
@@ -77,8 +82,8 @@ function App() {
     // Default to landing page
     return (
       <LandingPage 
-        onSwitchToLogin={switchToLogin}
-        onSwitchToSignup={switchToSignup}
+        onLogin={handleLogin}
+        onSignup={handleSignup}
       />
     );
   }
