@@ -13,8 +13,7 @@ import {
 } from 'lucide-react';
 import MediLinkLogo from '../resources/MediLinkLogo.jpeg';
 import AuthModal from '../Common/AuthModal';
-import LoginModal from '../Auth/LoginModal';
-import SignupModal from '../Auth/SignupModal';
+import Auth from '../Auth/Auth';
 
 const LandingPage = ({ onLogin, onSignup }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
@@ -587,36 +586,23 @@ const LandingPage = ({ onLogin, onSignup }) => {
         </div>
       </footer>
 
-      {/* Login Modal */}
+      {/* Auth Modal - handles both login and signup */}
       <AuthModal 
-        isOpen={isLoginModalOpen} 
-        onClose={() => setIsLoginModalOpen(false)}
-        maxWidth="max-w-md"
-      >
-        <LoginModal 
-          onLogin={onLogin}
-          onSwitchToSignup={() => {
-            setIsLoginModalOpen(false);
-            setIsSignupModalOpen(true);
-          }}
-          onSwitchToForgotPassword={() => {
-            setIsLoginModalOpen(false);
-            // You can add forgot password modal here
-          }}
-        />
-      </AuthModal>
-
-      {/* Signup Modal */}
-      <AuthModal 
-        isOpen={isSignupModalOpen} 
-        onClose={() => setIsSignupModalOpen(false)}
+        isOpen={isLoginModalOpen || isSignupModalOpen} 
+        onClose={() => {
+          setIsLoginModalOpen(false);
+          setIsSignupModalOpen(false);
+        }}
         maxWidth="max-w-lg"
       >
-        <SignupModal 
+        <Auth 
+          context="modal"
+          onLogin={onLogin}
           onSignup={onSignup}
-          onSwitchToLogin={() => {
+          onSwitchToForgotPassword={() => {
+            setIsLoginModalOpen(false);
             setIsSignupModalOpen(false);
-            setIsLoginModalOpen(true);
+            // You can add forgot password modal here
           }}
         />
       </AuthModal>

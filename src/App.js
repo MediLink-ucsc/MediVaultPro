@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LandingPage from './components/Landing/LandingPage';
-import Login from './components/Auth/Login';
-import Signup from './components/Auth/Signup';
+import Auth from './components/Auth/Auth';
 import ForgotPassword from './components/Auth/ForgotPassword';
 import DoctorDashboard from './components/Doctor/DoctorDashboard';
 import NurseDashboard from './components/Nurse/NurseDashboard';
@@ -43,10 +42,6 @@ function App() {
     localStorage.removeItem('medivaultpro_user');
   };
 
-  const switchToSignup = () => {
-    setCurrentView('signup');
-  };
-
   const switchToLogin = () => {
     setCurrentView('login');
   };
@@ -64,15 +59,12 @@ function App() {
       return <ForgotPassword onBackToLogin={switchToLogin} />;
     }
     
-    if (currentView === 'signup') {
-      return <Signup onSignup={handleSignup} onSwitchToLogin={switchToLogin} onBackToLanding={switchToLanding} />;
-    }
-    
-    if (currentView === 'login') {
+    if (currentView === 'signup' || currentView === 'login') {
       return (
-        <Login 
+        <Auth 
+          context="page"
           onLogin={handleLogin} 
-          onSwitchToSignup={switchToSignup}
+          onSignup={handleSignup}
           onSwitchToForgotPassword={switchToForgotPassword}
           onBackToLanding={switchToLanding}
         />
