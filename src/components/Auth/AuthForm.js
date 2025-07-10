@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
-import { User, Lock, Mail, Phone, ArrowLeft } from 'lucide-react';
+import { User, Lock, Mail, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 import MediLinkLogo from '../resources/MediLinkLogo.jpeg';
 
 const AuthForm = ({ 
-  mode = 'login', // 'login' or 'signup'
+  mode = 'login', // Only login mode supported now
   context = 'page', // 'page' or 'modal'
   onLogin, 
-  onSignup,
-  onSwitchMode,
   onSwitchToForgotPassword,
-  onBackToLanding
+  onBackToLanding,
+  onSwitchToRegistration
 }) => {
-  const isLogin = mode === 'login';
   const isModal = context === 'modal';
 
   // Login state
@@ -21,58 +19,6 @@ const AuthForm = ({
     password: '',
     role: 'doctor'
   });
-
-  // Signup state
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirmPassword: '',
-    role: 'doctor'
-  });
-
-  const [errors, setErrors] = useState({});
-
-  const validateSignupForm = () => {
-    const newErrors = {};
-
-    if (!formData.firstName.trim()) {
-      newErrors.firstName = 'First name is required';
-    }
-
-    if (!formData.lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
-    }
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Email is invalid';
-    }
-
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
-    } else if (!/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
-      newErrors.phone = 'Phone number must be 10 digits';
-    }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   const handleLoginSubmit = (e) => {
     e.preventDefault();
@@ -87,33 +33,8 @@ const AuthForm = ({
     });
   };
 
-  const handleSignupSubmit = (e) => {
-    e.preventDefault();
-    
-    if (validateSignupForm()) {
-      // Mock signup - in real app, this would make an API call
-      const userData = {
-        id: Date.now(), // Mock ID
-        name: `${formData.firstName} ${formData.lastName}`,
-        email: formData.email,
-        phone: formData.phone,
-        role: formData.role
-      };
-      
-      onSignup(userData);
-    }
-  };
-
   const handleInputChange = (field, value) => {
-    if (isLogin) {
-      setCredentials({ ...credentials, [field]: value });
-    } else {
-      setFormData({ ...formData, [field]: value });
-      // Clear error when user starts typing
-      if (errors[field]) {
-        setErrors({ ...errors, [field]: '' });
-      }
-    }
+    setCredentials({ ...credentials, [field]: value });
   };
 
   const ButtonComponent = isModal ? motion.button : 'button';
@@ -121,8 +42,6 @@ const AuthForm = ({
     whileHover: { scale: 1.02 },
     whileTap: { scale: 0.98 }
   } : {};
-
-  const currentData = isLogin ? credentials : formData;
 
   return (
     <div className="w-full">
@@ -156,188 +75,91 @@ const AuthForm = ({
           {isModal ? 'MediVaultPro' : 'MedivaultPro'}
         </h1>
         <p className="text-gray-600 mt-2">
-          {isLogin ? 'Sign in to your account' : 'Create your account'}
+          Sign in to your account
         </p>
       </div>
 
-      {/* Form */}
-      <form onSubmit={isLogin ? handleLoginSubmit : handleSignupSubmit} className="space-y-6">
-        {/* Signup specific fields */}
-        {!isLogin && (
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                First Name
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="text"
-                  required
-                  className={`w-full pl-10 pr-4 py-3 border ${errors.firstName ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-                    isModal ? 'transition-all' : ''
-                  }`}
-                  placeholder="First name"
-                  value={currentData.firstName || ''}
-                  onChange={(e) => handleInputChange('firstName', e.target.value)}
-                />
-              </div>
-              {errors.firstName && <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Last Name
-              </label>
-              <input
-                type="text"
-                required
-                className={`w-full px-4 py-3 border ${errors.lastName ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-                  isModal ? 'transition-all' : ''
-                }`}
-                placeholder="Last name"
-                value={currentData.lastName || ''}
-                onChange={(e) => handleInputChange('lastName', e.target.value)}
-              />
-              {errors.lastName && <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>}
-            </div>
-          </div>
-        )}
-
-        {/* Email field */}
+      {/* Login Form */}
+      <form onSubmit={handleLoginSubmit} className="space-y-6">
+        {/* Email */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Email Address
           </label>
           <div className="relative">
-            {isLogin ? (
-              <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            ) : (
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-            )}
+            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="email"
               required
-              className={`w-full pl-10 pr-4 py-3 border ${errors.email ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
+              className={`w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
                 isModal ? 'transition-all' : ''
               }`}
               placeholder="Enter your email"
-              value={currentData.email || ''}
+              value={credentials.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
             />
           </div>
-          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
         </div>
 
-        {/* Phone field - signup only */}
-        {!isLogin && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Phone Number
-            </label>
-            <div className="relative">
-              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="tel"
-                required
-                className={`w-full pl-10 pr-4 py-3 border ${errors.phone ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-                  isModal ? 'transition-all' : ''
-                }`}
-                placeholder="Phone number"
-                value={currentData.phone || ''}
-                onChange={(e) => handleInputChange('phone', e.target.value)}
-              />
-            </div>
-            {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+        {/* Password */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Password
+          </label>
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type="password"
+              required
+              className={`w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
+                isModal ? 'transition-all' : ''
+              }`}
+              placeholder="Enter your password"
+              value={credentials.password}
+              onChange={(e) => handleInputChange('password', e.target.value)}
+            />
           </div>
-        )}
+        </div>
 
-        {/* Role field */}
+        {/* Role Selection */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Role
           </label>
-          <select
-            className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-              isModal ? 'transition-all' : ''
-            }`}
-            value={currentData.role || 'doctor'}
-            onChange={(e) => handleInputChange('role', e.target.value)}
-          >
-            <option value="doctor">Doctor</option>
-            <option value="nurse">Nurse</option>
-            <option value="lab">Lab Operator</option>
-            <option value="systemadmin">System Admin</option>
-          </select>
-        </div>
-
-        {/* Password fields */}
-        <div className={isLogin ? '' : 'grid grid-cols-1 gap-4'}>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="password"
-                required
-                className={`w-full pl-10 pr-4 py-3 border ${errors.password ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-                  isModal ? 'transition-all' : ''
-                }`}
-                placeholder={isLogin ? "Enter your password" : "Password"}
-                value={currentData.password || ''}
-                onChange={(e) => handleInputChange('password', e.target.value)}
-              />
-            </div>
-            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <select
+              className={`w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent appearance-none ${
+                isModal ? 'transition-all' : ''
+              }`}
+              value={credentials.role}
+              onChange={(e) => handleInputChange('role', e.target.value)}
+            >
+              <option value="doctor">Doctor</option>
+              <option value="nurse">Nurse</option>
+              <option value="lab">Lab Technician</option>
+              <option value="systemadmin">System Administrator</option>
+            </select>
           </div>
-
-          {/* Confirm password - signup only */}
-          {!isLogin && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="password"
-                  required
-                  className={`w-full pl-10 pr-4 py-3 border ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-                    isModal ? 'transition-all' : ''
-                  }`}
-                  placeholder="Confirm password"
-                  value={currentData.confirmPassword || ''}
-                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                />
-              </div>
-              {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
-            </div>
-          )}
         </div>
 
-        {/* Submit button */}
+        {/* Submit Button */}
         <ButtonComponent
           type="submit"
-          {...buttonProps}
-          className={`w-full text-white py-3 rounded-lg font-medium ${
+          className={`w-full bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 px-4 rounded-lg font-semibold shadow-lg ${
             isModal 
-              ? isLogin
-                ? 'bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 transition-all duration-200 shadow-lg hover:shadow-xl'
-                : 'bg-gradient-to-r from-orange-600 to-orange-700 hover:from-orange-700 hover:to-orange-800 transition-all duration-200 shadow-lg hover:shadow-xl'
-              : isLogin
-                ? 'bg-teal-600 hover:bg-teal-700 transition duration-200'
-                : 'bg-orange-600 hover:bg-orange-700 transition duration-200'
+              ? 'hover:shadow-xl transform transition-all duration-200' 
+              : 'hover:from-teal-700 hover:to-teal-800 transition-colors'
           }`}
+          {...buttonProps}
         >
-          {isLogin ? 'Sign In' : 'Create Account'}
+          Sign In
         </ButtonComponent>
       </form>
 
-      {/* Footer links */}
+      {/* Footer Links */}
       <div className="mt-6 text-center space-y-3">
-        {isLogin && onSwitchToForgotPassword && (
+        {onSwitchToForgotPassword && (
           <button 
             onClick={onSwitchToForgotPassword}
             className={`text-teal-600 hover:text-teal-700 text-sm block mx-auto ${
@@ -348,21 +170,26 @@ const AuthForm = ({
           </button>
         )}
         
-        <p className="text-gray-600 text-sm">
-          {isLogin ? "Don't have an account?" : "Already have an account?"}{' '}
-          <button 
-            onClick={onSwitchMode}
-            className={`font-medium ${
-              isModal 
-                ? isLogin
+        {onSwitchToRegistration && (
+          <div className="pt-4 border-t border-gray-200">
+            <p className="text-gray-600 text-sm mb-3">
+              New to MediVaultPro? 
+            </p>
+            <button 
+              onClick={onSwitchToRegistration}
+              className={`font-medium ${
+                isModal 
                   ? 'text-orange-600 hover:text-orange-700 hover:underline transition-colors'
-                  : 'text-teal-600 hover:text-teal-700 hover:underline transition-colors'
-                : 'text-teal-600 hover:text-teal-700'
-            }`}
-          >
-            {isLogin ? 'Sign up here' : 'Sign in here'}
-          </button>
-        </p>
+                  : 'text-orange-600 hover:text-orange-700'
+              }`}
+            >
+              Register Your Institution
+            </button>
+            <p className="text-xs text-gray-500 mt-2">
+              Join the MediLink ecosystem and get access for your healthcare facility
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

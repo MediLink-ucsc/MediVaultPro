@@ -16,7 +16,7 @@ import AuthModal from '../Common/AuthModal';
 import Auth from '../Auth/Auth';
 import InstituteRegistration from './InstituteRegistration';
 
-const LandingPage = ({ onLogin, onSignup }) => {
+const LandingPage = ({ onLogin, onSignup, onSwitchToForgotPassword }) => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
   
@@ -609,13 +609,13 @@ const LandingPage = ({ onLogin, onSignup }) => {
         <Auth 
           context="modal"
           onLogin={onLogin}
-          onSignup={() => {
-            setIsLoginModalOpen(false);
-            setShowRegistration(true);
-          }}
           onSwitchToForgotPassword={() => {
             setIsLoginModalOpen(false);
-            // You can add forgot password modal here
+            onSwitchToForgotPassword && onSwitchToForgotPassword();
+          }}
+          onSwitchToRegistration={() => {
+            setIsLoginModalOpen(false);
+            setShowRegistration(true);
           }}
         />
       </AuthModal>

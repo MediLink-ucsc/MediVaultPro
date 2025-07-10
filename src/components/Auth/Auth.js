@@ -4,15 +4,11 @@ import AuthForm from './AuthForm';
 const Auth = ({ 
   context = 'page', // 'page' or 'modal'
   onLogin, 
-  onSignup,
   onSwitchToForgotPassword,
-  onBackToLanding 
+  onBackToLanding,
+  onSwitchToRegistration
 }) => {
-  const [mode, setMode] = useState('login'); // 'login' or 'signup'
-
-  const handleSwitchMode = () => {
-    setMode(mode === 'login' ? 'signup' : 'login');
-  };
+  const [mode, setMode] = useState('login'); // Only 'login' mode now
 
   // For full page context, wrap with layout
   if (context === 'page') {
@@ -23,10 +19,9 @@ const Auth = ({
             mode={mode}
             context={context}
             onLogin={onLogin}
-            onSignup={onSignup}
-            onSwitchMode={handleSwitchMode}
             onSwitchToForgotPassword={onSwitchToForgotPassword}
             onBackToLanding={onBackToLanding}
+            onSwitchToRegistration={onSwitchToRegistration}
           />
         </div>
       </div>
@@ -39,10 +34,9 @@ const Auth = ({
       mode={mode}
       context={context}
       onLogin={onLogin}
-      onSignup={onSignup}
-      onSwitchMode={handleSwitchMode}
       onSwitchToForgotPassword={onSwitchToForgotPassword}
       onBackToLanding={onBackToLanding}
+      onSwitchToRegistration={onSwitchToRegistration}
     />
   );
 };

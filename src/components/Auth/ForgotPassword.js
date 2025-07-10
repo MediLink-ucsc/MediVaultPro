@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react';
 import MediLinkLogo from '../resources/MediLinkLogo.jpeg';
 
-const ForgotPassword = ({ onBackToLogin }) => {
+const ForgotPassword = ({ onBackToLogin, onResetPassword }) => {
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -116,6 +116,18 @@ const ForgotPassword = ({ onBackToLogin }) => {
                 Check your spam folder or try again in a few minutes.
               </p>
             </div>
+
+            {/* Demo button to simulate clicking reset link */}
+            <button
+              onClick={() => {
+                // Simulate clicking the reset link from email
+                const mockToken = 'demo-reset-token-' + Date.now();
+                onResetPassword && onResetPassword(mockToken);
+              }}
+              className="w-full bg-teal-600 text-white py-3 rounded-lg hover:bg-teal-700 transition duration-200 font-medium"
+            >
+              🔗 Click Reset Link (Demo)
+            </button>
 
             <button
               onClick={() => {

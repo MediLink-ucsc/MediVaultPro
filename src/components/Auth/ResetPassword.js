@@ -1,239 +1,313 @@
 import React, { useState } from 'react';
-import { Lock, Eye, EyeOff, CheckCircle } from 'lucide-react';
+import { Lock, Eye, EyeOff, ArrowLeft, CheckCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 import MediLinkLogo from '../resources/MediLinkLogo.jpeg';
 
-const ResetPassword = ({ token, onPasswordReset, onBackToLogin }) => {
-  const [passwords, setPasswords] = useState({
-    newPassword: '',
+const ResetPassword = ({ 
+  token, 
+  onPasswordReset, 
+  onBackToLogin,
+  context = 'page' // 'page' or 'modal'
+}) => {
+  const isModal = context === 'modal';
+  
+  const [formData, setFormData] = useState({
+    password: '',
     confirmPassword: ''
   });
+  
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [errors, setErrors] = useState({});
 
-  const validatePasswords = () => {
-    const newErrors = {};
-
-    if (passwords.newPassword.length < 8) {
-      newErrors.newPassword = 'Password must be at least 8 characters long';
+  const validatePassword = (password) => {
+    const errors = [];
+    if (password.length < 8) {
+      errors.push('At least 8 characters');
     }
-
-    if (passwords.newPassword !== passwords.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
+    if (!/(?=.*[a-z])/.test(password)) {
+      errors.push('One lowercase letter');
     }
-
-    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(passwords.newPassword)) {
-      newErrors.newPassword = 'Password must contain at least one uppercase letter, one lowercase letter, and one number';
+    if (!/(?=.*[A-Z])/.test(password)) {
+      errors.push('One uppercase letter');
     }
+    if (!/(?=.*\d)/.test(password)) {
+      errors.push('One number');
+    }
+    if (!/(?=.*[@$!%*?&])/.test(password)) {
+      errors.push('One special character');
+    }
+    return errors;
+  };
 
-    return newErrors;
+  const handleInputChange = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+    
+    // Clear errors when user starts typing
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: null });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    const validationErrors = validatePasswords();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+    const newErrors = {};
+    
+    // Validate password
+    const passwordErrors = validatePassword(formData.password);
+    if (passwordErrors.length > 0) {
+      newErrors.password = passwordErrors;
+    }
+    
+    // Validate password confirmation
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+    
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
-
+    
     setIsLoading(true);
-    setErrors({});
-
+    
     try {
-      // Simulate API call for password reset
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // In a real application, you would make an API call here
-      console.log('Password reset for token:', token);
-      console.log('New password set successfully');
+      // Call the callback with the new password and token
+      if (onPasswordReset) {
+        onPasswordReset({
+          token,
+          newPassword: formData.password
+        });
+      }
       
       setIsSuccess(true);
       
-      // Auto redirect to login after 3 seconds
+      // Auto redirect after success
       setTimeout(() => {
-        onPasswordReset();
+        if (onBackToLogin) {
+          onBackToLogin();
+        }
       }, 3000);
       
-    } catch (err) {
-      setErrors({ general: 'Failed to reset password. Please try again.' });
+    } catch (error) {
+      setErrors({ submit: 'Failed to reset password. Please try again.' });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleInputChange = (field, value) => {
-    setPasswords({ ...passwords, [field]: value });
-    // Clear errors when user starts typing
-    if (errors[field]) {
-      setErrors({ ...errors, [field]: '' });
-    }
-  };
+  const ButtonComponent = isModal ? motion.button : 'button';
+  const buttonProps = isModal ? {
+    whileHover: { scale: 1.02 },
+    whileTap: { scale: 0.98 }
+  } : {};
 
+  // Success state
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-          <div className="text-center">
-            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="w-8 h-8 text-green-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-4">Password Reset Successful!</h1>
-            <p className="text-gray-600 mb-6">
-              Your password has been successfully reset. You can now sign in with your new password.
-            </p>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-              <p className="text-blue-800 text-sm">
-                Redirecting to login page in 3 seconds...
-              </p>
-            </div>
-            <button
-              onClick={onBackToLogin}
-              className="w-full bg-teal-600 text-white py-3 rounded-lg hover:bg-teal-700 transition duration-200 font-medium"
-            >
-              Go to Sign In
-            </button>
+      <div className="w-full text-center">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className={`mx-auto w-16 h-16 ${isModal 
+            ? 'bg-gradient-to-br from-green-500 to-teal-500' 
+            : 'bg-white'
+          } rounded-full flex items-center justify-center mb-4 shadow-lg`}>
+            <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
+          <h1 className={`text-2xl font-bold ${isModal 
+            ? 'bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent' 
+            : 'text-gray-800'
+          }`}>
+            Password Reset Successfully!
+          </h1>
+          <p className="text-gray-600 mt-2">
+            Your password has been updated. You can now sign in with your new password.
+          </p>
+        </div>
+
+        <div className="space-y-4">
+          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-green-800 text-sm">
+              Redirecting to login page in a few seconds...
+            </p>
+          </div>
+          
+          {onBackToLogin && (
+            <ButtonComponent
+              onClick={onBackToLogin}
+              className={`w-full bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 px-4 rounded-lg font-semibold shadow-lg ${
+                isModal 
+                  ? 'hover:shadow-xl transform transition-all duration-200' 
+                  : 'hover:from-teal-700 hover:to-teal-800 transition-colors'
+              }`}
+              {...buttonProps}
+            >
+              Continue to Login
+            </ButtonComponent>
+          )}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="mx-auto w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-lg">
-            <img 
-              src={MediLinkLogo} 
-              alt="MediLink Logo" 
-              className="w-12 h-12 object-contain"
-            />
-          </div>
-          <h1 className="text-2xl font-bold text-gray-800">MedivaultPro</h1>
-          <p className="text-gray-600 mt-2">Set your new password</p>
+    <div className="w-full">
+      {/* Back to Login Button - only show on full page, not modal */}
+      {!isModal && onBackToLogin && (
+        <button
+          onClick={onBackToLogin}
+          className="fixed top-6 left-6 flex items-center space-x-2 bg-white/80 backdrop-blur-sm hover:bg-white text-gray-700 px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 group z-10"
+        >
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" />
+          <span className="text-sm font-medium">Back to Login</span>
+        </button>
+      )}
+
+      {/* Header */}
+      <div className="text-center mb-8">
+        <div className={`mx-auto w-16 h-16 ${isModal 
+          ? 'bg-gradient-to-br from-teal-500 to-orange-500' 
+          : 'bg-white'
+        } rounded-full flex items-center justify-center mb-4 shadow-lg`}>
+          <img 
+            src={MediLinkLogo} 
+            alt="MediLink Logo" 
+            className={`w-12 h-12 object-contain ${isModal ? 'rounded-full' : ''}`}
+          />
         </div>
+        <h1 className={`text-2xl font-bold ${isModal 
+          ? 'bg-gradient-to-r from-teal-600 to-orange-600 bg-clip-text text-transparent' 
+          : 'text-gray-800'
+        }`}>
+          Reset Your Password
+        </h1>
+        <p className="text-gray-600 mt-2">
+          Enter your new password below
+        </p>
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              New Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-                  errors.newPassword ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Enter new password"
-                value={passwords.newPassword}
-                onChange={(e) => handleInputChange('newPassword', e.target.value)}
-                disabled={isLoading}
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOff className="w-5 h-5 text-gray-400" />
-                ) : (
-                  <Eye className="w-5 h-5 text-gray-400" />
-                )}
-              </button>
-            </div>
-            {errors.newPassword && (
-              <p className="text-red-600 text-sm mt-1">{errors.newPassword}</p>
-            )}
+      {/* Reset Password Form */}
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* New Password */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            New Password
+          </label>
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type={showPassword ? "text" : "password"}
+              required
+              className={`w-full pl-10 pr-12 py-3 border ${
+                errors.password ? 'border-red-300' : 'border-gray-300'
+              } rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
+                isModal ? 'transition-all' : ''
+              }`}
+              placeholder="Enter your new password"
+              value={formData.password}
+              onChange={(e) => handleInputChange('password', e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Confirm New Password
-            </label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                required
-                className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-                  errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
-                }`}
-                placeholder="Confirm new password"
-                value={passwords.confirmPassword}
-                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                disabled={isLoading}
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                {showConfirmPassword ? (
-                  <EyeOff className="w-5 h-5 text-gray-400" />
-                ) : (
-                  <Eye className="w-5 h-5 text-gray-400" />
-                )}
-              </button>
-            </div>
-            {errors.confirmPassword && (
-              <p className="text-red-600 text-sm mt-1">{errors.confirmPassword}</p>
-            )}
-          </div>
-
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <h4 className="text-sm font-medium text-gray-700 mb-2">Password Requirements:</h4>
-            <ul className="text-xs text-gray-600 space-y-1">
-              <li className={`flex items-center ${passwords.newPassword.length >= 8 ? 'text-green-600' : ''}`}>
-                <div className={`w-2 h-2 rounded-full mr-2 ${passwords.newPassword.length >= 8 ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                At least 8 characters
-              </li>
-              <li className={`flex items-center ${/(?=.*[a-z])(?=.*[A-Z])/.test(passwords.newPassword) ? 'text-green-600' : ''}`}>
-                <div className={`w-2 h-2 rounded-full mr-2 ${/(?=.*[a-z])(?=.*[A-Z])/.test(passwords.newPassword) ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                Both uppercase and lowercase letters
-              </li>
-              <li className={`flex items-center ${/(?=.*\d)/.test(passwords.newPassword) ? 'text-green-600' : ''}`}>
-                <div className={`w-2 h-2 rounded-full mr-2 ${/(?=.*\d)/.test(passwords.newPassword) ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                At least one number
-              </li>
-            </ul>
-          </div>
-
-          {errors.general && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-red-600 text-sm">{errors.general}</p>
+          {errors.password && (
+            <div className="mt-2">
+              <p className="text-red-600 text-sm">Password must contain:</p>
+              <ul className="text-red-600 text-xs mt-1 space-y-1">
+                {errors.password.map((error, index) => (
+                  <li key={index}>• {error}</li>
+                ))}
+              </ul>
             </div>
           )}
+        </div>
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-teal-600 text-white py-3 rounded-lg hover:bg-teal-700 transition duration-200 font-medium disabled:bg-teal-400 disabled:cursor-not-allowed flex items-center justify-center"
-          >
-            {isLoading ? (
-              <>
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                Resetting Password...
-              </>
-            ) : (
-              'Reset Password'
-            )}
-          </button>
-        </form>
+        {/* Confirm Password */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Confirm New Password
+          </label>
+          <div className="relative">
+            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              required
+              className={`w-full pl-10 pr-12 py-3 border ${
+                errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
+              } rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
+                isModal ? 'transition-all' : ''
+              }`}
+              placeholder="Confirm your new password"
+              value={formData.confirmPassword}
+              onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+          </div>
+          {errors.confirmPassword && (
+            <p className="mt-2 text-red-600 text-sm">{errors.confirmPassword}</p>
+          )}
+        </div>
 
-        <div className="mt-6 text-center">
+        {/* Submit Error */}
+        {errors.submit && (
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-800 text-sm">{errors.submit}</p>
+          </div>
+        )}
+
+        {/* Submit Button */}
+        <ButtonComponent
+          type="submit"
+          disabled={isLoading}
+          className={`w-full bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 px-4 rounded-lg font-semibold shadow-lg ${
+            isLoading 
+              ? 'opacity-50 cursor-not-allowed' 
+              : isModal 
+                ? 'hover:shadow-xl transform transition-all duration-200' 
+                : 'hover:from-teal-700 hover:to-teal-800 transition-colors'
+          }`}
+          {...buttonProps}
+        >
+          {isLoading ? (
+            <div className="flex items-center justify-center space-x-2">
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span>Resetting Password...</span>
+            </div>
+          ) : (
+            'Reset Password'
+          )}
+        </ButtonComponent>
+      </form>
+
+      {/* Footer */}
+      <div className="mt-6 text-center">
+        {onBackToLogin && (
           <button 
             onClick={onBackToLogin}
-            className="text-teal-600 hover:text-teal-700 text-sm font-medium"
+            className={`text-teal-600 hover:text-teal-700 text-sm ${
+              isModal ? 'hover:underline transition-colors' : ''
+            }`}
           >
-            Back to Sign In
+            Back to Login
           </button>
-        </div>
+        )}
       </div>
     </div>
   );
