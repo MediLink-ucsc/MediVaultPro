@@ -8,10 +8,10 @@ import Analytics from './Analytics';
 import Samples from './Samples';
 import Templates from './Templates';
 
-const LabDashboard = () => {
+const LabDashboard = ({user}) => {
   return (
     <Routes>
-      <Route path="/" element={<LabDashboardOverview />} />
+      <Route path="/" element={<LabDashboardOverview user={user}/>} />
       <Route path="/samples" element={<Samples />} />
       <Route path="/analytics" element={<Analytics />} />
       <Route path="/reports" element={<LabReports />} />

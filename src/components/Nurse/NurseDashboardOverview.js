@@ -3,7 +3,7 @@ import React from 'react';
 import { Users, Pill, Activity, ClipboardList } from 'lucide-react';
 import StatsCard from '../Common/StatsCard';
 
-const NurseDashboardOverview = () => {
+const NurseDashboardOverview = ({user}) => {
   const stats = [
     { title: 'Assigned Patients', value: '24', icon: Users, color: 'teal', trend: '+2%' },
     { title: 'Medications Due', value: '8', icon: Pill, color: 'orange', trend: '0%' },
@@ -15,7 +15,7 @@ const NurseDashboardOverview = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-gray-800">Nurse Dashboard</h1>
-        <p className="text-gray-600 mt-2">Welcome back, Nurse Johnson</p>
+        <p className="text-gray-600 mt-2">Welcome back, {user.firstName} {user.lastName}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
