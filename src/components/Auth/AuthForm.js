@@ -1,47 +1,109 @@
-import React, { useState } from 'react';
-import { User, Lock, Mail, ArrowLeft } from 'lucide-react';
-import { motion } from 'framer-motion';
-import MediLinkLogo from '../resources/MediLinkLogo.jpeg';
+import React, { useState } from "react";
+import { User, Lock, Mail, ArrowLeft } from "lucide-react";
+import { motion } from "framer-motion";
+import MediLinkLogo from "../resources/MediLinkLogo.jpeg";
+import { jwtDecode } from "jwt-decode";
+import ApiService from "../../services/apiService";
 
-const AuthForm = ({ 
-  mode = 'login', // Only login mode supported now
-  context = 'page', // 'page' or 'modal'
-  onLogin, 
+const AuthForm = ({
+  mode = "login", // Only login mode supported now
+  context = "page", // 'page' or 'modal'
+  onLogin,
   onSwitchToForgotPassword,
   onBackToLanding,
-  onSwitchToRegistration
+  onSwitchToRegistration,
 }) => {
-  const isModal = context === 'modal';
+  const isModal = context === "modal";
 
   // Login state
   const [credentials, setCredentials] = useState({
-    email: '',
-    password: '',
-    role: 'doctor'
+    username: "",
+    password: "",
+    role: "doctor",
   });
+  const [error, setError] = useState("");
 
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    // Mock login with all required fields
-    onLogin({
-      id: 1,
-      name: credentials.role === 'doctor' ? 'Dr.Dulmini Chathubhashini' : 
-            credentials.role === 'nurse' ? 'Nurse Likitha' : 
-            credentials.role === 'systemadmin' ? 'System Admin' : 'Lab Operator',
-      email: credentials.email || 'demo@medivaultpro.com',
-      role: credentials.role
-    });
+    setError("");
+
+    try {
+      console.log(credentials);
+
+      const data = await ApiService.login(credentials);
+      console.log("Login successful:", data);
+
+      const decodedToken = jwtDecode(data.token);
+      console.log("Decoded token:", decodedToken);
+
+      // Save token
+      localStorage.setItem("token", data.token);
+
+      // Normalize role to match App.js expectations
+      let normalizedRole;
+      switch (decodedToken.role) {
+        case "DOCTOR":
+          normalizedRole = "doctor";
+          break;
+        case "LAB_ASSISTANT":
+          normalizedRole = "lab";
+          break;
+        case "MEDICAL_STAFF":
+        case "NURSE":
+          normalizedRole = "nurse";
+          break;
+        case "ADMIN":
+          normalizedRole = "systemadmin";
+          break;
+        default:
+          normalizedRole = "doctor"; // fallback
+      }
+
+      const userInfo = {
+        token: data.token,
+        role: normalizedRole,
+        email: decodedToken.email,
+        id: decodedToken.id,
+        firstName: decodedToken.firstName,
+        lastName: decodedToken.lastName,
+      };
+
+      // Also save user info to localStorage
+      localStorage.setItem("medivaultpro_user", JSON.stringify(userInfo));
+
+      // Notify App about logged-in user
+      onLogin(userInfo);
+
+      // Navigation will be handled by the parent component
+    } catch (err) {
+      setError(err.message);
+    }
   };
+
+  // const handleLoginSubmit = (e) => {
+  //   e.preventDefault();
+  //   // Mock login with all required fields
+  //   onLogin({
+  //     id: 1,
+  //     name: credentials.role === 'doctor' ? 'Dr.Dulmini Chathubhashini' :
+  //           credentials.role === 'nurse' ? 'Nurse Likitha' :
+  //           credentials.role === 'systemadmin' ? 'System Admin' : 'Lab Operator',
+  //     email: credentials.email || 'demo@medivaultpro.com',
+  //     role: credentials.role
+  //   });
+  // };
 
   const handleInputChange = (field, value) => {
     setCredentials({ ...credentials, [field]: value });
   };
 
-  const ButtonComponent = isModal ? motion.button : 'button';
-  const buttonProps = isModal ? {
-    whileHover: { scale: 1.02 },
-    whileTap: { scale: 0.98 }
-  } : {};
+  const ButtonComponent = isModal ? motion.button : "button";
+  const buttonProps = isModal
+    ? {
+        whileHover: { scale: 1.02 },
+        whileTap: { scale: 0.98 },
+      }
+    : {};
 
   return (
     <div className="w-full">
@@ -58,25 +120,31 @@ const AuthForm = ({
 
       {/* Header */}
       <div className="text-center mb-8">
-        <div className={`mx-auto w-16 h-16 ${isModal 
-          ? 'bg-gradient-to-br from-teal-500 to-orange-500' 
-          : 'bg-white'
-        } rounded-full flex items-center justify-center mb-4 shadow-lg`}>
-          <img 
-            src={MediLinkLogo} 
-            alt="MediLink Logo" 
-            className={`w-12 h-12 object-contain ${isModal ? 'rounded-full' : ''}`}
+        <div
+          className={`mx-auto w-16 h-16 ${
+            isModal
+              ? "bg-gradient-to-br from-teal-500 to-orange-500"
+              : "bg-white"
+          } rounded-full flex items-center justify-center mb-4 shadow-lg`}
+        >
+          <img
+            src={MediLinkLogo}
+            alt="MediLink Logo"
+            className={`w-12 h-12 object-contain ${
+              isModal ? "rounded-full" : ""
+            }`}
           />
         </div>
-        <h1 className={`text-2xl font-bold ${isModal 
-          ? 'bg-gradient-to-r from-teal-600 to-orange-600 bg-clip-text text-transparent' 
-          : 'text-gray-800'
-        }`}>
-          {isModal ? 'MediVaultPro' : 'MedivaultPro'}
+        <h1
+          className={`text-2xl font-bold ${
+            isModal
+              ? "bg-gradient-to-r from-teal-600 to-orange-600 bg-clip-text text-transparent"
+              : "text-gray-800"
+          }`}
+        >
+          {isModal ? "MediVaultPro" : "MedivaultPro"}
         </h1>
-        <p className="text-gray-600 mt-2">
-          Sign in to your account
-        </p>
+        <p className="text-gray-600 mt-2">Sign in to your account</p>
       </div>
 
       {/* Login Form */}
@@ -92,11 +160,13 @@ const AuthForm = ({
               type="email"
               required
               className={`w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-                isModal ? 'transition-all' : ''
+                isModal ? "transition-all" : ""
               }`}
               placeholder="Enter your email"
               value={credentials.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
+              onChange={(e) =>
+                setCredentials({ ...credentials, username: e.target.value })
+              }
             />
           </div>
         </div>
@@ -112,17 +182,19 @@ const AuthForm = ({
               type="password"
               required
               className={`w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
-                isModal ? 'transition-all' : ''
+                isModal ? "transition-all" : ""
               }`}
               placeholder="Enter your password"
               value={credentials.password}
-              onChange={(e) => handleInputChange('password', e.target.value)}
+              onChange={(e) =>
+                setCredentials({ ...credentials, password: e.target.value })
+              }
             />
           </div>
         </div>
 
         {/* Role Selection */}
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Role
           </label>
@@ -141,52 +213,56 @@ const AuthForm = ({
               <option value="systemadmin">System Administrator</option>
             </select>
           </div>
-        </div>
+        </div> */}
 
         {/* Submit Button */}
         <ButtonComponent
           type="submit"
           className={`w-full bg-gradient-to-r from-teal-600 to-teal-700 text-white py-3 px-4 rounded-lg font-semibold shadow-lg ${
-            isModal 
-              ? 'hover:shadow-xl transform transition-all duration-200' 
-              : 'hover:from-teal-700 hover:to-teal-800 transition-colors'
+            isModal
+              ? "hover:shadow-xl transform transition-all duration-200"
+              : "hover:from-teal-700 hover:to-teal-800 transition-colors"
           }`}
           {...buttonProps}
         >
           Sign In
         </ButtonComponent>
+
+        {/* Error Message */}
+        {error && (
+          <p className="text-red-600 text-center text-sm mt-2">{error}</p>
+        )}
       </form>
 
       {/* Footer Links */}
       <div className="mt-6 text-center space-y-3">
         {onSwitchToForgotPassword && (
-          <button 
+          <button
             onClick={onSwitchToForgotPassword}
             className={`text-teal-600 hover:text-teal-700 text-sm block mx-auto ${
-              isModal ? 'hover:underline transition-colors' : ''
+              isModal ? "hover:underline transition-colors" : ""
             }`}
           >
             Forgot your password?
           </button>
         )}
-        
+
         {onSwitchToRegistration && (
           <div className="pt-4 border-t border-gray-200">
-            <p className="text-gray-600 text-sm mb-3">
-              New to MediVaultPro? 
-            </p>
-            <button 
+            <p className="text-gray-600 text-sm mb-3">New to MediVaultPro?</p>
+            <button
               onClick={onSwitchToRegistration}
               className={`font-medium ${
-                isModal 
-                  ? 'text-orange-600 hover:text-orange-700 hover:underline transition-colors'
-                  : 'text-orange-600 hover:text-orange-700'
+                isModal
+                  ? "text-orange-600 hover:text-orange-700 hover:underline transition-colors"
+                  : "text-orange-600 hover:text-orange-700"
               }`}
             >
               Register Your Institution
             </button>
             <p className="text-xs text-gray-500 mt-2">
-              Join the MediLink ecosystem and get access for your healthcare facility
+              Join the MediLink ecosystem and get access for your healthcare
+              facility
             </p>
           </div>
         )}

@@ -46,7 +46,6 @@ function App() {
     try {
       console.log("Logging out...");
 
-      // Use ApiService instead of direct fetch
       await ApiService.logout();
 
       localStorage.removeItem("token");
@@ -89,26 +88,38 @@ function App() {
           <Route
             path="/doctor/*"
             element={
-              user.role === "doctor" ? <DoctorDashboard /> : <Navigate to="/" />
+              user.role === "doctor" ? (
+                <DoctorDashboard user={user} />
+              ) : (
+                <Navigate to="/" />
+              )
             }
           />
           <Route
             path="/nurse/*"
             element={
-              user.role === "nurse" ? <NurseDashboard /> : <Navigate to="/" />
+              user.role === "nurse" ? (
+                <NurseDashboard user={user} />
+              ) : (
+                <Navigate to="/" />
+              )
             }
           />
           <Route
             path="/lab/*"
             element={
-              user.role === "lab" ? <LabDashboard /> : <Navigate to="/" />
+              user.role === "lab" ? (
+                <LabDashboard user={user} />
+              ) : (
+                <Navigate to="/" />
+              )
             }
           />
           <Route
             path="/systemadmin/*"
             element={
               user.role === "systemadmin" ? (
-                <SystemAdminDashboard />
+                <SystemAdminDashboard user={user} />
               ) : (
                 <Navigate to="/" />
               )

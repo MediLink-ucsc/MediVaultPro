@@ -29,11 +29,33 @@ const Login = ({ onLogin }) => {
       // Save token
       localStorage.setItem("token", data.token);
 
+      // Normalize role to match App.js expectations
+      let normalizedRole;
+      switch (decodedToken.role) {
+        case "DOCTOR":
+          normalizedRole = "doctor";
+          break;
+        case "LAB_ASSISTANT":
+          normalizedRole = "lab";
+          break;
+        case "MEDICAL_STAFF":
+        case "NURSE":
+          normalizedRole = "nurse";
+          break;
+        case "ADMIN":
+          normalizedRole = "systemadmin";
+          break;
+        default:
+          normalizedRole = "doctor"; // fallback
+      }
+
       const userInfo = {
         token: data.token,
-        role: decodedToken.role,
+        role: normalizedRole,
         email: decodedToken.email,
         id: decodedToken.id,
+        firstName: decodedToken.firstName,
+        lastName: decodedToken.lastName,
       };
 
       // Also save user info to localStorage
@@ -42,17 +64,14 @@ const Login = ({ onLogin }) => {
       // Notify App about logged-in user
       onLogin(userInfo);
 
-      // Navigate based on role (use lowercase roles to match your App)
-      if (userInfo.role === "DOCTOR") {
+      // Navigate based on role (use normalized roles to match your App)
+      if (normalizedRole === "doctor") {
         navigate("/doctor");
-      } else if (userInfo.role === "LAB_ASSISTANT") {
+      } else if (normalizedRole === "lab") {
         navigate("/lab");
-      } else if (
-        userInfo.role === "MEDICAL_STAFF" ||
-        userInfo.role === "NURSE"
-      ) {
+      } else if (normalizedRole === "nurse") {
         navigate("/nurse");
-      } else if (userInfo.role === "ADMIN") {
+      } else if (normalizedRole === "systemadmin") {
         navigate("/admin"); // add admin route in App if needed
       } else {
         setError("Unknown role");
