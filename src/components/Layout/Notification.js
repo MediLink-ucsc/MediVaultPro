@@ -6,9 +6,9 @@ const Notification = () => {
   const [notifications, setNotifications] = useState([
     {
       id: 1,
-      type: 'appointment',
-      title: 'Appointment Reminder',
-      message: 'Likitha has an appointment in 15 minutes',
+      type: 'calendar',
+      title: 'Calendar Event Reminder',
+      message: 'Likitha has a calendar event in 15 minutes',
       time: '2 min ago',
       isRead: false,
       icon: Calendar,
@@ -46,9 +46,9 @@ const Notification = () => {
     },
     {
       id: 5,
-      type: 'appointment',
+      type: 'calendar',
       title: 'Cancellation Notice',
-      message: 'Hansaja cancelled her 3 PM appointment',
+      message: 'Hansaja cancelled her 3 PM calendar event',
       time: '2 days ago',
       isRead: false,
       icon: Calendar,

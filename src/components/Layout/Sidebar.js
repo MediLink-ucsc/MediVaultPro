@@ -4,7 +4,6 @@ import {
   LayoutDashboard,
   Users,
   Calendar,
-  FileText,
   TestTube,
   BarChart3,
   Settings,
@@ -83,9 +82,7 @@ const Sidebar = ({ user }) => {
         return [
           { icon: LayoutDashboard, label: 'Dashboard', path: '/doctor' },
           { icon: Users, label: 'Patients', path: '/doctor/patients' },
-          { icon: Calendar, label: 'Calendar', path: '/doctor/appointments' },
-          { icon: FileText, label: 'Documentation', path: '/doctor/documentation' },
-          { icon: TestTube, label: 'Diagnostics', path: '/doctor/diagnostics' },
+          { icon: Calendar, label: 'Calendar', path: '/doctor/calendar' },
           { icon: BarChart3, label: 'Analytics', path: '/doctor/analytics' },
           { icon: Settings, label: 'Settings', path: '/doctor/settings' }
         ];

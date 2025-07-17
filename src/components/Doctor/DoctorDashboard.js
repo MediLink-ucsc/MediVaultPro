@@ -3,9 +3,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import DashboardOverview from './DashboardOverview';
 import PatientList from './PatientList';
-import Appointments from './Appointments';
-import Documentation from './Documentation';
-import Diagnostics from './Diagnostics';
+import Calendar from './Calendar';
 import Analytics from './Analytics';
 import Settings from './Settings';
 
@@ -14,9 +12,7 @@ const DoctorDashboard = () => {
     <Routes>
       <Route path="/" element={<DashboardOverview />} />
       <Route path="/patients" element={<PatientList />} />
-      <Route path="/appointments" element={<Appointments />} />
-      <Route path="/documentation" element={<Documentation />} />
-      <Route path="/diagnostics" element={<Diagnostics />} />
+      <Route path="/calendar" element={<Calendar />} />
       <Route path="/analytics" element={<Analytics />} />
       <Route path="/settings" element={<Settings />} />
     </Routes>

@@ -37,8 +37,8 @@ const PatientList = () => {
     setActiveDropdown(null);
   };
 
-  const handleScheduleAppointment = (patientId) => {
-    console.log('Schedule appointment for:', patientId);
+  const handleScheduleCalendarEvent = (patientId) => {
+    console.log('Schedule calendar event for:', patientId);
     setActiveDropdown(null);
   };
 
@@ -165,10 +165,10 @@ const PatientList = () => {
                           <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
                             <div className="py-1">
                               <button
-                                onClick={() => handleScheduleAppointment(patient.id)}
+                                onClick={() => handleScheduleCalendarEvent(patient.id)}
                                 className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                               >
-                                Schedule Appointment
+                                Schedule Calendar Event
                               </button>
                               <button
                                 onClick={() => handleViewRecords(patient.id)}

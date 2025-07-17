@@ -14,7 +14,7 @@ const DashboardOverview = () => {
 
   const stats = [
     { title: 'Total Patients', value: '1,234', icon: Users, color: 'teal', trend: '+12%' },
-    { title: 'Today\'s Appointments', value: '24', icon: Calendar, color: 'orange', trend: '+3%' },
+    { title: 'Today\'s Calendar Events', value: '24', icon: Calendar, color: 'orange', trend: '+3%' },
     { title: 'Pending Reports', value: '8', icon: FileText, color: 'teal', trend: '-2%' },
   ];
 

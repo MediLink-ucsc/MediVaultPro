@@ -6,7 +6,7 @@ const DoctorCalendar = () => {
   const [events, setEvents] = useState([
     { id: 1, date: '2025-06-29', time: '10:00', title: 'Team Meeting', description: 'Weekly team sync', color: 'bg-blue-500' },
     { id: 2, date: '2025-06-30', time: '14:30', title: 'Medical Conference', description: 'Cardiology updates', color: 'bg-green-500' },
-    { id: 3, date: '2025-07-01', time: '09:00', title: 'Personal Appointment', description: 'Dentist visit', color: 'bg-purple-500' }
+    { id: 3, date: '2025-07-01', time: '09:00', title: 'Personal Event', description: 'Dentist visit', color: 'bg-purple-500' }
   ]);
   const [showEventModal, setShowEventModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
