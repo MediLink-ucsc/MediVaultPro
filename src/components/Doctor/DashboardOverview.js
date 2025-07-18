@@ -1,9 +1,8 @@
 // src/components/Doctor/DashboardOverview.js
 import React, { useState } from 'react';
-import { Users, Calendar, FileText, Pill, UserPlus, Clipboard, FlaskConical, Stethoscope } from 'lucide-react';
+import { Users, Calendar, FileText, Pill, Clipboard, FlaskConical, Stethoscope } from 'lucide-react';
 import StatsCard from '../Common/StatsCard';
 import Modal from '../Common/Modal';
-import NewPatientForm from './QuickActions/NewPatientForm';
 import PrescriptionForm from './QuickActions/PrescriptionForm';
 import LabOrderForm from './QuickActions/LabOrderForm';
 import SOAPForm from './QuickActions/SOAPForm';
@@ -20,7 +19,6 @@ const DashboardOverview = () => {
   ];
 
   const quickActions = [
-    { title: 'New Patient', icon: UserPlus, color: 'teal', description: 'Register new patient' },
     { title: 'Prescribe', icon: Pill, color: 'orange', description: 'Write prescription' },
     { title: 'Order Lab', icon: FlaskConical, color: 'teal', description: 'Laboratory tests' },
     { title: 'SOAP Note', icon: Clipboard, color: 'orange', description: 'Create medical note' },
@@ -51,8 +49,6 @@ const DashboardOverview = () => {
 
   const getModalContent = () => {
     switch (activeModal) {
-      case 'New Patient':
-        return <NewPatientForm onSubmit={handleSubmit} />;
       case 'Prescribe':
         return <PrescriptionForm onSubmit={handleSubmit} />;
       case 'Order Lab':
@@ -81,7 +77,7 @@ const DashboardOverview = () => {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {quickActions.map((action, index) => {
             const IconComponent = action.icon;
             return (

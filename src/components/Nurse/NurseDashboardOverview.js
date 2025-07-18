@@ -1,7 +1,8 @@
 // src/components/Nurse/NurseDashboardOverview.js
-import React from 'react';
-import { Users, Pill, Activity, ClipboardList } from 'lucide-react';
+import React, { useState } from 'react';
+import { Users, Pill, Activity, ClipboardList, Stethoscope, FileText } from 'lucide-react';
 import StatsCard from '../Common/StatsCard';
+import Button from '../Common/Button';
 
 const NurseDashboardOverview = () => {
   const stats = [
@@ -10,6 +11,18 @@ const NurseDashboardOverview = () => {
     { title: 'Vital Signs Pending', value: '12', icon: Activity, color: 'teal', trend: '-3%' },
     { title: 'Care Plans Active', value: '18', icon: ClipboardList, color: 'orange', trend: '+1%' }
   ];
+
+  const quickActions = [
+    { title: 'Record Vitals', icon: Stethoscope, color: 'teal', description: 'Update patient vitals' },
+    { title: 'Add Medication', icon: Pill, color: 'orange', description: 'Log medication administration' },
+    { title: 'Care Plan', icon: FileText, color: 'teal', description: 'Update care plans' },
+  ];
+
+  const handleQuickAction = (actionTitle) => {
+    console.log('Quick action clicked:', actionTitle);
+    // Here you would handle the specific action
+    // For example, navigate to different forms or open modals
+  };
 
   return (
     <div className="space-y-6">
@@ -22,6 +35,32 @@ const NurseDashboardOverview = () => {
         {stats.map((stat, index) => (
           <StatsCard key={index} {...stat} />
         ))}
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {quickActions.map((action, index) => {
+            const IconComponent = action.icon;
+            return (
+              <Button
+                key={index}
+                onClick={() => handleQuickAction(action.title)}
+                variant="secondary"
+                role="nurse"
+                size="lg"
+                icon={IconComponent}
+                className="flex-col h-auto py-4 text-center"
+                fullWidth
+              >
+                <div className="mt-2">
+                  <div className="font-medium text-sm">{action.title}</div>
+                  <div className="text-xs opacity-80 mt-1">{action.description}</div>
+                </div>
+              </Button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

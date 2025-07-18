@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { Plus, X, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, X, Trash2, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
+import Modal from '../Common/Modal';
 
-const DoctorCalendar = () => {
+const DoctorCalendar = ({ onBack, preFilledData }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState([
     { id: 1, date: '2025-06-29', time: '10:00', title: 'Team Meeting', description: 'Weekly team sync', color: 'bg-teal-500' },
@@ -17,6 +18,42 @@ const DoctorCalendar = () => {
     time: '',
     color: 'bg-teal-500'
   });
+
+  // Auto-open modal with pre-filled data if provided
+  useEffect(() => {
+    // Check for patient data from localStorage first
+    const storedPatientData = localStorage.getItem('selectedPatientForAppointment');
+    if (storedPatientData) {
+      const patientData = JSON.parse(storedPatientData);
+      
+      // Get tomorrow's date as default
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowString = tomorrow.toISOString().split('T')[0];
+      
+      setEventForm({
+        title: `Appointment with ${patientData.name}`,
+        description: `Medical consultation for ${patientData.condition}`,
+        date: tomorrowString,
+        time: '09:00',
+        color: 'bg-teal-500'
+      });
+      
+      setShowEventModal(true);
+      
+      // Clear the localStorage data after using it
+      localStorage.removeItem('selectedPatientForAppointment');
+    } else if (preFilledData) {
+      setEventForm({
+        title: preFilledData.title || '',
+        description: preFilledData.description || '',
+        date: preFilledData.date || '',
+        time: preFilledData.time || '',
+        color: preFilledData.color || 'bg-teal-500'
+      });
+      setShowEventModal(true);
+    }
+  }, [preFilledData]);
 
   const months = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -125,11 +162,25 @@ const DoctorCalendar = () => {
     } else {
       const newEvent = {
         id: Date.now(),
-        ...eventForm
+        ...eventForm,
+        // Add patient info if available from preFilledData
+        ...(preFilledData && {
+          patientId: preFilledData.patientId,
+          patientName: preFilledData.patientName
+        })
       };
       setEvents(prev => [...prev, newEvent]);
     }
     closeEventModal();
+    
+    // Show success message
+    if (preFilledData) {
+      alert(`Appointment scheduled successfully for ${preFilledData.patientName}!`);
+      // If this was triggered from patient list, go back
+      if (onBack) {
+        setTimeout(() => onBack(), 500);
+      }
+    }
   };
 
   const deleteEvent = (eventId) => {
@@ -147,7 +198,20 @@ const DoctorCalendar = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-800">Calendar</h1>
+        {onBack ? (
+          <div className="flex items-center space-x-4">
+            <button 
+              onClick={onBack}
+              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span>Back to Patient List</span>
+            </button>
+            <h1 className="text-3xl font-bold text-gray-800">Calendar</h1>
+          </div>
+        ) : (
+          <h1 className="text-3xl font-bold text-gray-800">Calendar</h1>
+        )}
         <button 
           onClick={() => openEventModal()}
           className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition duration-200 flex items-center space-x-2"
@@ -213,13 +277,17 @@ const DoctorCalendar = () => {
                             {dayEvents.slice(0, 2).map(event => (
                               <div 
                                 key={event.id}
-                                className={`text-xs p-1 rounded text-white truncate ${event.color}`}
+                                className={`text-xs p-1 rounded text-white truncate ${event.color} cursor-pointer hover:opacity-80`}
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   openEventModal(null, event);
                                 }}
+                                title={event.patientName ? `Patient: ${event.patientName}` : event.description}
                               >
                                 {event.time} {event.title}
+                                {event.patientName && (
+                                  <div className="text-xs opacity-90">👤 {event.patientName}</div>
+                                )}
                               </div>
                             ))}
                             {dayEvents.length > 2 && (
@@ -250,6 +318,9 @@ const DoctorCalendar = () => {
                     <div className="flex-1">
                       <div className="text-sm font-medium text-gray-800">{event.title}</div>
                       <div className="text-xs text-gray-600">{event.time}</div>
+                      {event.patientName && (
+                        <div className="text-xs text-teal-600">👤 Patient: {event.patientName}</div>
+                      )}
                     </div>
                   </div>
                 ))
@@ -280,114 +351,103 @@ const DoctorCalendar = () => {
       </div>
 
       {/* Event Modal */}
-      {showEventModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-lg max-w-md w-full mx-4">
-            <div className="p-6 border-b border-gray-200 flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-800">
-                {editingEvent ? 'Edit Event' : 'Add Event'}
-              </h3>
-              <button 
-                onClick={closeEventModal}
-                className="p-2 hover:bg-gray-100 rounded-lg"
+      <Modal 
+        isOpen={showEventModal} 
+        onClose={closeEventModal}
+        title={editingEvent ? 'Edit Event' : 'Add Event'}
+        size="md"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+            <input
+              type="text"
+              value={eventForm.title}
+              onChange={(e) => setEventForm(prev => ({ ...prev, title: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              placeholder="Event title"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <textarea
+              value={eventForm.description}
+              onChange={(e) => setEventForm(prev => ({ ...prev, description: e.target.value }))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              rows="3"
+              placeholder="Event description"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+              <input
+                type="date"
+                value={eventForm.date}
+                onChange={(e) => setEventForm(prev => ({ ...prev, date: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Time</label>
+              <input
+                type="time"
+                value={eventForm.time}
+                onChange={(e) => setEventForm(prev => ({ ...prev, time: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Color</label>
+            <div className="flex space-x-2">
+              {colors.map(color => (
+                <button
+                  key={color.class}
+                  onClick={() => setEventForm(prev => ({ ...prev, color: color.class }))}
+                  className={`w-8 h-8 rounded-full ${color.class} ${
+                    eventForm.color === color.class ? 'ring-2 ring-gray-400' : ''
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+            {editingEvent && (
+              <button
+                onClick={() => {
+                  deleteEvent(editingEvent.id);
+                  closeEventModal();
+                }}
+                className="text-orange-600 hover:text-orange-700 flex items-center space-x-2"
               >
-                <X className="w-5 h-5" />
+                <Trash2 className="w-4 h-4" />
+                <span>Delete</span>
               </button>
-            </div>
+            )}
             
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
-                <input
-                  type="text"
-                  value={eventForm.title}
-                  onChange={(e) => setEventForm(prev => ({ ...prev, title: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  placeholder="Event title"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea
-                  value={eventForm.description}
-                  onChange={(e) => setEventForm(prev => ({ ...prev, description: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  rows="3"
-                  placeholder="Event description"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
-                  <input
-                    type="date"
-                    value={eventForm.date}
-                    onChange={(e) => setEventForm(prev => ({ ...prev, date: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Time</label>
-                  <input
-                    type="time"
-                    value={eventForm.time}
-                    onChange={(e) => setEventForm(prev => ({ ...prev, time: e.target.value }))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Color</label>
-                <div className="flex space-x-2">
-                  {colors.map(color => (
-                    <button
-                      key={color.class}
-                      onClick={() => setEventForm(prev => ({ ...prev, color: color.class }))}
-                      className={`w-8 h-8 rounded-full ${color.class} ${
-                        eventForm.color === color.class ? 'ring-2 ring-gray-400' : ''
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 border-t border-gray-200 flex items-center justify-between">
-              {editingEvent && (
-                <button
-                  onClick={() => {
-                    deleteEvent(editingEvent.id);
-                    closeEventModal();
-                  }}
-                  className="text-orange-600 hover:text-orange-700 flex items-center space-x-2"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  <span>Delete</span>
-                </button>
-              )}
-              
-              <div className="flex space-x-3 ml-auto">
-                <button
-                  onClick={closeEventModal}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={saveEvent}
-                  className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
-                >
-                  {editingEvent ? 'Update' : 'Save'}
-                </button>
-              </div>
+            <div className="flex space-x-3 ml-auto">
+              <button
+                onClick={closeEventModal}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={saveEvent}
+                className="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
+              >
+                {editingEvent ? 'Update' : 'Save'}
+              </button>
             </div>
           </div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 };

@@ -1,10 +1,13 @@
 // src/components/Nurse/NursePatients.js
 import React, { useState } from 'react';
-import { Search, Filter, UserPlus, Eye, Stethoscope, Plus, Pill, Activity } from 'lucide-react';
+import { Search, Filter, UserPlus, Eye, Stethoscope, Plus, Pill, Activity, User, MapPin, Phone } from 'lucide-react';
 import Button from '../Common/Button';
+import Modal from '../Common/Modal';
+import NewPatientForm from './NewPatientForm';
 
 const NursePatients = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showNewPatientModal, setShowNewPatientModal] = useState(false);
 
   // Mock patient data for nurses
   const [patients] = useState([
@@ -70,6 +73,14 @@ const NursePatients = () => {
     }
   };
 
+  const handleNewPatientSubmit = (e) => {
+    e.preventDefault();
+    console.log('New patient form submitted');
+    setShowNewPatientModal(false);
+    // Here you would typically handle the form submission
+    // and update the patients list
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -81,9 +92,10 @@ const NursePatients = () => {
           variant="primary"
           role="nurse"
           size="md"
-          icon={Plus}
+          icon={UserPlus}
+          onClick={() => setShowNewPatientModal(true)}
         >
-          Add Note
+          Add New Patient
         </Button>
       </div>
 
@@ -173,6 +185,15 @@ const NursePatients = () => {
           )}
         </div>
       </div>
+
+      <Modal
+        isOpen={showNewPatientModal}
+        onClose={() => setShowNewPatientModal(false)}
+        title="Register New Patient"
+        size="lg"
+      >
+        <NewPatientForm onSubmit={handleNewPatientSubmit} />
+      </Modal>
     </div>
   );
 };

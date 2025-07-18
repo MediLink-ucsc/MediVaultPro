@@ -1,68 +1,116 @@
 // src/components/Doctor/PatientList.js
-import React, { useState } from 'react';
-import { Search, Filter, Plus, Eye, Edit, Trash2, MoreVertical, X } from 'lucide-react';
-import NewPatientForm from './QuickActions/NewPatientForm';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Search, Filter, Eye, Trash2, Calendar, FileText, Pill, Stethoscope, ClipboardList } from 'lucide-react';
+import Modal from '../Common/Modal';
+import LabOrderForm from './QuickActions/LabOrderForm';
+import PrescriptionForm from './QuickActions/PrescriptionForm';
+import QuickExamForm from './QuickActions/QuickExamForm';
+import SOAPForm from './QuickActions/SOAPForm';
+import PatientDetails from './PatientDetails';
 
 const PatientList = () => {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeDropdown, setActiveDropdown] = useState(null);
-  const [showNewPatientModal, setShowNewPatientModal] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    type: null, // 'lab', 'prescription', 'exam', 'soap'
+    patient: null
+  });
+  const [showActionSelector, setShowActionSelector] = useState({
+    isOpen: false,
+    patient: null
+  });
   const [patients, setPatients] = useState([
-    { id: 1, name: 'Hansaja Boss', age: 45, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-25', condition: 'Hypertension' },
-    { id: 2, name: 'Greatest Dulmini', age: 32, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-24', condition: 'Diabetes' },
-    { id: 3, name: 'Cute Anji', age: 58, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-23', condition: 'Arthritis' },
-    { id: 4, name: 'Moda Sathya', age: 29, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-22', condition: 'Allergy' }
+    { id: 1, name: 'Likitha', age: 45, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-25', condition: 'Hypertension' },
+    { id: 2, name: 'Dulmini', age: 32, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-24', condition: 'Diabetes' },
+    { id: 3, name: 'Anji', age: 58, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-23', condition: 'Arthritis' },
+    { id: 4, name: 'Sathya', age: 29, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-22', condition: 'Allergy' }
   ]);
 
-  const toggleDropdown = (id) => {
-    setActiveDropdown(activeDropdown === id ? null : id);
+  // Remove the dropdown click outside handler since we're removing dropdowns
+
+  const openQuickActionModal = (type, patient) => {
+    setModalState({
+      isOpen: true,
+      type,
+      patient
+    });
+    setShowActionSelector({ isOpen: false, patient: null });
   };
 
+  const openActionSelector = (patient) => {
+    setShowActionSelector({
+      isOpen: true,
+      patient
+    });
+  };
 
+  const closeActionSelector = () => {
+    setShowActionSelector({
+      isOpen: false,
+      patient: null
+    });
+  };
 
-  const handleEdit = (patientId) => {
-    console.log('Edit patient:', patientId);
-    setActiveDropdown(null);
+  const closeModal = () => {
+    setModalState({
+      isOpen: false,
+      type: null,
+      patient: null
+    });
+  };
+
+  const handleQuickActionSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const data = Object.fromEntries(formData.entries());
+    
+    console.log(`${modalState.type} form submitted for patient:`, modalState.patient?.name, data);
+    
+    // Here you would typically send the data to your backend
+    // For now, we'll just close the modal
+    closeModal();
+    
+    // Show success message (you could implement a toast notification here)
+    alert(`${modalState.type} successfully created for ${modalState.patient?.name}`);
   };
 
   const handleDelete = (patientId) => {
-    console.log('Delete patient:', patientId);
-    // Remove the patient from the state
-    setPatients(patients.filter(patient => patient.id !== patientId));
-    setActiveDropdown(null);
+    const patient = patients.find(p => p.id === patientId);
+    if (window.confirm(`Are you sure you want to delete ${patient?.name}? This action cannot be undone.`)) {
+      console.log('Delete patient:', patientId);
+      // Remove the patient from the state
+      setPatients(patients.filter(patient => patient.id !== patientId));
+      alert(`${patient?.name} has been deleted successfully.`);
+    }
   };
 
   const handleViewRecords = (patientId) => {
     console.log('View records for:', patientId);
-    setActiveDropdown(null);
+    const patient = patients.find(p => p.id === patientId);
+    setSelectedPatient(patient);
   };
 
   const handleScheduleCalendarEvent = (patientId) => {
     console.log('Schedule calendar event for:', patientId);
-    setActiveDropdown(null);
+    const patient = patients.find(p => p.id === patientId);
+    
+    // Store patient data in localStorage to pass to calendar
+    localStorage.setItem('selectedPatientForAppointment', JSON.stringify({
+      id: patient?.id,
+      name: patient?.name,
+      phone: patient?.phone,
+      condition: patient?.condition
+    }));
+    
+    // Navigate to the calendar component in sidebar
+    navigate('/doctor/calendar');
   };
 
-  const handleAddPatient = () => {
-    setShowNewPatientModal(true);
-  };
-
-  const handleCloseModal = () => {
-    setShowNewPatientModal(false);
-  };
-
-  const handleSubmitNewPatient = (patientData) => {
-    console.log('New patient data:', patientData);
-    // Add the new patient to the state
-    const newPatient = {
-      id: patients.length + 1,
-      name: patientData.name,
-      age: patientData.age,
-      phone: patientData.phone,
-      lastVisit: new Date().toISOString().split('T')[0],
-      condition: patientData.condition || 'General'
-    };
-    setPatients([...patients, newPatient]);
-    setShowNewPatientModal(false);
+  const handleBackToList = () => {
+    setSelectedPatient(null);
   };
 
   const filteredPatients = patients.filter(patient =>
@@ -70,17 +118,18 @@ const PatientList = () => {
     patient.condition.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // If a patient is selected, show the patient details view
+  if (selectedPatient) {
+    return <PatientDetails patient={selectedPatient} onBack={handleBackToList} />;
+  }
+
   return (
     <div className="space-y-6 relative">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-800">Patients</h1>
-        <button 
-          className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition duration-200 flex items-center space-x-2"
-          onClick={handleAddPatient}
-        >
-          <Plus className="w-5 h-5" />
-          <span>Add Patient</span>
-        </button>
+        <div className="text-sm text-gray-500">
+          💡 Click on any patient to perform quick actions
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
@@ -119,7 +168,11 @@ const PatientList = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredPatients.map((patient) => (
-                <tr key={patient.id} className="hover:bg-gray-50">
+                <tr 
+                  key={patient.id} 
+                  className="hover:bg-teal-50 cursor-pointer transition-colors"
+                  onClick={() => openActionSelector(patient)}
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="font-medium text-gray-900">{patient.name}</div>
                   </td>
@@ -135,63 +188,34 @@ const PatientList = () => {
                     <div className="flex items-center space-x-2">
                       <button 
                         className="text-teal-600 hover:text-teal-800 p-1 rounded hover:bg-teal-50"
-                        title="View"
-                        onClick={() => handleViewRecords(patient.id)}
+                        title="View Records"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewRecords(patient.id);
+                        }}
                       >
                         <Eye className="w-5 h-5" />
                       </button>
                       <button 
-                        className="text-orange-600 hover:text-orange-800 p-1 rounded hover:bg-orange-50"
-                        title="Edit"
-                        onClick={() => handleEdit(patient.id)}
+                        className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50"
+                        title="Schedule Appointment"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleScheduleCalendarEvent(patient.id);
+                        }}
                       >
-                        <Edit className="w-5 h-5" />
+                        <Calendar className="w-5 h-5" />
                       </button>
                       <button 
                         className="text-orange-700 hover:text-orange-900 p-1 rounded hover:bg-orange-50"
-                        title="Delete"
-                        onClick={() => handleDelete(patient.id)}
+                        title="Delete Patient"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(patient.id);
+                        }}
                       >
                         <Trash2 className="w-5 h-5" />
                       </button>
-                      <div className="relative">
-                        <button 
-                          className="text-gray-600 hover:text-gray-800 p-1 rounded hover:bg-gray-50"
-                          onClick={() => toggleDropdown(patient.id)}
-                        >
-                          <MoreVertical className="w-5 h-5" />
-                        </button>
-                        {activeDropdown === patient.id && (
-                          <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
-                            <div className="py-1">
-                              <button
-                                onClick={() => handleScheduleCalendarEvent(patient.id)}
-                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                              >
-                                Schedule Calendar Event
-                              </button>
-                              <button
-                                onClick={() => handleViewRecords(patient.id)}
-                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                              >
-                                View Medical Records
-                              </button>
-                              <button
-                                onClick={() => handleEdit(patient.id)}
-                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                              >
-                                Edit Profile
-                              </button>
-                              <button
-                                onClick={() => handleDelete(patient.id)}
-                                className="block w-full text-left px-4 py-2 text-sm text-orange-600 hover:bg-gray-100"
-                              >
-                                Delete Patient
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
                     </div>
                   </td>
                 </tr>
@@ -201,28 +225,79 @@ const PatientList = () => {
         </div>
       </div>
 
-      {/* New Patient Modal */}
-      {showNewPatientModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white p-4 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-800">Add New Patient</h2>
-              <button 
-                onClick={handleCloseModal}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            <div className="p-6">
-              <NewPatientForm 
-                onSubmit={handleSubmitNewPatient} 
-                onCancel={handleCloseModal}
-              />
-            </div>
+      {/* Action Selector Modal */}
+      <Modal 
+        isOpen={showActionSelector.isOpen} 
+        onClose={closeActionSelector}
+        title={`Select Action for ${showActionSelector.patient?.name || ''}`}
+        size="md"
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600 mb-6">What would you like to do with this patient?</p>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <button
+              onClick={() => openQuickActionModal('soap', showActionSelector.patient)}
+              className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-teal-500 hover:bg-teal-50 transition-all duration-200 group"
+            >
+              <ClipboardList className="w-8 h-8 text-teal-600 mb-3 group-hover:text-teal-700" />
+              <span className="text-sm font-medium text-gray-700 group-hover:text-teal-700">SOAP Note</span>
+              <span className="text-xs text-gray-500 mt-1 text-center">Document patient examination</span>
+            </button>
+
+            <button
+              onClick={() => openQuickActionModal('lab', showActionSelector.patient)}
+              className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-teal-500 hover:bg-teal-50 transition-all duration-200 group"
+            >
+              <FileText className="w-8 h-8 text-teal-600 mb-3 group-hover:text-teal-700" />
+              <span className="text-sm font-medium text-gray-700 group-hover:text-teal-700">Lab Orders</span>
+              <span className="text-xs text-gray-500 mt-1 text-center">Order laboratory tests</span>
+            </button>
+
+            <button
+              onClick={() => openQuickActionModal('exam', showActionSelector.patient)}
+              className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all duration-200 group"
+            >
+              <Stethoscope className="w-8 h-8 text-orange-600 mb-3 group-hover:text-orange-700" />
+              <span className="text-sm font-medium text-gray-700 group-hover:text-orange-700">Quick Exam</span>
+              <span className="text-xs text-gray-500 mt-1 text-center">Record quick examination</span>
+            </button>
+
+            <button
+              onClick={() => openQuickActionModal('prescription', showActionSelector.patient)}
+              className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all duration-200 group"
+            >
+              <Pill className="w-8 h-8 text-orange-600 mb-3 group-hover:text-orange-700" />
+              <span className="text-sm font-medium text-gray-700 group-hover:text-orange-700">Prescription</span>
+              <span className="text-xs text-gray-500 mt-1 text-center">Prescribe medications</span>
+            </button>
           </div>
         </div>
-      )}
+      </Modal>
+
+      {/* Quick Action Modal */}
+      <Modal 
+        isOpen={modalState.isOpen} 
+        onClose={closeModal}
+        title={`${modalState.type === 'lab' ? 'Lab Orders' : 
+                modalState.type === 'prescription' ? 'Prescription' : 
+                modalState.type === 'soap' ? 'SOAP Note' :
+                'Quick Exam'} - ${modalState.patient?.name || ''}`}
+        size="lg"
+      >
+        {modalState.type === 'soap' && (
+          <SOAPForm onSubmit={handleQuickActionSubmit} selectedPatient={modalState.patient} />
+        )}
+        {modalState.type === 'lab' && (
+          <LabOrderForm onSubmit={handleQuickActionSubmit} selectedPatient={modalState.patient} />
+        )}
+        {modalState.type === 'prescription' && (
+          <PrescriptionForm onSubmit={handleQuickActionSubmit} selectedPatient={modalState.patient} />
+        )}
+        {modalState.type === 'exam' && (
+          <QuickExamForm onSubmit={handleQuickActionSubmit} selectedPatient={modalState.patient} />
+        )}
+      </Modal>
     </div>
   );
 };

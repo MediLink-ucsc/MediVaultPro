@@ -1,6 +1,6 @@
 import { Save } from 'lucide-react';
 import { motion } from 'framer-motion';
-import Button from '../../Common/Button';
+import Button from '../Common/Button';
 
 const NewPatientForm = ({ onSubmit }) => {
   const containerVariants = {
@@ -40,7 +40,7 @@ const NewPatientForm = ({ onSubmit }) => {
           <input
             type="text"
             required
-            className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+            className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
             placeholder="Enter first name"
           />
         </motion.div>
@@ -50,7 +50,7 @@ const NewPatientForm = ({ onSubmit }) => {
           <input
             type="text"
             required
-            className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+            className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
             placeholder="Enter last name"
           />
         </motion.div>
@@ -62,7 +62,7 @@ const NewPatientForm = ({ onSubmit }) => {
           <input
             type="date"
             required
-            className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+            className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
           />
         </motion.div>
         
@@ -70,7 +70,7 @@ const NewPatientForm = ({ onSubmit }) => {
           <label className="block text-sm font-medium text-gray-700 mb-2">Gender *</label>
           <select
             required
-            className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiAjd2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im02IDkgNiA2IDYtNiIvPjwvc3ZnPg==')] bg-no-repeat bg-[center_right_1rem]"
+            className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiAjd2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im02IDkgNiA2IDYtNiIvPjwvc3ZnPg==')] bg-no-repeat bg-[center_right_1rem]"
           >
             <option value="">Select gender</option>
             <option value="male">Male</option>
@@ -85,7 +85,7 @@ const NewPatientForm = ({ onSubmit }) => {
         <input
           type="tel"
           required
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
           placeholder="+94 XX XXX XXXX"
         />
       </motion.div>
@@ -94,7 +94,7 @@ const NewPatientForm = ({ onSubmit }) => {
         <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
         <input
           type="email"
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
           placeholder="patient@email.com"
         />
       </motion.div>
@@ -103,7 +103,7 @@ const NewPatientForm = ({ onSubmit }) => {
         <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
         <textarea
           rows="3"
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
           placeholder="Enter full address"
         />
       </motion.div>
@@ -112,8 +112,17 @@ const NewPatientForm = ({ onSubmit }) => {
         <label className="block text-sm font-medium text-gray-700 mb-2">Emergency Contact</label>
         <input
           type="text"
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
           placeholder="Phone number"
+        />
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <label className="block text-sm font-medium text-gray-700 mb-2">Room Assignment</label>
+        <input
+          type="text"
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+          placeholder="e.g., ICU-101, Ward-205"
         />
       </motion.div>
 
@@ -124,10 +133,10 @@ const NewPatientForm = ({ onSubmit }) => {
         <Button
           type="submit"
           variant="primary"
-          role="doctor"
+          role="nurse"
           size="lg"
           icon={Save}
-          className="w-full shadow-lg hover:shadow-teal-200"
+          className="w-full shadow-lg hover:shadow-orange-200"
           fullWidth
         >
           Register Patient
