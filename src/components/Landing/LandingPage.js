@@ -105,13 +105,13 @@ const LandingPage = ({ onLogin, onSignup }) => {
       icon: <Stethoscope className="w-12 h-12" />,
       title: "Doctors",
       description: "Comprehensive patient management, diagnostics, and treatment planning tools.",
-      color: "bg-teal-600"
+      color: "bg-teal-600" // Unified teal theme
     },
     {
       icon: <Users className="w-12 h-12" />,
       title: "Nurses",
       description: "Patient care coordination, vital signs monitoring, and medication management.",
-      color: "bg-orange-500"
+      color: "bg-teal-500" // Changed from orange to teal for unified theme
     },
     {
       icon: <FlaskConical className="w-12 h-12" />,
@@ -123,7 +123,7 @@ const LandingPage = ({ onLogin, onSignup }) => {
       icon: <Building className="w-12 h-12" />,
       title: "Administrators",
       description: "Staff management, system oversight, and institutional administration.",
-      color: "bg-orange-600"
+      color: "bg-teal-600" // Changed from orange to teal for unified theme
     }
   ];
 

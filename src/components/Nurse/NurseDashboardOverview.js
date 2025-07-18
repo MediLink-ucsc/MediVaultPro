@@ -1,34 +1,55 @@
 // src/components/Nurse/NurseDashboardOverview.js
-import React, { useState } from 'react';
-import { Users, Pill, Activity, ClipboardList, Stethoscope, FileText } from 'lucide-react';
+import React from 'react';
+import { Users, Pill, Activity, ClipboardList, Stethoscope, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import StatsCard from '../Common/StatsCard';
 import Button from '../Common/Button';
 
 const NurseDashboardOverview = () => {
+  const navigate = useNavigate();
+  
   const stats = [
     { title: 'Assigned Patients', value: '24', icon: Users, color: 'teal', trend: '+2%' },
-    { title: 'Medications Due', value: '8', icon: Pill, color: 'orange', trend: '0%' },
+    { title: 'Medications Due', value: '8', icon: Pill, color: 'orange', trend: '0%' }, // Orange for urgent medications
     { title: 'Vital Signs Pending', value: '12', icon: Activity, color: 'teal', trend: '-3%' },
-    { title: 'Care Plans Active', value: '18', icon: ClipboardList, color: 'orange', trend: '+1%' }
+    { title: 'Care Plans Active', value: '18', icon: ClipboardList, color: 'teal', trend: '+1%' }
   ];
 
   const quickActions = [
-    { title: 'Record Vitals', icon: Stethoscope, color: 'teal', description: 'Update patient vitals' },
-    { title: 'Add Medication', icon: Pill, color: 'orange', description: 'Log medication administration' },
-    { title: 'Care Plan', icon: FileText, color: 'teal', description: 'Update care plans' },
+    { 
+      title: 'Patient Care Hub', 
+      icon: Users, 
+      color: 'teal', 
+      description: 'Access all patient activities',
+      route: '/nurse/patients'
+    },
+    { 
+      title: 'Med Schedule', 
+      icon: Clock, 
+      color: 'orange', // Orange for urgent medication management
+      description: 'View medication timeline',
+      route: '/nurse/medications'
+    },
+    { 
+      title: 'Record Vitals', 
+      icon: Stethoscope, 
+      color: 'teal', 
+      description: 'Quick vital signs entry',
+      route: '/nurse/patients'
+    }
   ];
 
-  const handleQuickAction = (actionTitle) => {
-    console.log('Quick action clicked:', actionTitle);
-    // Here you would handle the specific action
-    // For example, navigate to different forms or open modals
+  const handleQuickAction = (action) => {
+    if (action.route) {
+      navigate(action.route);
+    }
   };
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-gray-800">Nurse Dashboard</h1>
-        <p className="text-gray-600 mt-2">Welcome back, Nurse Johnson</p>
+        <p className="text-gray-600 mt-2">Streamlined nursing workflow with consolidated patient care</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -39,18 +60,18 @@ const NurseDashboardOverview = () => {
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {quickActions.map((action, index) => {
             const IconComponent = action.icon;
             return (
               <Button
                 key={index}
-                onClick={() => handleQuickAction(action.title)}
+                onClick={() => handleQuickAction(action)}
                 variant="secondary"
-                role="nurse"
+                role={action.color === 'orange' ? 'urgent' : 'nurse'}
                 size="lg"
                 icon={IconComponent}
-                className="flex-col h-auto py-4 text-center"
+                className="flex-col h-auto py-6 text-center"
                 fullWidth
               >
                 <div className="mt-2">

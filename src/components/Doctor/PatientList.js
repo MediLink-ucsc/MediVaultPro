@@ -8,6 +8,8 @@ import PrescriptionForm from './QuickActions/PrescriptionForm';
 import QuickExamForm from './QuickActions/QuickExamForm';
 import SOAPForm from './QuickActions/SOAPForm';
 import PatientDetails from './PatientDetails';
+import EnhancedPatientDetails from './EnhancedPatientDetails';
+import dataStore from '../../utils/dataStore';
 
 const PatientList = () => {
   const navigate = useNavigate();
@@ -22,12 +24,17 @@ const PatientList = () => {
     isOpen: false,
     patient: null
   });
-  const [patients, setPatients] = useState([
-    { id: 1, name: 'Likitha', age: 45, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-25', condition: 'Hypertension' },
-    { id: 2, name: 'Dulmini', age: 32, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-24', condition: 'Diabetes' },
-    { id: 3, name: 'Anji', age: 58, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-23', condition: 'Arthritis' },
-    { id: 4, name: 'Sathya', age: 29, phone: 'xxx xxxx xxxx', lastVisit: '2024-06-22', condition: 'Allergy' }
-  ]);
+  const [patients, setPatients] = useState([]);
+
+  // Load patients from data store on component mount
+  useEffect(() => {
+    loadPatients();
+  }, []);
+
+  const loadPatients = () => {
+    const allPatients = dataStore.getPatients();
+    setPatients(allPatients);
+  };
 
   // Remove the dropdown click outside handler since we're removing dropdowns
 
@@ -90,7 +97,15 @@ const PatientList = () => {
   const handleViewRecords = (patientId) => {
     console.log('View records for:', patientId);
     const patient = patients.find(p => p.id === patientId);
-    setSelectedPatient(patient);
+    if (patient) {
+      // Get comprehensive patient data including vitals, care plans, etc.
+      const patientSummary = dataStore.getPatientSummary(patientId);
+      setSelectedPatient({
+        ...patient,
+        name: `${patient.firstName} ${patient.lastName}`, // For compatibility with PatientDetails
+        summary: patientSummary
+      });
+    }
   };
 
   const handleScheduleCalendarEvent = (patientId) => {
@@ -100,7 +115,7 @@ const PatientList = () => {
     // Store patient data in localStorage to pass to calendar
     localStorage.setItem('selectedPatientForAppointment', JSON.stringify({
       id: patient?.id,
-      name: patient?.name,
+      name: `${patient?.firstName} ${patient?.lastName}`,
       phone: patient?.phone,
       condition: patient?.condition
     }));
@@ -113,14 +128,17 @@ const PatientList = () => {
     setSelectedPatient(null);
   };
 
-  const filteredPatients = patients.filter(patient =>
-    patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    patient.condition.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredPatients = patients.filter(patient => {
+    const fullName = `${patient.firstName} ${patient.lastName}`.toLowerCase();
+    const searchLower = searchTerm.toLowerCase();
+    return fullName.includes(searchLower) ||
+           patient.condition.toLowerCase().includes(searchLower) ||
+           patient.id.toLowerCase().includes(searchLower);
+  });
 
   // If a patient is selected, show the patient details view
   if (selectedPatient) {
-    return <PatientDetails patient={selectedPatient} onBack={handleBackToList} />;
+    return <EnhancedPatientDetails patient={selectedPatient} onBack={handleBackToList} />;
   }
 
   return (
@@ -174,7 +192,10 @@ const PatientList = () => {
                   onClick={() => openActionSelector(patient)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-medium text-gray-900">{patient.name}</div>
+                    <div className="font-medium text-gray-900">
+                      {patient.firstName} {patient.lastName}
+                    </div>
+                    <div className="text-sm text-gray-500">ID: {patient.id}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-500">{patient.age}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-gray-500">{patient.phone}</td>
@@ -206,16 +227,6 @@ const PatientList = () => {
                       >
                         <Calendar className="w-5 h-5" />
                       </button>
-                      <button 
-                        className="text-orange-700 hover:text-orange-900 p-1 rounded hover:bg-orange-50"
-                        title="Delete Patient"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(patient.id);
-                        }}
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </button>
                     </div>
                   </td>
                 </tr>
@@ -229,7 +240,9 @@ const PatientList = () => {
       <Modal 
         isOpen={showActionSelector.isOpen} 
         onClose={closeActionSelector}
-        title={`Select Action for ${showActionSelector.patient?.name || ''}`}
+        title={`Select Action for ${showActionSelector.patient ? 
+          `${showActionSelector.patient.firstName} ${showActionSelector.patient.lastName}` : 
+          ''}`}
         size="md"
       >
         <div className="space-y-4">
@@ -282,7 +295,9 @@ const PatientList = () => {
         title={`${modalState.type === 'lab' ? 'Lab Orders' : 
                 modalState.type === 'prescription' ? 'Prescription' : 
                 modalState.type === 'soap' ? 'SOAP Note' :
-                'Quick Exam'} - ${modalState.patient?.name || ''}`}
+                'Quick Exam'} - ${modalState.patient ? 
+                  `${modalState.patient.firstName} ${modalState.patient.lastName}` : 
+                  ''}`}
         size="lg"
       >
         {modalState.type === 'soap' && (

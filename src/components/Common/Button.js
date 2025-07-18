@@ -16,7 +16,7 @@ const Button = ({
   iconPosition = 'left',
   ...props
 }) => {
-  // Role-based color schemes
+  // Unified color schemes - teal for standard, orange for urgent
   const roleColors = {
     doctor: {
       primary: {
@@ -50,32 +50,32 @@ const Button = ({
     },
     nurse: {
       primary: {
-        base: 'bg-gradient-to-r from-orange-500 to-orange-600',
-        hover: 'hover:from-orange-600 hover:to-orange-700',
-        focus: 'focus:ring-orange-500',
-        shadow: 'shadow-orange-200',
+        base: 'bg-gradient-to-r from-teal-500 to-teal-600',
+        hover: 'hover:from-teal-600 hover:to-teal-700',
+        focus: 'focus:ring-teal-500',
+        shadow: 'shadow-teal-200',
         text: 'text-white'
       },
       secondary: {
-        base: 'bg-orange-50 border-2 border-orange-200',
-        hover: 'hover:bg-orange-100 hover:border-orange-300',
-        focus: 'focus:ring-orange-500',
-        shadow: 'shadow-orange-100',
-        text: 'text-orange-700'
+        base: 'bg-teal-50 border-2 border-teal-200',
+        hover: 'hover:bg-teal-100 hover:border-teal-300',
+        focus: 'focus:ring-teal-500',
+        shadow: 'shadow-teal-100',
+        text: 'text-teal-700'
       },
       outline: {
-        base: 'border-2 border-orange-500 bg-transparent',
-        hover: 'hover:bg-orange-500 hover:text-white',
-        focus: 'focus:ring-orange-500',
-        shadow: 'shadow-orange-200',
-        text: 'text-orange-500'
+        base: 'border-2 border-teal-500 bg-transparent',
+        hover: 'hover:bg-teal-500 hover:text-white',
+        focus: 'focus:ring-teal-500',
+        shadow: 'shadow-teal-200',
+        text: 'text-teal-500'
       },
       ghost: {
         base: 'bg-transparent',
-        hover: 'hover:bg-orange-50',
-        focus: 'focus:ring-orange-500',
+        hover: 'hover:bg-teal-50',
+        focus: 'focus:ring-teal-500',
         shadow: '',
-        text: 'text-orange-600'
+        text: 'text-teal-600'
       }
     },
     lab: {
@@ -108,7 +108,37 @@ const Button = ({
         text: 'text-teal-600'
       }
     },
-    systemadmin: {
+    clinicadmin: {
+      primary: {
+        base: 'bg-gradient-to-r from-teal-500 to-teal-600',
+        hover: 'hover:from-teal-600 hover:to-teal-700',
+        focus: 'focus:ring-teal-500',
+        shadow: 'shadow-teal-200',
+        text: 'text-white'
+      },
+      secondary: {
+        base: 'bg-teal-50 border-2 border-teal-200',
+        hover: 'hover:bg-teal-100 hover:border-teal-300',
+        focus: 'focus:ring-teal-500',
+        shadow: 'shadow-teal-100',
+        text: 'text-teal-700'
+      },
+      outline: {
+        base: 'border-2 border-teal-500 bg-transparent',
+        hover: 'hover:bg-teal-500 hover:text-white',
+        focus: 'focus:ring-teal-500',
+        shadow: 'shadow-teal-200',
+        text: 'text-teal-500'
+      },
+      ghost: {
+        base: 'bg-transparent',
+        hover: 'hover:bg-teal-50',
+        focus: 'focus:ring-teal-500',
+        shadow: '',
+        text: 'text-teal-600'
+      }
+    },
+    urgent: {
       primary: {
         base: 'bg-gradient-to-r from-orange-500 to-orange-600',
         hover: 'hover:from-orange-600 hover:to-orange-700',
@@ -233,49 +263,40 @@ const Button = ({
     !disabled && colorScheme.hover,
     !disabled && colorScheme.focus,
     
-    // Shadow for primary variants
-    variant === 'primary' && !disabled && `hover:shadow-lg hover:${colorScheme.shadow}`,
+    // Shadow
+    colorScheme.shadow,
     
-    // Full width
+    // Width
     fullWidth && 'w-full',
-    
-    // Loading state
-    loading && 'cursor-wait',
     
     // Custom classes
     className
   ].filter(Boolean).join(' ');
 
-  const handleClick = (e) => {
-    if (disabled || loading) return;
-    onClick?.(e);
-  };
-
-  const iconElement = Icon && (
-    <Icon className={`w-4 h-4 ${children && iconPosition === 'left' ? 'mr-2' : ''} ${children && iconPosition === 'right' ? 'ml-2' : ''}`} />
-  );
-
-  const loadingSpinner = loading && (
-    <svg className="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-    </svg>
-  );
-
   return (
     <motion.button
       type={type}
-      className={baseClasses}
-      onClick={handleClick}
       disabled={disabled || loading}
-      whileHover={!disabled && !loading ? { y: -1 } : {}}
-      whileTap={!disabled && !loading ? { scale: 0.98 } : {}}
+      onClick={!disabled && !loading ? onClick : undefined}
+      className={baseClasses}
+      whileHover={{ scale: disabled || loading ? 1 : 1.02 }}
+      whileTap={{ scale: disabled || loading ? 1 : 0.98 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
       {...props}
     >
-      {loading && loadingSpinner}
-      {!loading && iconPosition === 'left' && iconElement}
+      {loading && (
+        <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+      )}
+      
+      {Icon && iconPosition === 'left' && !loading && (
+        <Icon className={`w-4 h-4 ${children ? 'mr-2' : ''}`} />
+      )}
+      
       {children}
-      {!loading && iconPosition === 'right' && iconElement}
+      
+      {Icon && iconPosition === 'right' && !loading && (
+        <Icon className={`w-4 h-4 ${children ? 'ml-2' : ''}`} />
+      )}
     </motion.button>
   );
 };

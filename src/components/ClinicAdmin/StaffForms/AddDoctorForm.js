@@ -1,4 +1,4 @@
-// src/components/SystemAdmin/StaffForms/AddDoctorForm.js
+// src/components/ClinicAdmin/StaffForms/AddDoctorForm.js
 import React, { useState } from 'react';
 import { User, Mail, Phone, Building, Calendar, FileText, Award, MapPin } from 'lucide-react';
 

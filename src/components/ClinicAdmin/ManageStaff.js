@@ -1,4 +1,4 @@
-// src/components/SystemAdmin/ManageStaff.js
+// src/components/ClinicAdmin/ManageStaff.js
 import React, { useState } from 'react';
 import { 
   Users, 
@@ -30,17 +30,17 @@ const ManageStaff = () => {
   const itemsPerPage = 10;
 
   // In a real app, this would come from the logged-in admin's data
-  const adminInstitute = "City General Hospital";
+  const adminInstitute = "City Medical Center";
 
   // Mock data - in real app, this would come from API
   const [staffData, setStaffData] = useState([
     {
       id: 1,
       name: 'Dr. Dulmini Chathubhashini',
-      email: 'dulmini.chathubhashini@cityhospital.com',
+      email: 'dulmini.chathubhashini@citymedical.com',
       role: 'doctor',
       department: 'Cardiology',
-      institute: 'City General Hospital',
+      institute: 'City Medical Center',
       phone: '+94 xxx xxx xxx',
       status: 'active',
       joinDate: '2022-01-15',
@@ -49,10 +49,10 @@ const ManageStaff = () => {
     {
       id: 2,
       name: 'Likitha',
-      email: 'likitha@cityhospital.com',
+      email: 'likitha@citymedical.com',
       role: 'nurse',
       department: 'Emergency',
-      institute: 'City General Hospital',
+      institute: 'City Medical Center',
       phone: '+94 xxx xxx xxx',
       status: 'active',
       joinDate: '2022-03-20',
@@ -179,7 +179,7 @@ const ManageStaff = () => {
   const getRoleColor = (role) => {
     const colors = {
       doctor: 'bg-teal-100 text-teal-800',
-      nurse: 'bg-orange-100 text-orange-800',
+      nurse: 'bg-teal-100 text-teal-800', // Changed from orange to teal for unified scheme
       lab: 'bg-teal-100 text-teal-800'
     };
     return colors[role] || 'bg-gray-100 text-gray-800';
@@ -196,14 +196,14 @@ const ManageStaff = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Manage Staff Data</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Manage Clinic Staff</h1>
           <p className="text-gray-600 mt-1">View, edit, and manage staff members for {adminInstitute}</p>
         </div>
         <div className="flex items-center space-x-3">
           <Button 
             onClick={handleAddStaff}
             variant="primary"
-            role="systemadmin"
+            role="clinicadmin"
             size="md"
             icon={UserPlus}
           >

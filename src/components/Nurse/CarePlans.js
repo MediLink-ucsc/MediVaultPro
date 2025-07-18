@@ -1,64 +1,98 @@
 // src/components/Nurse/CarePlans.js
-import React, { useState } from 'react';
-import { ClipboardList, User, Calendar, CheckCircle, Circle, Search, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ClipboardList, User, Calendar, CheckCircle, Circle, Search, Plus, Edit, Eye } from 'lucide-react';
+import Button from '../Common/Button';
+import CarePlanForm from './CarePlanForm';
+import dataStore from '../../utils/dataStore';
 
 const CarePlans = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showCarePlanForm, setShowCarePlanForm] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedCarePlan, setSelectedCarePlan] = useState(null);
+  const [carePlans, setCarePlans] = useState([]);
+  const [patients, setPatients] = useState([]);
 
-  // Mock care plans data
-  const [carePlans] = useState([
-    {
-      id: 1,
-      patient: 'Likitha Chathubhashini',
-      room: 'ICU-101',
-      planType: 'Post-Surgical Care',
-      startDate: '2024-06-28',
-      endDate: '2024-07-05',
-      progress: 75,
-      tasks: [
-        { id: 1, task: 'Monitor vital signs every 2 hours', completed: true },
-        { id: 2, task: 'Administer pain medication as needed', completed: true },
-        { id: 3, task: 'Encourage deep breathing exercises', completed: false },
-        { id: 4, task: 'Assist with mobility as tolerated', completed: false }
-      ]
-    },
-    {
-      id: 2,
-      patient: 'Hansaja Damsara',
-      room: 'Ward-205',
-      planType: 'Diabetes Management',
-      startDate: '2024-06-25',
-      endDate: '2024-07-25',
-      progress: 60,
-      tasks: [
-        { id: 1, task: 'Monitor blood glucose levels', completed: true },
-        { id: 2, task: 'Dietary counseling and education', completed: true },
-        { id: 3, task: 'Medication compliance review', completed: false },
-        { id: 4, task: 'Foot care assessment', completed: false }
-      ]
-    },
-    {
-      id: 3,
-      patient: 'Sathya Abeysinghe',
-      room: 'Maternity-302',
-      planType: 'Prenatal Care',
-      startDate: '2024-06-01',
-      endDate: '2024-12-01',
-      progress: 40,
-      tasks: [
-        { id: 1, task: 'Weekly prenatal check-ups', completed: true },
-        { id: 2, task: 'Nutritional guidance', completed: true },
-        { id: 3, task: 'Birthing class enrollment', completed: false },
-        { id: 4, task: 'Pediatrician selection assistance', completed: false }
-      ]
-    }
-  ]);
+  // Load data from store on component mount
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = () => {
+    const allCarePlans = dataStore.getCarePlans();
+    const allPatients = dataStore.getPatients();
+    
+    // Merge care plans with patient data
+    const carePlansWithPatientInfo = allCarePlans.map(plan => {
+      const patient = allPatients.find(p => p.id === plan.patientId);
+      return {
+        ...plan,
+        patient: patient ? `${patient.firstName} ${patient.lastName}` : 'Unknown Patient',
+        condition: patient?.condition || 'Unknown condition'
+      };
+    });
+
+    setCarePlans(carePlansWithPatientInfo);
+    setPatients(allPatients);
+  };
 
   const filteredCarePlans = carePlans.filter(plan =>
     plan.patient.toLowerCase().includes(searchTerm.toLowerCase()) ||
     plan.planType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    plan.room.toLowerCase().includes(searchTerm.toLowerCase())
+    plan.condition.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleCreateCarePlan = () => {
+    // For now, we'll use the first patient. In a real app, this would be a patient selector
+    if (patients.length > 0) {
+      setSelectedPatient(patients[0]);
+      setSelectedCarePlan(null);
+      setShowCarePlanForm(true);
+    } else {
+      alert('No patients available. Please register a patient first.');
+    }
+  };
+
+  const handleEditCarePlan = (carePlan) => {
+    const patient = patients.find(p => p.id === carePlan.patientId);
+    if (patient) {
+      setSelectedPatient(patient);
+      setSelectedCarePlan(carePlan);
+      setShowCarePlanForm(true);
+    }
+  };
+
+  const handleCarePlanSubmit = (carePlan) => {
+    console.log('Care plan saved:', carePlan);
+    setShowCarePlanForm(false);
+    setSelectedPatient(null);
+    setSelectedCarePlan(null);
+    // Reload data to show the new/updated care plan
+    loadData();
+    alert(`Care plan ${selectedCarePlan ? 'updated' : 'created'} successfully!`);
+  };
+
+  const handleCancelCarePlan = () => {
+    setShowCarePlanForm(false);
+    setSelectedPatient(null);
+    setSelectedCarePlan(null);
+  };
+
+  const handleToggleTask = (carePlanId, taskId) => {
+    const carePlan = carePlans.find(cp => cp.id === carePlanId);
+    const task = carePlan.tasks.find(t => t.id === taskId);
+    
+    const taskUpdate = {
+      completed: !task.completed,
+      completedDate: !task.completed ? new Date().toISOString().split('T')[0] : null,
+      completedBy: !task.completed ? 'Current Nurse' : null
+    };
+
+    const updatedPlan = dataStore.updateCarePlanTask(carePlanId, taskId, taskUpdate);
+    if (updatedPlan) {
+      loadData(); // Reload to show updated progress
+    }
+  };
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -82,7 +116,10 @@ const CarePlans = () => {
           <h1 className="text-3xl font-bold text-gray-800">Care Plans</h1>
           <p className="text-gray-600 mt-2">Manage and track patient care plans</p>
         </div>
-        <button className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition duration-200 flex items-center space-x-2">
+        <button 
+          className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition duration-200 flex items-center space-x-2"
+          onClick={handleCreateCarePlan}
+        >
           <Plus className="w-5 h-5" />
           <span>New Care Plan</span>
         </button>
@@ -94,7 +131,7 @@ const CarePlans = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search care plans, patients, or rooms..."
+              placeholder="Search care plans or patients..."
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -113,7 +150,7 @@ const CarePlans = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-800">{plan.patient}</h3>
-                      <p className="text-sm text-gray-600">{plan.room} • {plan.planType}</p>
+                      <p className="text-sm text-gray-600">{plan.condition} • {plan.planType}</p>
                     </div>
                   </div>
                   
@@ -145,11 +182,16 @@ const CarePlans = () => {
                   <div className="space-y-2">
                     {plan.tasks.map((task) => (
                       <div key={task.id} className="flex items-center space-x-3">
-                        {task.completed ? (
-                          <CheckCircle className="w-5 h-5 text-teal-500" />
-                        ) : (
-                          <Circle className="w-5 h-5 text-gray-400" />
-                        )}
+                        <button
+                          onClick={() => handleToggleTask(plan.id, task.id)}
+                          className="flex-shrink-0"
+                        >
+                          {task.completed ? (
+                            <CheckCircle className="w-5 h-5 text-teal-500 hover:text-teal-600" />
+                          ) : (
+                            <Circle className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+                          )}
+                        </button>
                         <span className={`text-sm ${task.completed ? 'text-gray-500 line-through' : 'text-gray-700'}`}>
                           {task.task}
                         </span>
@@ -161,8 +203,12 @@ const CarePlans = () => {
                     <span className="text-sm text-gray-600">
                       {plan.tasks.filter(task => task.completed).length} of {plan.tasks.length} tasks completed
                     </span>
-                    <button className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors text-sm">
-                      Update Plan
+                    <button 
+                      onClick={() => handleEditCarePlan(plan)}
+                      className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors text-sm flex items-center space-x-2"
+                    >
+                      <Edit className="w-4 h-4" />
+                      <span>Update Plan</span>
                     </button>
                   </div>
                 </div>
@@ -179,6 +225,16 @@ const CarePlans = () => {
           )}
         </div>
       </div>
+
+      {/* Care Plan Modal */}
+      {showCarePlanForm && selectedPatient && (
+        <CarePlanForm
+          patient={selectedPatient}
+          existingPlan={selectedCarePlan}
+          onSubmit={handleCarePlanSubmit}
+          onCancel={handleCancelCarePlan}
+        />
+      )}
     </div>
   );
 };

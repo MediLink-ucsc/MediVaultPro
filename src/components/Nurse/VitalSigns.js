@@ -1,91 +1,129 @@
 // src/components/Nurse/VitalSigns.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Activity, Heart, Thermometer, User, Search, Plus, TrendingUp } from 'lucide-react';
 import Button from '../Common/Button';
+import VitalSignsForm from './VitalSignsForm';
+import dataStore from '../../utils/dataStore';
 
 const VitalSigns = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showVitalSignsModal, setShowVitalSignsModal] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+  const [vitalSigns, setVitalSigns] = useState([]);
+  const [patients, setPatients] = useState([]);
 
-  // Mock vital signs data
-  const [vitalSigns] = useState([
-    {
-      id: 1,
-      patient: 'Likitha Chathubhashini',
-      room: 'ICU-101',
-      temperature: '98.6°F',
-      heartRate: '72 bpm',
-      bloodPressure: '120/80',
-      respiratoryRate: '16/min',
-      oxygenSaturation: '98%',
-      lastUpdated: '2 hours ago',
-      status: 'normal'
-    },
-    {
-      id: 2,
-      patient: 'Hansaja Damsara',
-      room: 'Ward-205',
-      temperature: '99.2°F',
-      heartRate: '85 bpm',
-      bloodPressure: '140/90',
-      respiratoryRate: '18/min',
-      oxygenSaturation: '96%',
-      lastUpdated: '1 hour ago',
-      status: 'elevated'
-    },
-    {
-      id: 3,
-      patient: 'Sathya Abeysinghe',
-      room: 'Maternity-302',
-      temperature: '98.4°F',
-      heartRate: '78 bpm',
-      bloodPressure: '115/75',
-      respiratoryRate: '14/min',
-      oxygenSaturation: '99%',
-      lastUpdated: '30 minutes ago',
-      status: 'normal'
-    },
-    {
-      id: 4,
-      patient: 'Saranga Dissanayake',
-      room: 'Ward-108',
-      temperature: '100.1°F',
-      heartRate: '95 bpm',
-      bloodPressure: '150/95',
-      respiratoryRate: '20/min',
-      oxygenSaturation: '94%',
-      lastUpdated: '15 minutes ago',
-      status: 'concerning'
-    }
-  ]);
+  // Load data from store on component mount
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = () => {
+    const allVitals = dataStore.getVitalSigns();
+    const allPatients = dataStore.getPatients();
+    
+    // Merge vitals with patient data
+    const vitalsWithPatientInfo = allVitals.map(vital => {
+      const patient = allPatients.find(p => p.id === vital.patientId);
+      return {
+        ...vital,
+        patient: patient ? `${patient.firstName} ${patient.lastName}` : 'Unknown Patient',
+        condition: patient?.condition || 'Unknown condition'
+      };
+    });
+
+    setVitalSigns(vitalsWithPatientInfo);
+    setPatients(allPatients);
+  };
 
   const filteredVitalSigns = vitalSigns.filter(vital =>
     vital.patient.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    vital.room.toLowerCase().includes(searchTerm.toLowerCase())
+    vital.condition.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const getStatusColor = (status) => {
+  const getStatusFromVitals = (vital) => {
+    // Simple logic to determine status based on vital signs
+    const tempValue = parseFloat(vital.temperature);
+    const heartRateValue = parseInt(vital.heartRate);
+    const oxygenValue = parseInt(vital.oxygenSaturation);
+
+    if (tempValue > 100.4 || heartRateValue > 100 || oxygenValue < 95) {
+      return 'concerning';
+    } else if (tempValue > 99.5 || heartRateValue > 90 || oxygenValue < 97) {
+      return 'elevated';
+    } else {
+      return 'normal';
+    }
+  };
+
+  const getStatusColor = (vital) => {
+    const status = getStatusFromVitals(vital);
     switch (status) {
       case 'normal':
         return 'bg-teal-100 text-teal-800';
       case 'elevated':
         return 'bg-orange-100 text-orange-800';
       case 'concerning':
-        return 'bg-orange-100 text-orange-800';
+        return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (vital) => {
+    const status = getStatusFromVitals(vital);
     switch (status) {
       case 'normal':
         return <Activity className="w-4 h-4 text-teal-600" />;
       case 'elevated':
         return <TrendingUp className="w-4 h-4 text-orange-600" />;
       case 'concerning':
-        return <Heart className="w-4 h-4 text-orange-600" />;
+        return <Heart className="w-4 h-4 text-red-600" />;
       default:
         return <Activity className="w-4 h-4 text-gray-600" />;
+    }
+  };
+
+  const handleRecordVitals = () => {
+    // For now, we'll use the first patient. In a real app, this would be a patient selector
+    if (patients.length > 0) {
+      setSelectedPatient(patients[0]);
+      setShowVitalSignsModal(true);
+    } else {
+      alert('No patients available. Please register a patient first.');
+    }
+  };
+
+  const handleVitalSignsSubmit = (vitalSigns) => {
+    console.log('Vital signs recorded:', vitalSigns);
+    setShowVitalSignsModal(false);
+    setSelectedPatient(null);
+    // Reload data to show the new vitals
+    loadData();
+    alert('Vital signs recorded successfully!');
+  };
+
+  const handleCancelVitalSigns = () => {
+    setShowVitalSignsModal(false);
+    setSelectedPatient(null);
+  };
+
+  const getTimeAgo = (dateString, timeString) => {
+    try {
+      const vitalDateTime = new Date(`${dateString} ${timeString}`);
+      const now = new Date();
+      const diffMs = now - vitalDateTime;
+      const diffMins = Math.floor(diffMs / (1000 * 60));
+      const diffHours = Math.floor(diffMins / 60);
+      
+      if (diffMins < 60) {
+        return `${diffMins} minutes ago`;
+      } else if (diffHours < 24) {
+        return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+      } else {
+        return dateString;
+      }
+    } catch (error) {
+      return 'Recently';
     }
   };
 
@@ -101,7 +139,7 @@ const VitalSigns = () => {
           role="nurse"
           size="md"
           icon={Plus}
-          onClick={() => {}}
+          onClick={handleRecordVitals}
         >
           Record Vitals
         </Button>
@@ -113,7 +151,7 @@ const VitalSigns = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
-              placeholder="Search patients or rooms..."
+              placeholder="Search patients..."
               className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -132,13 +170,13 @@ const VitalSigns = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-800">{vital.patient}</h3>
-                      <p className="text-sm text-gray-600">{vital.room}</p>
+                      <p className="text-sm text-gray-600">{vital.condition}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    {getStatusIcon(vital.status)}
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(vital.status)}`}>
-                      {vital.status.charAt(0).toUpperCase() + vital.status.slice(1)}
+                    {getStatusIcon(vital)}
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(vital)}`}>
+                      {getStatusFromVitals(vital).charAt(0).toUpperCase() + getStatusFromVitals(vital).slice(1)}
                     </span>
                   </div>
                 </div>
@@ -178,15 +216,12 @@ const VitalSigns = () => {
                 </div>
 
                 <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                  <span className="text-sm text-gray-500">Last updated: {vital.lastUpdated}</span>
-                  <Button
-                    variant="secondary"
-                    role="nurse"
-                    size="sm"
-                    onClick={() => {}}
-                  >
-                    Update Vitals
-                  </Button>
+                  <span className="text-sm text-gray-500">
+                    Last updated: {getTimeAgo(vital.date, vital.time)}
+                  </span>
+                  <span className="text-xs text-gray-400">
+                    By: {vital.recordedBy}
+                  </span>
                 </div>
               </div>
             ))}
@@ -201,6 +236,15 @@ const VitalSigns = () => {
           )}
         </div>
       </div>
+
+      {/* Vital Signs Modal */}
+      {showVitalSignsModal && selectedPatient && (
+        <VitalSignsForm
+          patient={selectedPatient}
+          onSubmit={handleVitalSignsSubmit}
+          onCancel={handleCancelVitalSigns}
+        />
+      )}
     </div>
   );
 };

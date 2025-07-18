@@ -1,4 +1,4 @@
-// src/components/SystemAdmin/StaffForms/AddNurseForm.js
+// src/components/ClinicAdmin/StaffForms/AddNurseForm.js
 import React, { useState } from 'react';
 import { User, Mail, Phone, Building, Calendar, FileText, Award, MapPin, Heart } from 'lucide-react';
 
@@ -29,8 +29,6 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
 
   const departments = [
     'Emergency',
-    'ICU (Intensive Care Unit)',
-    'General Ward',
     'Pediatrics',
     'Maternity',
     'Surgery',
@@ -40,11 +38,10 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
     'Oncology',
     'Psychiatry',
     'Outpatient',
-    'Operating Room'
+    'Day Surgery'
   ];
 
   const specializations = [
-    'Critical Care Nursing',
     'Emergency Nursing',
     'Pediatric Nursing',
     'Surgical Nursing',
@@ -63,19 +60,18 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
     'Basic Life Support (BLS)',
     'Advanced Cardiovascular Life Support (ACLS)',
     'Pediatric Advanced Life Support (PALS)',
-    'Critical Care Registered Nurse (CCRN)',
     'Certified Emergency Nurse (CEN)',
     'Certified Pediatric Nurse (CPN)',
     'Certified Wound Care Nurse',
     'Infection Prevention and Control',
     'Trauma Nursing Core Course (TNCC)',
-    'Certified Nurse Operating Room (CNOR)'
+    'Certified Ambulatory Care Nurse (CACN)'
   ];
 
   const shiftOptions = [
-    { value: 'day', label: 'Day Shift (7 AM - 7 PM)' },
-    { value: 'night', label: 'Night Shift (7 PM - 7 AM)' },
-    { value: 'rotating', label: 'Rotating Shifts' },
+    { value: 'morning', label: 'Morning Shift (6 AM - 2 PM)' },
+    { value: 'afternoon', label: 'Afternoon Shift (2 PM - 10 PM)' },
+    { value: 'full-day', label: 'Full Day (8 AM - 6 PM)' },
     { value: 'flexible', label: 'Flexible' }
   ];
 

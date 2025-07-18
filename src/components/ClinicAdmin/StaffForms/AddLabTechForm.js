@@ -1,4 +1,4 @@
-// src/components/SystemAdmin/StaffForms/AddLabTechForm.js
+// src/components/ClinicAdmin/StaffForms/AddLabTechForm.js
 import React, { useState } from 'react';
 import { User, Mail, Phone, Building, Calendar, FileText, Award, MapPin, TestTube } from 'lucide-react';
 

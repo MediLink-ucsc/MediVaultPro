@@ -41,41 +41,41 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
     {
       type: 'clinic',
       title: 'Medical Clinic',
-      description: 'For hospitals, clinics, and healthcare facilities providing patient care',
+      description: 'For clinics and medical centers providing outpatient care services',
       icon: <Stethoscope className="w-12 h-12" />,
       color: 'from-teal-500 to-teal-600',
       features: [
         'Patient Management System',
-        'Prescription Management',
-        'Lab Integration',
+        'Prescription & Treatment Records',
+        'Lab Integration & Reports',
         'Electronic Health Records',
         'Multi-role Access (Doctors, Nurses, Admin)'
       ]
     },
     {
       type: 'lab',
-      title: 'Laboratory',
-      description: 'For diagnostic labs, pathology centers, and testing facilities',
+      title: 'Diagnostic Laboratory',
+      description: 'For diagnostic labs, pathology centers, and medical testing facilities',
       icon: <FlaskConical className="w-12 h-12" />,
       color: 'from-teal-500 to-teal-600',
       features: [
-        'Sample Management',
+        'Sample Management & Tracking',
         'Test Processing & Results',
-        'Report Generation',
-        'Clinic Integration',
+        'Digital Report Generation',
+        'Clinic Integration Support',
         'Lab Technician & Admin Access'
       ]
     },
     {
       type: 'clinic_lab',
-      title: 'Clinic + Laboratory',
-      description: 'For clinics that have their own in-house laboratory services',
+      title: 'Medical Center + Lab',
+      description: 'For medical centers with integrated in-house laboratory services',
       icon: <Building2 className="w-12 h-12" />,
       color: 'from-orange-500 to-orange-600',
       features: [
-        'Patient Management System',
-        'In-house Lab Services',
-        'Integrated Test Processing',
+        'Complete Patient Management',
+        'Integrated Lab Services',
+        'Seamless Test Processing',
         'Unified Patient Reports',
         'All Roles Access (Doctors, Nurses, Lab Techs, Admin)'
       ]
@@ -151,11 +151,11 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
     }
 
     if (!formData.state.trim()) {
-      newErrors.state = 'State is required';
+      newErrors.state = 'Province is required';
     }
 
     if (!formData.zipCode.trim()) {
-      newErrors.zipCode = 'ZIP code is required';
+      newErrors.zipCode = 'Postal code is required';
     }
 
     if (!formData.phone.trim()) {
@@ -379,7 +379,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
                         errors.instituteName ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      placeholder="Enter your institution name"
+                      placeholder="e.g., Nawaloka Medical Center"
                     />
                     {errors.instituteName && (
                       <p className="mt-1 text-sm text-red-600 flex items-center">
@@ -402,7 +402,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
                         errors.address ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      placeholder="Street address"
+                      placeholder="e.g., 23, Deshamanya H. K. Dharmadasa Mawatha"
                     />
                     {errors.address && (
                       <p className="mt-1 text-sm text-red-600 flex items-center">
@@ -422,7 +422,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
                         errors.city ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      placeholder="City"
+                      placeholder="e.g., Colombo"
                     />
                     {errors.city && (
                       <p className="mt-1 text-sm text-red-600 flex items-center">
@@ -433,17 +433,26 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">State *</label>
-                    <input
-                      type="text"
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Province/State *</label>
+                    <select
                       name="state"
                       value={formData.state}
                       onChange={handleInputChange}
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
                         errors.state ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      placeholder="State"
-                    />
+                    >
+                      <option value="">Select Province</option>
+                      <option value="Western Province">Western Province</option>
+                      <option value="Central Province">Central Province</option>
+                      <option value="Southern Province">Southern Province</option>
+                      <option value="Northern Province">Northern Province</option>
+                      <option value="Eastern Province">Eastern Province</option>
+                      <option value="North Western Province">North Western Province</option>
+                      <option value="North Central Province">North Central Province</option>
+                      <option value="Uva Province">Uva Province</option>
+                      <option value="Sabaragamuwa Province">Sabaragamuwa Province</option>
+                    </select>
                     {errors.state && (
                       <p className="mt-1 text-sm text-red-600 flex items-center">
                         <AlertCircle className="w-4 h-4 mr-1" />
@@ -453,7 +462,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">ZIP Code *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Postal Code *</label>
                     <input
                       type="text"
                       name="zipCode"
@@ -462,7 +471,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
                         errors.zipCode ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      placeholder="ZIP Code"
+                      placeholder="e.g., 00200"
                     />
                     {errors.zipCode && (
                       <p className="mt-1 text-sm text-red-600 flex items-center">
@@ -485,7 +494,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
                         errors.phone ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      placeholder="Phone number"
+                      placeholder="+94 11 234 5678"
                     />
                     {errors.phone && (
                       <p className="mt-1 text-sm text-red-600 flex items-center">
@@ -508,7 +517,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                       className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
                         errors.email ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      placeholder="Email address"
+                      placeholder="admin@nawaloka.lk"
                     />
                     {errors.email && (
                       <p className="mt-1 text-sm text-red-600 flex items-center">
@@ -529,7 +538,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                       value={formData.licenseNumber}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
-                      placeholder="Medical license number"
+                      placeholder="Medical license number (SLMC)"
                     />
                   </div>
 
@@ -541,7 +550,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                       value={formData.website}
                       onChange={handleInputChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
-                      placeholder="https://www.example.com"
+                      placeholder="https://www.nawaloka.lk"
                     />
                   </div>
                 </div>
@@ -560,7 +569,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
                           errors.adminName ? 'border-red-500' : 'border-gray-300'
                         }`}
-                        placeholder="Administrator full name"
+                        placeholder="Dr. Priyani Fernando"
                       />
                       {errors.adminName && (
                         <p className="mt-1 text-sm text-red-600 flex items-center">
@@ -580,7 +589,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
                           errors.adminEmail ? 'border-red-500' : 'border-gray-300'
                         }`}
-                        placeholder="Administrator email"
+                        placeholder="priyani.fernando@nawaloka.lk"
                       />
                       {errors.adminEmail && (
                         <p className="mt-1 text-sm text-red-600 flex items-center">
@@ -600,7 +609,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
                           errors.adminPhone ? 'border-red-500' : 'border-gray-300'
                         }`}
-                        placeholder="Administrator phone"
+                        placeholder="+94 77 123 4567"
                       />
                       {errors.adminPhone && (
                         <p className="mt-1 text-sm text-red-600 flex items-center">

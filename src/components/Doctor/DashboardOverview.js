@@ -14,15 +14,15 @@ const DashboardOverview = () => {
 
   const stats = [
     { title: 'Total Patients', value: '1,234', icon: Users, color: 'teal', trend: '+12%' },
-    { title: 'Today\'s Calendar Events', value: '24', icon: Calendar, color: 'orange', trend: '+3%' },
-    { title: 'Pending Reports', value: '8', icon: FileText, color: 'teal', trend: '-2%' },
+    { title: 'Today\'s Calendar Events', value: '24', icon: Calendar, color: 'orange', trend: '+3%' }, // Orange for urgent appointments
+    { title: 'Pending Reports', value: '8', icon: FileText, color: 'orange', trend: '-2%' }, // Orange for pending urgent reports
   ];
 
   const quickActions = [
-    { title: 'Prescribe', icon: Pill, color: 'orange', description: 'Write prescription' },
+    { title: 'Prescribe', icon: Pill, color: 'orange', description: 'Write prescription' }, // Orange for urgent prescriptions
     { title: 'Order Lab', icon: FlaskConical, color: 'teal', description: 'Laboratory tests' },
-    { title: 'SOAP Note', icon: Clipboard, color: 'orange', description: 'Create medical note' },
-    { title: 'Quick Exam', icon: Stethoscope, color: 'teal', description: 'Patient examination' },
+    { title: 'SOAP Note', icon: Clipboard, color: 'teal', description: 'Create medical note' },
+    { title: 'Quick Exam', icon: Stethoscope, color: 'orange', description: 'Patient examination' }, // Orange for urgent examinations
   ];
 
   const getColorClasses = (color) => {
@@ -85,7 +85,7 @@ const DashboardOverview = () => {
                 key={index}
                 onClick={() => setActiveModal(action.title)}
                 variant="secondary"
-                role="doctor"
+                role={action.color === 'orange' ? 'urgent' : 'doctor'}
                 size="lg"
                 icon={IconComponent}
                 className="flex-col h-auto py-4 text-center"

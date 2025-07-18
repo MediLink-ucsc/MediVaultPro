@@ -7,71 +7,27 @@ import {
   TestTube,
   BarChart3,
   Settings,
-  Pill,
-  Activity,
-  ClipboardList,
   FlaskConical,
   ChevronRight,
   Building2,
   UserPlus,
-  BookTemplate
+  BookTemplate,
+  Clock
 } from 'lucide-react';
 import MediLinkLogo from '../resources/MediLinkLogo.jpeg';
 
 const Sidebar = ({ user }) => {
   const getRoleColors = () => {
-    switch (user.role) {
-      case 'doctor':
-        return {
-          primary: 'from-[#0d9488] to-[#0d9488]',
-          primaryLight: 'from-[#14b8a6] to-[#5eead4]',
-          secondary: 'from-teal-50 to-teal-100',
-          accent: '#0d9488',
-          accentLight: '#14b8a6',
-          hover: 'hover:bg-teal-50',
-          hoverText: 'hover:text-[#0d9488]'
-        };
-      case 'nurse':
-        return {
-          primary: 'from-[#ea580c] to-[#ea580c]',
-          primaryLight: 'from-[#f97316] to-[#fdba74]',
-          secondary: 'from-orange-50 to-orange-100',
-          accent: '#ea580c',
-          accentLight: '#f97316',
-          hover: 'hover:bg-orange-50',
-          hoverText: 'hover:text-[#ea580c]'
-        };
-      case 'lab':
-        return {
-          primary: 'from-[#0d9488] to-[#0d9488]',
-          primaryLight: 'from-[#14b8a6] to-[#5eead4]',
-          secondary: 'from-teal-50 to-teal-100',
-          accent: '#0d9488',
-          accentLight: '#14b8a6',
-          hover: 'hover:bg-teal-50',
-          hoverText: 'hover:text-[#0d9488]'
-        };
-      case 'systemadmin':
-        return {
-          primary: 'from-[#ea580c] to-[#ea580c]',
-          primaryLight: 'from-[#f97316] to-[#fdba74]',
-          secondary: 'from-orange-50 to-orange-100',
-          accent: '#ea580c',
-          accentLight: '#f97316',
-          hover: 'hover:bg-orange-50',
-          hoverText: 'hover:text-[#ea580c]'
-        };
-      default:
-        return {
-          primary: 'from-[#0d9488] to-[#0d9488]',
-          primaryLight: 'from-[#14b8a6] to-[#5eead4]',
-          secondary: 'from-teal-50 to-teal-100',
-          accent: '#0d9488',
-          accentLight: '#14b8a6',
-          hover: 'hover:bg-teal-50',
-          hoverText: 'hover:text-[#0d9488]'
-        };
-    }
+    // Unified color scheme using teal as the primary color for all roles
+    return {
+      primary: 'from-[#0d9488] to-[#0d9488]',
+      primaryLight: 'from-[#14b8a6] to-[#5eead4]',
+      secondary: 'from-teal-50 to-teal-100',
+      accent: '#0d9488',
+      accentLight: '#14b8a6',
+      hover: 'hover:bg-teal-50',
+      hoverText: 'hover:text-[#0d9488]'
+    };
   };
 
   const colors = getRoleColors();
@@ -89,10 +45,8 @@ const Sidebar = ({ user }) => {
       case 'nurse':
         return [
           { icon: LayoutDashboard, label: 'Dashboard', path: '/nurse' },
-          { icon: Users, label: 'Patients', path: '/nurse/patients' },
-          { icon: Pill, label: 'Medications', path: '/nurse/medications' },
-          { icon: Activity, label: 'Vital Signs', path: '/nurse/vitals' },
-          { icon: ClipboardList, label: 'Care Plans', path: '/nurse/care-plans' },
+          { icon: Users, label: 'Patient Care', path: '/nurse/patients' },
+          { icon: Clock, label: 'Medication Schedule', path: '/nurse/medications' },
           { icon: Settings, label: 'Settings', path: '/nurse/settings' }
         ];
       case 'lab':
@@ -104,12 +58,12 @@ const Sidebar = ({ user }) => {
           { icon: BarChart3, label: 'Analytics', path: '/lab/analytics' },
           { icon: Settings, label: 'Settings', path: '/lab/settings' }
         ];
-      case 'systemadmin':
+      case 'clinicadmin':
         return [
-          { icon: LayoutDashboard, label: 'Dashboard', path: '/systemadmin' },
-          { icon: Building2, label: 'Register Institute', path: '/systemadmin/register-institute' },
-          { icon: UserPlus, label: 'Manage Staff', path: '/systemadmin/manage-staff' },
-          { icon: Settings, label: 'Settings', path: '/systemadmin/settings' }
+          { icon: LayoutDashboard, label: 'Dashboard', path: '/clinic-admin' },
+          { icon: Building2, label: 'Clinic Profile', path: '/clinic-admin/clinic-profile' },
+          { icon: UserPlus, label: 'Manage Staff', path: '/clinic-admin/manage-staff' },
+          { icon: Settings, label: 'Settings', path: '/clinic-admin/settings' }
         ];
       default:
         return [];

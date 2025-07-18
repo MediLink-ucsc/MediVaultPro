@@ -1,4 +1,4 @@
-// src/components/SystemAdmin/StaffForms/AddStaffModal.js
+// src/components/ClinicAdmin/StaffForms/AddStaffModal.js
 import React, { useState } from 'react';
 import { Users, Heart, TestTube, ArrowLeft } from 'lucide-react';
 import Modal from '../../Common/Modal';
@@ -6,7 +6,7 @@ import AddDoctorForm from './AddDoctorForm';
 import AddNurseForm from './AddNurseForm';
 import AddLabTechForm from './AddLabTechForm';
 
-const AddStaffModal = ({ isOpen, onClose, onSubmit, adminInstitute = "City General Hospital" }) => {
+const AddStaffModal = ({ isOpen, onClose, onSubmit, adminInstitute = "City Medical Center" }) => {
   const [selectedRole, setSelectedRole] = useState(null);
 
   // The admin can only add staff to their own institute

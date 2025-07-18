@@ -4,9 +4,9 @@ import { FlaskConical, AlertTriangle, Clock, User } from 'lucide-react';
 
 const UrgentSamples = () => {
   const urgentSamples = [
-    { id: 'S1001', type: 'Blood Culture', patient: 'Hansaja', dueTime: '2 hours', priority: 'STAT', location: 'ICU' },
-    { id: 'S1002', type: 'Cardiac Enzymes', patient: 'Likitha', dueTime: '1 hour', priority: 'URGENT', location: 'ER' },
-    { id: 'S1003', type: 'Glucose Test', patient: 'Anji', dueTime: '30 mins', priority: 'STAT', location: 'Ward A' },
+    { id: 'S1001', type: 'Blood Culture', patient: 'Hansaja', dueTime: '2 hours', priority: 'STAT', location: 'Emergency' },
+    { id: 'S1002', type: 'Cardiac Enzymes', patient: 'Likitha', dueTime: '1 hour', priority: 'URGENT', location: 'Emergency' },
+    { id: 'S1003', type: 'Glucose Test', patient: 'Anji', dueTime: '30 mins', priority: 'STAT', location: 'Outpatient' },
     { id: 'S1004', type: 'CBC', patient: 'Sathya', dueTime: '45 mins', priority: 'URGENT', location: 'Outpatient' },
   ];
 

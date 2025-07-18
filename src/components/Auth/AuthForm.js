@@ -27,7 +27,7 @@ const AuthForm = ({
       id: 1,
       name: credentials.role === 'doctor' ? 'Dr.Dulmini Chathubhashini' : 
             credentials.role === 'nurse' ? 'Nurse Likitha' : 
-            credentials.role === 'systemadmin' ? 'System Admin' : 'Lab Operator',
+            credentials.role === 'clinicadmin' ? 'Clinic Administrator' : 'Lab Operator',
       email: credentials.email || 'demo@medivaultpro.com',
       role: credentials.role
     });
@@ -138,7 +138,7 @@ const AuthForm = ({
               <option value="doctor">Doctor</option>
               <option value="nurse">Nurse</option>
               <option value="lab">Lab Technician</option>
-              <option value="systemadmin">System Administrator</option>
+              <option value="clinicadmin">Clinic Administrator</option>
             </select>
           </div>
         </div>
