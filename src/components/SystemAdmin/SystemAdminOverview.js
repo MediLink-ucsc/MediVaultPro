@@ -15,7 +15,7 @@ import StatsCard from '../Common/StatsCard';
 const SystemAdminOverview = () => {
   const stats = [
     { title: 'Total Staff', value: '2,341', icon: Users, color: 'orange', trend: '+12%' },
-    { title: 'Active Staff Today', value: '1,987', icon: UserCheck, color: 'blue', trend: '+8%' },
+    { title: 'Active Staff Today', value: '1,987', icon: UserCheck, color: 'teal', trend: '+8%' },
     { title: 'System Health', value: '99.8%', icon: Activity, color: 'green', trend: '+0.2%' },
   ];
 
@@ -37,14 +37,14 @@ const SystemAdminOverview = () => {
     { 
       title: 'System Settings', 
       icon: SettingsIcon, 
-      color: 'blue', 
+      color: 'teal', 
       description: 'Configure system parameters',
       path: '/system-admin/settings'
     },
     { 
       title: 'Analytics', 
       icon: TrendingUp, 
-      color: 'purple', 
+      color: 'orange', 
       description: 'View system analytics',
       path: '/system-admin/analytics'
     },
@@ -70,7 +70,7 @@ const SystemAdminOverview = () => {
       message: 'System maintenance completed successfully', 
       time: '1 day ago',
       icon: Shield,
-      color: 'green'
+      color: 'teal'
     },
   ];
 
@@ -92,6 +92,28 @@ const SystemAdminOverview = () => {
       blue: 'text-blue-600',
       purple: 'text-purple-600',
       green: 'text-green-600',
+    };
+    return colorMap[color] || colorMap.teal;
+  };
+
+  const getActivityColorClasses = (color) => {
+    const colorMap = {
+      teal: 'bg-teal-100',
+      orange: 'bg-orange-100',
+      green: 'bg-green-100',
+      blue: 'bg-blue-100',
+      purple: 'bg-purple-100',
+    };
+    return colorMap[color] || colorMap.teal;
+  };
+
+  const getActivityIconColorClasses = (color) => {
+    const colorMap = {
+      teal: 'text-teal-600',
+      orange: 'text-orange-600',
+      green: 'text-green-600',
+      blue: 'text-blue-600',
+      purple: 'text-purple-600',
     };
     return colorMap[color] || colorMap.teal;
   };
@@ -155,8 +177,8 @@ const SystemAdminOverview = () => {
         <div className="space-y-4">
           {recentActivities.map((activity, index) => (
             <div key={index} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
-              <div className={`w-10 h-10 rounded-full bg-${activity.color}-100 flex items-center justify-center`}>
-                <activity.icon className={`w-5 h-5 text-${activity.color}-600`} />
+              <div className={`w-10 h-10 rounded-full ${getActivityColorClasses(activity.color)} flex items-center justify-center`}>
+                <activity.icon className={`w-5 h-5 ${getActivityIconColorClasses(activity.color)}`} />
               </div>
               <div className="flex-1">
                 <p className="text-gray-800 font-medium">{activity.message}</p>

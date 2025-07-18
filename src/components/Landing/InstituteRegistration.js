@@ -57,12 +57,11 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
       title: 'Laboratory',
       description: 'For diagnostic labs, pathology centers, and testing facilities',
       icon: <FlaskConical className="w-12 h-12" />,
-      color: 'from-orange-500 to-orange-600',
+      color: 'from-teal-500 to-teal-600',
       features: [
         'Sample Management',
         'Test Processing & Results',
         'Report Generation',
-        'Quality Control',
         'Clinic Integration',
         'Lab Technician & Admin Access'
       ]
@@ -72,7 +71,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
       title: 'Clinic + Laboratory',
       description: 'For clinics that have their own in-house laboratory services',
       icon: <Building2 className="w-12 h-12" />,
-      color: 'from-purple-500 to-purple-600',
+      color: 'from-orange-500 to-orange-600',
       features: [
         'Patient Management System',
         'In-house Lab Services',

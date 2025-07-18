@@ -4,9 +4,9 @@ import { Plus, X, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 const DoctorCalendar = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [events, setEvents] = useState([
-    { id: 1, date: '2025-06-29', time: '10:00', title: 'Team Meeting', description: 'Weekly team sync', color: 'bg-blue-500' },
-    { id: 2, date: '2025-06-30', time: '14:30', title: 'Medical Conference', description: 'Cardiology updates', color: 'bg-green-500' },
-    { id: 3, date: '2025-07-01', time: '09:00', title: 'Personal Event', description: 'Dentist visit', color: 'bg-purple-500' }
+    { id: 1, date: '2025-06-29', time: '10:00', title: 'Team Meeting', description: 'Weekly team sync', color: 'bg-teal-500' },
+    { id: 2, date: '2025-06-30', time: '14:30', title: 'Medical Conference', description: 'Cardiology updates', color: 'bg-teal-600' },
+    { id: 3, date: '2025-07-01', time: '09:00', title: 'Personal Event', description: 'Dentist visit', color: 'bg-orange-500' }
   ]);
   const [showEventModal, setShowEventModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
@@ -15,7 +15,7 @@ const DoctorCalendar = () => {
     description: '',
     date: '',
     time: '',
-    color: 'bg-blue-500'
+    color: 'bg-teal-500'
   });
 
   const months = [
@@ -26,12 +26,12 @@ const DoctorCalendar = () => {
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   const colors = [
-    { name: 'Blue', class: 'bg-blue-500' },
-    { name: 'Green', class: 'bg-green-500' },
-    { name: 'Purple', class: 'bg-purple-500' },
-    { name: 'Red', class: 'bg-red-500' },
-    { name: 'Yellow', class: 'bg-yellow-500' },
-    { name: 'Teal', class: 'bg-teal-500' }
+    { name: 'Teal Light', class: 'bg-teal-400' },
+    { name: 'Teal', class: 'bg-teal-500' },
+    { name: 'Teal Dark', class: 'bg-teal-600' },
+    { name: 'Orange Light', class: 'bg-orange-400' },
+    { name: 'Orange', class: 'bg-orange-500' },
+    { name: 'Orange Dark', class: 'bg-orange-600' }
   ];
 
   const getDaysInMonth = (date) => {
@@ -95,7 +95,7 @@ const DoctorCalendar = () => {
         description: '',
         date: date ? formatDate(date) : '',
         time: '',
-        color: 'bg-blue-500'
+        color: 'bg-teal-500'
       });
     }
     setShowEventModal(true);
@@ -109,7 +109,7 @@ const DoctorCalendar = () => {
       description: '',
       date: '',
       time: '',
-      color: 'bg-blue-500'
+      color: 'bg-teal-500'
     });
   };
 
@@ -363,7 +363,7 @@ const DoctorCalendar = () => {
                     deleteEvent(editingEvent.id);
                     closeEventModal();
                   }}
-                  className="text-red-600 hover:text-red-700 flex items-center space-x-2"
+                  className="text-orange-600 hover:text-orange-700 flex items-center space-x-2"
                 >
                   <Trash2 className="w-4 h-4" />
                   <span>Delete</span>

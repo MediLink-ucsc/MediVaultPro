@@ -1,6 +1,7 @@
 // src/components/Nurse/NurseSettings.js
 import React, { useState } from 'react';
 import { User, Bell, Lock, Palette, Globe, Save } from 'lucide-react';
+import Button from '../Common/Button';
 
 const NurseSettings = () => {
   const [settings, setSettings] = useState({
@@ -279,13 +280,16 @@ const NurseSettings = () => {
           </div>
 
           {/* Save Button */}
-          <button
+          <Button
             onClick={handleSave}
-            className="w-full bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center space-x-2"
+            variant="primary"
+            role="nurse"
+            size="lg"
+            icon={Save}
+            fullWidth
           >
-            <Save className="w-5 h-5" />
-            <span>Save Changes</span>
-          </button>
+            Save Changes
+          </Button>
         </div>
       </div>
     </div>

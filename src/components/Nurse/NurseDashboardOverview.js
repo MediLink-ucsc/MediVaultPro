@@ -29,13 +29,13 @@ const NurseDashboardOverview = () => {
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Priority Patients</h3>
           <div className="space-y-4">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex items-center space-x-4 p-3 bg-red-50 rounded-lg">
-                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                  <Users className="w-5 h-5 text-red-600" />
+              <div key={i} className="flex items-center space-x-4 p-3 bg-orange-50 rounded-lg">
+                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                  <Users className="w-5 h-5 text-orange-600" />
                 </div>
                 <div className="flex-1">
                   <div className="font-medium text-gray-800">Critical Patient {i}</div>
-                  <div className="text-sm text-red-600">Requires immediate attention</div>
+                  <div className="text-sm text-orange-600">Requires immediate attention</div>
                 </div>
               </div>
             ))}

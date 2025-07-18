@@ -58,8 +58,8 @@ const UploadReportForm = ({ onSubmit, sampleData }) => {
   ];
 
   const urgencyLevels = [
-    { value: 'routine', label: 'Routine', color: 'bg-green-100 text-green-800' },
-    { value: 'urgent', label: 'Urgent', color: 'bg-yellow-100 text-yellow-800' },
+    { value: 'routine', label: 'Routine', color: 'bg-teal-100 text-teal-800' },
+    { value: 'urgent', label: 'Urgent', color: 'bg-orange-100 text-orange-800' },
     { value: 'stat', label: 'STAT', color: 'bg-red-100 text-red-800' },
     { value: 'critical', label: 'Critical', color: 'bg-red-100 text-red-800' },
   ];
@@ -332,9 +332,9 @@ const UploadReportForm = ({ onSubmit, sampleData }) => {
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Sample Information Section - Only show when sample data is provided */}
         {sampleData && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+          <div className="bg-teal-50 border border-teal-200 rounded-lg p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-              <FileCheck className="w-5 h-5 mr-2 text-blue-600" />
+              <FileCheck className="w-5 h-5 mr-2 text-teal-600" />
               Sample Information
             </h3>
             
@@ -363,8 +363,8 @@ const UploadReportForm = ({ onSubmit, sampleData }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                   sampleData.status === 'pending' ? 'bg-orange-100 text-orange-700' :
-                  sampleData.status === 'in-progress' ? 'bg-blue-100 text-blue-700' :
-                  sampleData.status === 'completed' ? 'bg-green-100 text-green-700' : 
+                  sampleData.status === 'in-progress' ? 'bg-teal-100 text-teal-700' :
+                  sampleData.status === 'completed' ? 'bg-teal-100 text-teal-700' : 
                   'bg-gray-100 text-gray-700'
                 }`}>
                   {sampleData.status.replace('-', ' ').toUpperCase()}
@@ -616,7 +616,7 @@ const UploadReportForm = ({ onSubmit, sampleData }) => {
                   </p>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="w-6 h-6 text-green-500" />
+                  <CheckCircle className="w-6 h-6 text-teal-500" />
                   <button
                     type="button"
                     onClick={removeFile}
@@ -641,7 +641,7 @@ const UploadReportForm = ({ onSubmit, sampleData }) => {
                 />
                 <label
                   htmlFor="file-upload"
-                  className="inline-block px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 cursor-pointer transition-colors"
+                  className="inline-block px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg hover:from-teal-600 hover:to-teal-700 cursor-pointer transition-all duration-200"
                 >
                   Select File
                 </label>
@@ -727,7 +727,7 @@ const UploadReportForm = ({ onSubmit, sampleData }) => {
           <button
             type="submit"
             disabled={isUploading}
-            className="px-6 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
+            className="px-6 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg hover:from-teal-600 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center space-x-2"
           >
             {isUploading ? (
               <>

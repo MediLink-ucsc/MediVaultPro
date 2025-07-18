@@ -69,9 +69,9 @@ const CarePlans = () => {
   };
 
   const getProgressColor = (progress) => {
-    if (progress >= 80) return 'bg-green-500';
-    if (progress >= 60) return 'bg-orange-500';
-    if (progress >= 40) return 'bg-teal-500';
+    if (progress >= 80) return 'bg-teal-500';
+    if (progress >= 60) return 'bg-teal-400';
+    if (progress >= 40) return 'bg-orange-500';
     return 'bg-gray-400';
   };
 
@@ -146,7 +146,7 @@ const CarePlans = () => {
                     {plan.tasks.map((task) => (
                       <div key={task.id} className="flex items-center space-x-3">
                         {task.completed ? (
-                          <CheckCircle className="w-5 h-5 text-green-500" />
+                          <CheckCircle className="w-5 h-5 text-teal-500" />
                         ) : (
                           <Circle className="w-5 h-5 text-gray-400" />
                         )}

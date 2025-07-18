@@ -1,6 +1,7 @@
 // src/components/Nurse/NursePatients.js
 import React, { useState } from 'react';
-import { Search, Filter, Plus, Eye, User, Phone, MapPin } from 'lucide-react';
+import { Search, Filter, UserPlus, Eye, Stethoscope, Plus, Pill, Activity } from 'lucide-react';
+import Button from '../Common/Button';
 
 const NursePatients = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -59,9 +60,9 @@ const NursePatients = () => {
       case 'stable':
         return 'bg-teal-100 text-teal-800';
       case 'good':
-        return 'bg-green-100 text-green-800';
+        return 'bg-teal-100 text-teal-800';
       case 'recovering':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-teal-100 text-teal-800';
       case 'monitoring':
         return 'bg-orange-100 text-orange-800';
       default:
@@ -76,10 +77,14 @@ const NursePatients = () => {
           <h1 className="text-3xl font-bold text-gray-800">My Patients</h1>
           <p className="text-gray-600 mt-2">Manage and monitor your assigned patients</p>
         </div>
-        <button className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition duration-200 flex items-center space-x-2">
-          <Plus className="w-5 h-5" />
-          <span>Add Note</span>
-        </button>
+        <Button
+          variant="primary"
+          role="nurse"
+          size="md"
+          icon={Plus}
+        >
+          Add Note
+        </Button>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
@@ -95,10 +100,14 @@ const NursePatients = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center space-x-2">
-              <Filter className="w-5 h-5" />
-              <span>Filter</span>
-            </button>
+            <Button
+              variant="outline"
+              role="nurse"
+              size="sm"
+              icon={Filter}
+            >
+              Filter
+            </Button>
           </div>
         </div>
 
@@ -133,13 +142,23 @@ const NursePatients = () => {
                 </div>
 
                 <div className="flex space-x-2">
-                  <button className="flex-1 bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center space-x-2">
-                    <Eye className="w-4 h-4" />
-                    <span>View Details</span>
-                  </button>
-                  <button className="flex-1 bg-teal-600 text-white py-2 px-4 rounded-lg hover:bg-teal-700 transition-colors">
+                  <Button
+                    variant="primary"
+                    role="nurse"
+                    size="sm"
+                    icon={Eye}
+                    fullWidth
+                  >
+                    View Details
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    role="nurse"
+                    size="sm"
+                    fullWidth
+                  >
                     Update Status
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}

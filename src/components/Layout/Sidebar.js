@@ -53,13 +53,13 @@ const Sidebar = ({ user }) => {
         };
       case 'systemadmin':
         return {
-          primary: 'from-[#7c3aed] to-[#7c3aed]',
-          primaryLight: 'from-[#8b5cf6] to-[#c4b5fd]',
-          secondary: 'from-purple-50 to-purple-100',
-          accent: '#7c3aed',
-          accentLight: '#8b5cf6',
-          hover: 'hover:bg-purple-50',
-          hoverText: 'hover:text-[#7c3aed]'
+          primary: 'from-[#ea580c] to-[#ea580c]',
+          primaryLight: 'from-[#f97316] to-[#fdba74]',
+          secondary: 'from-orange-50 to-orange-100',
+          accent: '#ea580c',
+          accentLight: '#f97316',
+          hover: 'hover:bg-orange-50',
+          hoverText: 'hover:text-[#ea580c]'
         };
       default:
         return {

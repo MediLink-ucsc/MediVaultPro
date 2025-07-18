@@ -37,10 +37,10 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit, adminInstitute = "City Gener
       title: 'Lab Technician',
       description: 'Add laboratory technicians and staff',
       icon: TestTube,
-      color: 'blue',
-      bgColor: 'bg-blue-50',
-      iconColor: 'text-blue-600',
-      borderColor: 'border-blue-200'
+      color: 'teal',
+      bgColor: 'bg-teal-50',
+      iconColor: 'text-teal-600',
+      borderColor: 'border-teal-200'
     }
   ];
 
@@ -63,28 +63,28 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit, adminInstitute = "City Gener
   };
 
   const renderRoleSelection = () => (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Add New Staff Member</h2>
-        <p className="text-gray-600">Select the type of staff member you want to add</p>
+        <h2 className="text-3xl font-bold text-gray-900 mb-3">Add New Staff Member</h2>
+        <p className="text-lg text-gray-600">Select the type of staff member you want to add</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {roles.map((role) => {
           const IconComponent = role.icon;
           return (
             <button
               key={role.id}
               onClick={() => handleRoleSelect(role.id)}
-              className={`p-6 rounded-xl border-2 transition-all hover:shadow-lg ${role.bgColor} ${role.borderColor} hover:border-${role.color}-300 group`}
+              className={`p-8 rounded-2xl border-2 transition-all duration-300 hover:shadow-strong ${role.bgColor} ${role.borderColor} hover:border-${role.color}-400 group hover:-translate-y-1`}
             >
-              <div className="flex flex-col items-center space-y-3">
-                <div className={`w-12 h-12 rounded-lg bg-${role.color}-100 flex items-center justify-center group-hover:bg-${role.color}-200 transition-colors`}>
-                  <IconComponent className={`w-6 h-6 ${role.iconColor}`} />
+              <div className="flex flex-col items-center space-y-4">
+                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br from-${role.color}-500 to-${role.color}-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-medium`}>
+                  <IconComponent className="w-8 h-8 text-white" />
                 </div>
                 <div className="text-center">
-                  <h3 className="text-lg font-semibold text-gray-900">{role.title}</h3>
-                  <p className="text-sm text-gray-600 mt-1">{role.description}</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{role.title}</h3>
+                  <p className="text-sm text-gray-600">{role.description}</p>
                 </div>
               </div>
             </button>
@@ -129,14 +129,14 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit, adminInstitute = "City Gener
       title={selectedRole ? getFormTitle() : 'Add Staff Member'}
       size="4xl"
     >
-      <div className="max-h-[80vh] overflow-y-auto">
+      <div className="space-y-6">
         {selectedRole && (
-          <div className="mb-4">
+          <div className="mb-6">
             <button
               onClick={handleBack}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+              className="flex items-center space-x-2 text-gray-600 hover:text-teal-600 transition-colors duration-200 font-medium"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-5 h-5" />
               <span>Back to role selection</span>
             </button>
           </div>

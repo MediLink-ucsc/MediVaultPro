@@ -245,13 +245,13 @@ const ProcessTestForm = ({ onSubmit }) => {
         <button
           type="button"
           onClick={() => onSubmit(null)}
-          className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+          className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
+          className="px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-md hover:from-teal-600 hover:to-teal-700 transition-all duration-200"
         >
           Update Test Status
         </button>

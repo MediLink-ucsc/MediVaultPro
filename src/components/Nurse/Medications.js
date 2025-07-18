@@ -1,6 +1,7 @@
 // src/components/Nurse/Medications.js
 import React, { useState } from 'react';
 import { Clock, User, Pill, Check, AlertTriangle, Search } from 'lucide-react';
+import Button from '../Common/Button';
 
 const Medications = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,11 +62,11 @@ const Medications = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-teal-100 text-teal-800';
       case 'pending':
         return 'bg-orange-100 text-orange-800';
       case 'overdue':
-        return 'bg-red-100 text-red-800';
+        return 'bg-orange-100 text-orange-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -73,7 +74,7 @@ const Medications = () => {
 
   const getPriorityIcon = (priority) => {
     if (priority === 'high') {
-      return <AlertTriangle className="w-4 h-4 text-red-500" />;
+      return <AlertTriangle className="w-4 h-4 text-orange-500" />;
     }
     return null;
   };
@@ -153,13 +154,15 @@ const Medications = () => {
                     </span>
                     
                     {med.status !== 'completed' && (
-                      <button
+                      <Button
+                        variant="secondary"
+                        role="nurse"
+                        size="sm"
+                        icon={Check}
                         onClick={() => handleMarkCompleted(med.id)}
-                        className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors flex items-center space-x-2"
                       >
-                        <Check className="w-4 h-4" />
-                        <span>Mark Given</span>
-                      </button>
+                        Mark Given
+                      </Button>
                     )}
                   </div>
                 </div>

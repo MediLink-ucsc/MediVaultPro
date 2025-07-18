@@ -72,7 +72,7 @@ const LabDashboardOverview = () => {
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-gray-500">{stat.description}</p>
                   <div className={`flex items-center text-xs font-medium ${
-                    stat.trend.startsWith('+') ? 'text-teal-600' : 'text-red-600'
+                    stat.trend.startsWith('+') ? 'text-teal-600' : 'text-orange-600'
                   }`}>
                     <TrendingUp className={`w-3 h-3 mr-1 ${
                       stat.trend.startsWith('-') ? 'transform rotate-180' : ''

@@ -156,17 +156,19 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
       {/* Personal Information */}
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <User className="w-5 h-5 mr-2 text-orange-600" />
+      <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 p-6 rounded-xl border border-orange-200/50 shadow-soft">
+        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center mr-3 shadow-medium">
+            <User className="w-5 h-5 text-white" />
+          </div>
           Personal Information
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Full Name *
             </label>
             <input
@@ -174,66 +176,75 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                errors.name ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
+                errors.name ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-gray-200 hover:border-orange-300'
               }`}
               placeholder="Jane Smith"
             />
-            {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
+            {errors.name && <p className="mt-2 text-sm text-red-600 flex items-center">
+              <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">!</span>
+              {errors.name}
+            </p>}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Email Address *
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                  errors.email ? 'border-red-500' : 'border-gray-300'
+                className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
+                  errors.email ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-gray-200 hover:border-orange-300'
                 }`}
                 placeholder="nurse@hospital.com"
               />
             </div>
-            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+            {errors.email && <p className="mt-2 text-sm text-red-600 flex items-center">
+              <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">!</span>
+              {errors.email}
+            </p>}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Phone Number *
             </label>
             <div className="relative">
-              <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="tel"
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                  errors.phone ? 'border-red-500' : 'border-gray-300'
+                className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
+                  errors.phone ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-gray-200 hover:border-orange-300'
                 }`}
                 placeholder="+94 xxx xxx xxx"
               />
             </div>
-            {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
+            {errors.phone && <p className="mt-2 text-sm text-red-600 flex items-center">
+              <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">!</span>
+              {errors.phone}
+            </p>}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Address
             </label>
             <div className="relative">
-              <MapPin className="absolute left-3 top-3 w-4 h-4 text-gray-400" />
+              <MapPin className="absolute left-4 top-4 w-5 h-5 text-gray-400" />
               <textarea
                 name="address"
                 value={formData.address}
                 onChange={handleInputChange}
-                rows="2"
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                rows="3"
+                className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-200 bg-white/70 backdrop-blur-sm hover:border-orange-300 resize-none"
                 placeholder="Full address"
               />
             </div>
@@ -242,33 +253,35 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
       </div>
 
       {/* Professional Information */}
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <Building className="w-5 h-5 mr-2 text-orange-600" />
+      <div className="bg-gradient-to-br from-teal-50 to-teal-100/50 p-6 rounded-xl border border-teal-200/50 shadow-soft">
+        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 shadow-medium">
+            <Building className="w-5 h-5 text-white" />
+          </div>
           Professional Information
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Institute
             </label>
-            <div className="px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg text-gray-700">
+            <div className="px-4 py-3 bg-gradient-to-r from-teal-100 to-teal-50 border-2 border-teal-200 rounded-xl text-gray-700 font-medium">
               {adminInstitute}
             </div>
-            <p className="mt-1 text-xs text-gray-500">Staff will be added to your institute</p>
+            <p className="mt-2 text-xs text-gray-500">Staff will be added to your institute</p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Department *
             </label>
             <select
               name="department"
               value={formData.department}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                errors.department ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-teal-100 focus:border-teal-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
+                errors.department ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-gray-200 hover:border-teal-300'
               }`}
             >
               <option value="">Select Department</option>
@@ -276,11 +289,14 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
                 <option key={index} value={dept}>{dept}</option>
               ))}
             </select>
-            {errors.department && <p className="mt-1 text-sm text-red-600">{errors.department}</p>}
+            {errors.department && <p className="mt-2 text-sm text-red-600 flex items-center">
+              <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">!</span>
+              {errors.department}
+            </p>}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
               Specialization
             </label>
             <select
@@ -490,17 +506,17 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
       </div>
 
       {/* Form Actions */}
-      <div className="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
+      <div className="flex items-center justify-end space-x-4 pt-8 border-t border-gray-200/50">
         <button
           type="button"
           onClick={onCancel}
-          className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          className="px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium shadow-soft"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-6 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all"
+          className="px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-200 font-medium shadow-medium hover:shadow-strong transform hover:-translate-y-0.5"
         >
           Add Nurse
         </button>

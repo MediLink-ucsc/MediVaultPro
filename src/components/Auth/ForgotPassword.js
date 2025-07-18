@@ -85,8 +85,8 @@ const ForgotPassword = ({ onBackToLogin, onResetPassword, context = 'page' }) =>
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                <p className="text-red-600 text-sm">{error}</p>
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                <p className="text-orange-600 text-sm">{error}</p>
               </div>
             )}
 

@@ -8,6 +8,7 @@ import PrescriptionForm from './QuickActions/PrescriptionForm';
 import LabOrderForm from './QuickActions/LabOrderForm';
 import SOAPForm from './QuickActions/SOAPForm';
 import QuickExamForm from './QuickActions/QuickExamForm';
+import Button from '../Common/Button';
 
 const DashboardOverview = () => {
   const [activeModal, setActiveModal] = useState(null);
@@ -21,18 +22,15 @@ const DashboardOverview = () => {
   const quickActions = [
     { title: 'New Patient', icon: UserPlus, color: 'teal', description: 'Register new patient' },
     { title: 'Prescribe', icon: Pill, color: 'orange', description: 'Write prescription' },
-    { title: 'Order Lab', icon: FlaskConical, color: 'blue', description: 'Laboratory tests' },
-    { title: 'SOAP Note', icon: Clipboard, color: 'purple', description: 'Create medical note' },
-    { title: 'Quick Exam', icon: Stethoscope, color: 'green', description: 'Patient examination' },
+    { title: 'Order Lab', icon: FlaskConical, color: 'teal', description: 'Laboratory tests' },
+    { title: 'SOAP Note', icon: Clipboard, color: 'orange', description: 'Create medical note' },
+    { title: 'Quick Exam', icon: Stethoscope, color: 'teal', description: 'Patient examination' },
   ];
 
   const getColorClasses = (color) => {
     const colorMap = {
       teal: 'bg-teal-50 border-teal-200 hover:bg-teal-100 text-teal-700',
       orange: 'bg-orange-50 border-orange-200 hover:bg-orange-100 text-orange-700',
-      blue: 'bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700',
-      purple: 'bg-purple-50 border-purple-200 hover:bg-purple-100 text-purple-700',
-      green: 'bg-green-50 border-green-200 hover:bg-green-100 text-green-700',
     };
     return colorMap[color] || colorMap.teal;
   };
@@ -41,9 +39,6 @@ const DashboardOverview = () => {
     const colorMap = {
       teal: 'text-teal-600',
       orange: 'text-orange-600',
-      blue: 'text-blue-600',
-      purple: 'text-purple-600',
-      green: 'text-green-600',
     };
     return colorMap[color] || colorMap.teal;
   };
@@ -90,19 +85,21 @@ const DashboardOverview = () => {
           {quickActions.map((action, index) => {
             const IconComponent = action.icon;
             return (
-              <button
+              <Button
                 key={index}
                 onClick={() => setActiveModal(action.title)}
-                className={`p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${getColorClasses(action.color)}`}
+                variant="secondary"
+                role="doctor"
+                size="lg"
+                icon={IconComponent}
+                className="flex-col h-auto py-4 text-center"
+                fullWidth
               >
-                <div className="text-center">
-                  <div className="mb-2 flex justify-center">
-                    <IconComponent className={`w-6 h-6 ${getIconColorClasses(action.color)}`} />
-                  </div>
+                <div className="mt-2">
                   <div className="font-medium text-sm">{action.title}</div>
                   <div className="text-xs opacity-80 mt-1">{action.description}</div>
                 </div>
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -119,7 +116,7 @@ const DashboardOverview = () => {
                 </div>
                 <div className="flex-1">
                   <div className="font-medium text-gray-800">Patient {i}</div>
-                  <div className="text-sm text-red-600">Requires immediate attention</div>
+                  <div className="text-sm text-orange-600">Requires immediate attention</div>
                 </div>
               </div>
             ))}

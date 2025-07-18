@@ -11,6 +11,7 @@ import {
   Check,
   AlertCircle
 } from 'lucide-react';
+import Button from '../Common/Button';
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('profile');
@@ -497,22 +498,22 @@ const Settings = () => {
       </div>
 
       {/* Floating Save Button */}
-      <button
+      <Button
         onClick={handleSave}
-        className={`fixed bottom-6 right-6 flex items-center space-x-2 px-6 py-3 rounded-full shadow-lg transition-all duration-300 font-medium ${
-          saveStatus === 'saving' 
-            ? 'bg-gray-600 text-white cursor-not-allowed' 
-            : saveStatus === 'saved'
-            ? 'bg-green-600 text-white'
-            : 'bg-teal-600 text-white hover:bg-teal-700 hover:shadow-xl transform hover:scale-105'
-        }`}
+        variant="primary"
+        role="lab"
+        size="md"
+        icon={Save}
         disabled={saveStatus === 'saving'}
+        loading={saveStatus === 'saving'}
+        className={`fixed bottom-6 right-6 rounded-full shadow-lg transition-all duration-300 ${
+          saveStatus === 'saved' 
+            ? 'bg-teal-600 text-white' 
+            : 'hover:shadow-xl transform hover:scale-105'
+        }`}
       >
-        <Save className={`w-4 h-4 ${saveStatus === 'saving' ? 'animate-spin' : ''}`} />
-        <span>
-          {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved!' : 'Save Changes'}
-        </span>
-      </button>
+        {saveStatus === 'saving' ? 'Saving...' : saveStatus === 'saved' ? 'Saved!' : 'Save Changes'}
+      </Button>
     </div>
   );
 };

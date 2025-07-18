@@ -36,9 +36,9 @@ const AddSample = ({ onSubmit, onCancel }) => {
   const [errors, setErrors] = useState({});
 
   const sampleTypes = [
-    { value: 'blood', label: 'Blood', icon: TestTube2, color: 'text-red-500' },
-    { value: 'urine', label: 'Urine', icon: Beaker, color: 'text-yellow-500' },
-    { value: 'swab', label: 'Swab', icon: Microscope, color: 'text-purple-500' },
+    { value: 'blood', label: 'Blood', icon: TestTube2, color: 'text-orange-600' },
+    { value: 'urine', label: 'Urine', icon: Beaker, color: 'text-orange-400' },
+    { value: 'swab', label: 'Swab', icon: Microscope, color: 'text-teal-600' },
     { value: 'other', label: 'Other', icon: FlaskConical, color: 'text-teal-500' }
   ];
 
@@ -433,7 +433,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
         </button>
         <button
           type="submit"
-          className="flex items-center space-x-2 px-4 py-2 text-white bg-teal-600 rounded-lg hover:bg-teal-700 transition-colors duration-200"
+          className="flex items-center space-x-2 px-4 py-2 text-white bg-gradient-to-r from-teal-500 to-teal-600 rounded-lg hover:from-teal-600 hover:to-teal-700 transition-all duration-200"
         >
           <Save className="w-4 h-4" />
           <span>Add Sample</span>

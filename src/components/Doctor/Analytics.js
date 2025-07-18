@@ -30,7 +30,7 @@ const Analytics = () => {
                 </div>
               </div>
               <p className={`mt-3 text-sm ${
-                metric.change.startsWith('+') ? 'text-green-600' : 'text-red-600'
+                metric.change.startsWith('+') ? 'text-teal-600' : 'text-orange-600'
               }`}>
                 {metric.change} from last month
               </p>

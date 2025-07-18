@@ -370,7 +370,7 @@ const RegisterInstitute = () => {
           {/* Contact Information */}
           <div>
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
-              <Phone className="w-5 h-5 text-blue-600" />
+              <Phone className="w-5 h-5 text-teal-600" />
               <span>Contact Information</span>
             </h2>
             
@@ -460,7 +460,7 @@ const RegisterInstitute = () => {
           {/* Logo Upload */}
           <div>
             <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
-              <Upload className="w-5 h-5 text-purple-600" />
+              <Upload className="w-5 h-5 text-orange-600" />
               <span>Logo Upload</span>
             </h2>
             

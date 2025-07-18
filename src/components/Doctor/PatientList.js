@@ -141,14 +141,14 @@ const PatientList = () => {
                         <Eye className="w-5 h-5" />
                       </button>
                       <button 
-                        className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50"
+                        className="text-orange-600 hover:text-orange-800 p-1 rounded hover:bg-orange-50"
                         title="Edit"
                         onClick={() => handleEdit(patient.id)}
                       >
                         <Edit className="w-5 h-5" />
                       </button>
                       <button 
-                        className="text-red-600 hover:text-red-800 p-1 rounded hover:bg-red-50"
+                        className="text-orange-700 hover:text-orange-900 p-1 rounded hover:bg-orange-50"
                         title="Delete"
                         onClick={() => handleDelete(patient.id)}
                       >
@@ -184,7 +184,7 @@ const PatientList = () => {
                               </button>
                               <button
                                 onClick={() => handleDelete(patient.id)}
-                                className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100"
+                                className="block w-full text-left px-4 py-2 text-sm text-orange-600 hover:bg-gray-100"
                               >
                                 Delete Patient
                               </button>

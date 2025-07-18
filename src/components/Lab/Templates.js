@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import Modal from '../Common/Modal';
 import CreateTemplateForm from './CreateTemplateForm';
+import Button from '../Common/Button';
 
 const Templates = () => {
   const [activeModal, setActiveModal] = useState(null);
@@ -168,7 +169,7 @@ const Templates = () => {
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <div className={`w-2 h-2 rounded-full ${template.isActive ? 'bg-green-500' : 'bg-gray-400'}`} />
+          <div className={`w-2 h-2 rounded-full ${template.isActive ? 'bg-teal-500' : 'bg-gray-400'}`} />
           <div className="relative group/menu">
             <button className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
               <MoreVertical className="w-4 h-4 text-gray-500" />
@@ -250,7 +251,7 @@ const Templates = () => {
               <span className="text-xs px-2 py-1 bg-teal-100 text-teal-700 rounded-full">
                 {template.category}
               </span>
-              <div className={`w-2 h-2 rounded-full ${template.isActive ? 'bg-green-500' : 'bg-gray-400'}`} />
+              <div className={`w-2 h-2 rounded-full ${template.isActive ? 'bg-teal-500' : 'bg-gray-400'}`} />
             </div>
             <p className="text-sm text-gray-600 mt-1">{template.description}</p>
             <div className="flex items-center space-x-6 mt-2 text-xs text-gray-500">
@@ -262,24 +263,38 @@ const Templates = () => {
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <Eye className="w-4 h-4 text-gray-500" />
-          </button>
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <Edit3 className="w-4 h-4 text-gray-500" />
-          </button>
-          <button 
+          <Button
+            variant="ghost"
+            role="neutral"
+            size="xs"
+            icon={Eye}
+            onClick={() => {}}
+            className="p-2"
+          />
+          <Button
+            variant="ghost"
+            role="neutral"
+            size="xs"
+            icon={Edit3}
+            onClick={() => {}}
+            className="p-2"
+          />
+          <Button
+            variant="ghost"
+            role="neutral"
+            size="xs"
+            icon={Copy}
             onClick={() => handleDuplicateTemplate(template)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <Copy className="w-4 h-4 text-gray-500" />
-          </button>
-          <button 
+            className="p-2"
+          />
+          <Button
+            variant="ghost"
+            role="danger"
+            size="xs"
+            icon={Trash2}
             onClick={() => handleDeleteTemplate(template.id)}
-            className="p-2 hover:bg-red-100 rounded-lg transition-colors"
-          >
-            <Trash2 className="w-4 h-4 text-red-500" />
-          </button>
+            className="p-2"
+          />
         </div>
       </div>
     </div>
@@ -294,21 +309,32 @@ const Templates = () => {
           <p className="text-gray-600 mt-2">Manage and organize your lab report templates</p>
         </div>
         <div className="flex items-center space-x-3">
-          <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-            <Upload className="w-4 h-4" />
-            <span>Import</span>
-          </button>
-          <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-            <Download className="w-4 h-4" />
-            <span>Export</span>
-          </button>
-          <button 
-            onClick={() => setActiveModal('create')}
-            className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg hover:from-teal-600 hover:to-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+          <Button
+            variant="ghost"
+            role="lab"
+            size="md"
+            icon={Upload}
           >
-            <Plus className="w-4 h-4" />
-            <span>Create Template</span>
-          </button>
+            Import
+          </Button>
+          <Button
+            variant="ghost"
+            role="lab"
+            size="md"
+            icon={Download}
+          >
+            Export
+          </Button>
+          <Button 
+            onClick={() => setActiveModal('create')}
+            variant="primary"
+            role="lab"
+            size="md"
+            icon={Plus}
+            className="shadow-lg hover:shadow-xl"
+          >
+            Create Template
+          </Button>
         </div>
       </div>
 
@@ -331,8 +357,8 @@ const Templates = () => {
               <p className="text-sm font-medium text-gray-600">Active Templates</p>
               <p className="text-2xl font-bold text-gray-900">{templates.filter(t => t.isActive).length}</p>
             </div>
-            <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-              <Archive className="w-6 h-6 text-green-600" />
+            <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
+              <Archive className="w-6 h-6 text-teal-600" />
             </div>
           </div>
         </div>
@@ -342,8 +368,8 @@ const Templates = () => {
               <p className="text-sm font-medium text-gray-600">Most Used</p>
               <p className="text-2xl font-bold text-gray-900">{Math.max(...templates.map(t => t.usageCount))}</p>
             </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-              <Eye className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+              <Eye className="w-6 h-6 text-orange-600" />
             </div>
           </div>
         </div>
@@ -353,8 +379,8 @@ const Templates = () => {
               <p className="text-sm font-medium text-gray-600">Categories</p>
               <p className="text-2xl font-bold text-gray-900">{new Set(templates.map(t => t.category)).size}</p>
             </div>
-            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-              <Filter className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+              <Filter className="w-6 h-6 text-orange-600" />
             </div>
           </div>
         </div>

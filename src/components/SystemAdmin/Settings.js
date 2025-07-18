@@ -53,7 +53,7 @@ const Settings = () => {
           <p className="text-gray-600 mt-1">Configure system-wide parameters and preferences</p>
         </div>
         <div className="flex items-center space-x-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+          <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
             <SettingsIcon className="w-6 h-6 text-white" />
           </div>
         </div>
@@ -80,7 +80,7 @@ const Settings = () => {
       {/* General Settings */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
-          <Globe className="w-5 h-5 text-blue-600" />
+          <Globe className="w-5 h-5 text-teal-600" />
           <span>General Settings</span>
         </h2>
         
@@ -94,7 +94,7 @@ const Settings = () => {
               name="systemName"
               value={settings.systemName}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
           </div>
 
@@ -107,7 +107,7 @@ const Settings = () => {
               name="sessionTimeout"
               value={settings.sessionTimeout}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
           </div>
 
@@ -118,7 +118,7 @@ const Settings = () => {
               name="maintenanceMode"
               checked={settings.maintenanceMode}
               onChange={handleInputChange}
-              className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="w-4 h-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
             />
             <label htmlFor="maintenanceMode" className="text-sm font-medium text-gray-700">
               Maintenance Mode
@@ -132,7 +132,7 @@ const Settings = () => {
               name="userRegistration"
               checked={settings.userRegistration}
               onChange={handleInputChange}
-              className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="w-4 h-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
             />
             <label htmlFor="userRegistration" className="text-sm font-medium text-gray-700">
               Allow User Registration
@@ -144,7 +144,7 @@ const Settings = () => {
       {/* Security Settings */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
-          <Shield className="w-5 h-5 text-green-600" />
+          <Shield className="w-5 h-5 text-orange-600" />
           <span>Security Settings</span>
         </h2>
         
@@ -157,7 +157,7 @@ const Settings = () => {
               name="securityLevel"
               value={settings.securityLevel}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             >
               <option value="low">Low</option>
               <option value="medium">Medium</option>
@@ -174,7 +174,7 @@ const Settings = () => {
               name="dataRetentionDays"
               value={settings.dataRetentionDays}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
           </div>
 
@@ -187,7 +187,7 @@ const Settings = () => {
               name="maxFileSize"
               value={settings.maxFileSize}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
           </div>
 
@@ -201,7 +201,7 @@ const Settings = () => {
               value={settings.allowedFileTypes}
               onChange={handleInputChange}
               placeholder="pdf,jpg,png,docx"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -248,7 +248,7 @@ const Settings = () => {
       {/* Backup Settings */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
-          <Database className="w-5 h-5 text-purple-600" />
+          <Database className="w-5 h-5 text-teal-600" />
           <span>Backup Settings</span>
         </h2>
         
@@ -260,7 +260,7 @@ const Settings = () => {
             name="backupFrequency"
             value={settings.backupFrequency}
             onChange={handleInputChange}
-            className="w-full max-w-md px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full max-w-md px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
           >
             <option value="hourly">Hourly</option>
             <option value="daily">Daily</option>

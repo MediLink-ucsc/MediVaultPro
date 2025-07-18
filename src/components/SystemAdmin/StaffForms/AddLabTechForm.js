@@ -183,11 +183,13 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
       {/* Personal Information */}
-      <div className="bg-gray-50 p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <User className="w-5 h-5 mr-2 text-blue-600" />
+      <div className="bg-gradient-to-br from-teal-50 to-teal-100/50 p-6 rounded-xl border border-teal-200/50 shadow-soft">
+        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+          <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 shadow-medium">
+            <User className="w-5 h-5 text-white" />
+          </div>
           Personal Information
         </h3>
         
@@ -201,7 +203,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
                 errors.name ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="John Wilson"
@@ -220,7 +222,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
                   errors.email ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="labtech@lab.com"
@@ -240,7 +242,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
                 name="phone"
                 value={formData.phone}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
                   errors.phone ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="+94 xxx xxx xxx"
@@ -260,7 +262,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
                 value={formData.address}
                 onChange={handleInputChange}
                 rows="2"
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 placeholder="Full address"
               />
             </div>
@@ -271,7 +273,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
       {/* Professional Information */}
       <div className="bg-gray-50 p-4 rounded-lg">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <Building className="w-5 h-5 mr-2 text-blue-600" />
+          <Building className="w-5 h-5 mr-2 text-orange-600" />
           Professional Information
         </h3>
         
@@ -294,7 +296,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
               name="department"
               value={formData.department}
               onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
                 errors.department ? 'border-red-500' : 'border-gray-300'
               }`}
             >
@@ -314,7 +316,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
               name="specialization"
               value={formData.specialization}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             >
               <option value="">Select Specialization</option>
               {specializations.map((spec, index) => (
@@ -334,7 +336,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
                 name="licenseNumber"
                 value={formData.licenseNumber}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
                   errors.licenseNumber ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="LT-12345"
@@ -354,7 +356,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
                 name="degree"
                 value={formData.degree}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
                   errors.degree ? 'border-red-500' : 'border-gray-300'
                 }`}
                 placeholder="BSc in Medical Laboratory Technology"
@@ -373,7 +375,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
               value={formData.experience}
               onChange={handleInputChange}
               min="0"
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
                 errors.experience ? 'border-red-500' : 'border-gray-300'
               }`}
               placeholder="2"
@@ -386,7 +388,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
       {/* Work Schedule */}
       <div className="bg-gray-50 p-4 rounded-lg">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <Calendar className="w-5 h-5 mr-2 text-blue-600" />
+          <Calendar className="w-5 h-5 mr-2 text-orange-600" />
           Work Schedule
         </h3>
         
@@ -399,7 +401,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
               name="shiftPreference"
               value={formData.shiftPreference}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
             >
               <option value="">Select Shift Preference</option>
               {shiftOptions.map((shift) => (
@@ -421,7 +423,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
                     type="checkbox"
                     checked={formData.availableDays.includes(day)}
                     onChange={() => handleDaysChange(day)}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
                   />
                   <span className="text-sm text-gray-700">{day}</span>
                 </label>
@@ -438,7 +440,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
                 type="time"
                 value={formData.workingHours.start}
                 onChange={(e) => handleWorkingHoursChange('start', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
             </div>
 
@@ -450,7 +452,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
                 type="time"
                 value={formData.workingHours.end}
                 onChange={(e) => handleWorkingHoursChange('end', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -460,7 +462,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
       {/* Equipment Expertise */}
       <div className="bg-gray-50 p-4 rounded-lg">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <TestTube className="w-5 h-5 mr-2 text-blue-600" />
+          <TestTube className="w-5 h-5 mr-2 text-teal-600" />
           Equipment Expertise
         </h3>
         
@@ -471,7 +473,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
                 type="checkbox"
                 checked={formData.equipmentExpertise.includes(equipment)}
                 onChange={() => handleEquipmentChange(equipment)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-gray-300 text-teal-600 focus:ring-teal-500"
               />
               <span className="text-sm text-gray-700">{equipment}</span>
             </label>
@@ -482,7 +484,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
       {/* Certifications */}
       <div className="bg-gray-50 p-4 rounded-lg">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <Award className="w-5 h-5 mr-2 text-blue-600" />
+          <Award className="w-5 h-5 mr-2 text-orange-600" />
           Certifications
         </h3>
         
@@ -493,7 +495,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
                 type="checkbox"
                 checked={formData.certifications.includes(certification)}
                 onChange={() => handleCertificationChange(certification)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-gray-300 text-orange-600 focus:ring-orange-500"
               />
               <span className="text-sm text-gray-700">{certification}</span>
             </label>
@@ -517,7 +519,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
               name="emergencyContact"
               value={formData.emergencyContact}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               placeholder="Contact person name"
             />
           </div>
@@ -531,7 +533,7 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
               name="emergencyPhone"
               value={formData.emergencyPhone}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
               placeholder="+94 xxx xxx xxx"
             />
           </div>
@@ -539,17 +541,17 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
       </div>
 
       {/* Form Actions */}
-      <div className="flex items-center justify-end space-x-3 pt-6 border-t border-gray-200">
+      <div className="flex items-center justify-end space-x-4 pt-8 border-t border-gray-200/50">
         <button
           type="button"
           onClick={onCancel}
-          className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          className="px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium shadow-soft"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-6 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all"
+          className="px-8 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl hover:from-teal-600 hover:to-teal-700 transition-all duration-200 font-medium shadow-medium hover:shadow-strong transform hover:-translate-y-0.5"
         >
           Add Lab Technician
         </button>

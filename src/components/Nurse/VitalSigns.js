@@ -1,6 +1,7 @@
 // src/components/Nurse/VitalSigns.js
 import React, { useState } from 'react';
 import { Activity, Heart, Thermometer, User, Search, Plus, TrendingUp } from 'lucide-react';
+import Button from '../Common/Button';
 
 const VitalSigns = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -65,11 +66,11 @@ const VitalSigns = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case 'normal':
-        return 'bg-green-100 text-green-800';
+        return 'bg-teal-100 text-teal-800';
       case 'elevated':
         return 'bg-orange-100 text-orange-800';
       case 'concerning':
-        return 'bg-red-100 text-red-800';
+        return 'bg-orange-100 text-orange-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -78,11 +79,11 @@ const VitalSigns = () => {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'normal':
-        return <Activity className="w-4 h-4 text-green-600" />;
+        return <Activity className="w-4 h-4 text-teal-600" />;
       case 'elevated':
         return <TrendingUp className="w-4 h-4 text-orange-600" />;
       case 'concerning':
-        return <Heart className="w-4 h-4 text-red-600" />;
+        return <Heart className="w-4 h-4 text-orange-600" />;
       default:
         return <Activity className="w-4 h-4 text-gray-600" />;
     }
@@ -95,10 +96,15 @@ const VitalSigns = () => {
           <h1 className="text-3xl font-bold text-gray-800">Vital Signs Monitor</h1>
           <p className="text-gray-600 mt-2">Track and record patient vital signs</p>
         </div>
-        <button className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition duration-200 flex items-center space-x-2">
-          <Plus className="w-5 h-5" />
-          <span>Record Vitals</span>
-        </button>
+        <Button
+          variant="primary"
+          role="nurse"
+          size="md"
+          icon={Plus}
+          onClick={() => {}}
+        >
+          Record Vitals
+        </Button>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
@@ -140,7 +146,7 @@ const VitalSigns = () => {
                 <div className="grid grid-cols-2 gap-4 mb-4">
                   <div className="bg-gray-50 rounded-lg p-3">
                     <div className="flex items-center space-x-2 mb-1">
-                      <Thermometer className="w-4 h-4 text-red-500" />
+                      <Thermometer className="w-4 h-4 text-orange-500" />
                       <span className="text-xs font-medium text-gray-600">Temperature</span>
                     </div>
                     <p className="text-lg font-semibold text-gray-800">{vital.temperature}</p>
@@ -148,7 +154,7 @@ const VitalSigns = () => {
                   
                   <div className="bg-gray-50 rounded-lg p-3">
                     <div className="flex items-center space-x-2 mb-1">
-                      <Heart className="w-4 h-4 text-red-500" />
+                      <Heart className="w-4 h-4 text-orange-500" />
                       <span className="text-xs font-medium text-gray-600">Heart Rate</span>
                     </div>
                     <p className="text-lg font-semibold text-gray-800">{vital.heartRate}</p>
@@ -156,7 +162,7 @@ const VitalSigns = () => {
                   
                   <div className="bg-gray-50 rounded-lg p-3">
                     <div className="flex items-center space-x-2 mb-1">
-                      <Activity className="w-4 h-4 text-blue-500" />
+                      <Activity className="w-4 h-4 text-teal-500" />
                       <span className="text-xs font-medium text-gray-600">Blood Pressure</span>
                     </div>
                     <p className="text-lg font-semibold text-gray-800">{vital.bloodPressure}</p>
@@ -173,9 +179,14 @@ const VitalSigns = () => {
 
                 <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                   <span className="text-sm text-gray-500">Last updated: {vital.lastUpdated}</span>
-                  <button className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors text-sm">
+                  <Button
+                    variant="secondary"
+                    role="nurse"
+                    size="sm"
+                    onClick={() => {}}
+                  >
                     Update Vitals
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))}

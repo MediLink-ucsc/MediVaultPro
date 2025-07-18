@@ -1,5 +1,6 @@
 import { Save } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Button from '../../Common/Button';
 
 const NewPatientForm = ({ onSubmit }) => {
   const containerVariants = {
@@ -120,15 +121,17 @@ const NewPatientForm = ({ onSubmit }) => {
         className="pt-6 border-t border-gray-100"
         variants={itemVariants}
       >
-        <motion.button
+        <Button
           type="submit"
-          className="w-full bg-gradient-to-r from-teal-500 to-teal-600 text-white py-4 px-6 rounded-xl hover:from-teal-600 hover:to-teal-700 transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg hover:shadow-teal-200"
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
+          variant="primary"
+          role="doctor"
+          size="lg"
+          icon={Save}
+          className="w-full shadow-lg hover:shadow-teal-200"
+          fullWidth
         >
-          <Save className="w-5 h-5" />
-          <span className="font-medium">Register Patient</span>
-        </motion.button>
+          Register Patient
+        </Button>
       </motion.div>
     </motion.form>
   );

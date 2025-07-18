@@ -20,6 +20,7 @@ import {
   Upload
 } from 'lucide-react';
 import Modal from '../Common/Modal';
+import Button from '../Common/Button';
 import UploadReportForm from './UploadReportForm';
 import AddSample from './AddSample';
 
@@ -143,7 +144,7 @@ const Samples = () => {
       case 'pending':
         return 'bg-orange-100 text-orange-700 border-orange-200';
       case 'in-progress':
-        return 'bg-blue-100 text-blue-700 border-blue-200';
+        return 'bg-teal-100 text-teal-700 border-teal-200';
       case 'completed':
         return 'bg-teal-100 text-teal-700 border-teal-200';
       case 'rejected':
@@ -184,11 +185,11 @@ const Samples = () => {
   const getSampleTypeIcon = (sampleType) => {
     switch (sampleType.toLowerCase()) {
       case 'blood':
-        return <TestTube2 className="w-5 h-5 text-red-500" />;
+        return <TestTube2 className="w-5 h-5 text-orange-600" />;
       case 'urine':
-        return <Beaker className="w-5 h-5 text-yellow-500" />;
+        return <Beaker className="w-5 h-5 text-orange-400" />;
       case 'swab':
-        return <Microscope className="w-5 h-5 text-purple-500" />;
+        return <Microscope className="w-5 h-5 text-teal-600" />;
       default:
         return <FlaskConical className="w-5 h-5 text-teal-500" />;
     }
@@ -255,7 +256,7 @@ const Samples = () => {
       title: 'In Progress', 
       value: samples.filter(s => s.status === 'in-progress').length.toString(), 
       icon: RefreshCw, 
-      color: 'blue',
+      color: 'teal',
       change: '+8%' 
     },
     { 
@@ -275,17 +276,24 @@ const Samples = () => {
           <p className="text-gray-600 mt-2">Track and manage laboratory samples</p>
         </div>
         <div className="flex items-center space-x-3">
-          <button 
-            className="flex items-center space-x-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
+          <Button
+            variant="primary"
+            role="lab"
+            size="md"
+            icon={Plus}
             onClick={handleAddSample}
           >
-            <Plus className="w-4 h-4" />
-            <span>Add Sample</span>
-          </button>
-          <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-            <Download className="w-4 h-4" />
-            <span>Export</span>
-          </button>
+            Add Sample
+          </Button>
+          <Button
+            variant="ghost"
+            role="lab"
+            size="md"
+            icon={Download}
+            onClick={() => {}}
+          >
+            Export
+          </Button>
         </div>
       </div>
 
@@ -298,20 +306,17 @@ const Samples = () => {
                 <p className="text-sm font-medium text-gray-600">{stat.title}</p>
                 <p className="text-2xl font-bold text-gray-800 mt-1">{stat.value}</p>
                 <p className={`text-sm mt-1 ${stat.color === 'teal' ? 'text-teal-600' : 
-                  stat.color === 'orange' ? 'text-orange-600' : 
-                  stat.color === 'blue' ? 'text-blue-600' : 'text-gray-600'}`}>
+                  stat.color === 'orange' ? 'text-orange-600' : 'text-gray-600'}`}>
                   {stat.change} from yesterday
                 </p>
               </div>
               <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
                 stat.color === 'teal' ? 'bg-teal-100' : 
-                stat.color === 'orange' ? 'bg-orange-100' : 
-                stat.color === 'blue' ? 'bg-blue-100' : 'bg-gray-100'
+                stat.color === 'orange' ? 'bg-orange-100' : 'bg-gray-100'
               }`}>
                 <stat.icon className={`w-6 h-6 ${
                   stat.color === 'teal' ? 'text-teal-600' : 
-                  stat.color === 'orange' ? 'text-orange-600' : 
-                  stat.color === 'blue' ? 'text-blue-600' : 'text-gray-600'
+                  stat.color === 'orange' ? 'text-orange-600' : 'text-gray-600'
                 }`} />
               </div>
             </div>
@@ -359,10 +364,15 @@ const Samples = () => {
           </div>
 
           <div className="flex items-center space-x-3">
-            <button className="flex items-center space-x-2 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors duration-200">
-              <Filter className="w-4 h-4" />
-              <span>More Filters</span>
-            </button>
+            <Button
+              variant="ghost"
+              role="lab"
+              size="md"
+              icon={Filter}
+              onClick={() => {}}
+            >
+              More Filters
+            </Button>
             <div className="text-sm text-gray-600 bg-gray-50 px-3 py-2 rounded-lg">
               {filteredSamples.length} samples found
             </div>
@@ -444,7 +454,7 @@ const Samples = () => {
                     <div>
                       <div className="text-sm text-gray-800">{sample.collectedBy}</div>
                       {sample.notes && (
-                        <div className="text-xs text-blue-600 mt-1" title={sample.notes}>
+                        <div className="text-xs text-teal-600 mt-1" title={sample.notes}>
                           Note available
                         </div>
                       )}
@@ -452,26 +462,30 @@ const Samples = () => {
                   </td>
                   <td className="py-4 px-6">
                     <div className="flex items-center space-x-2">
-                      <button 
-                        className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors duration-200"
-                        title="View Details"
+                      <Button
+                        variant="ghost"
+                        role="lab"
+                        size="xs"
+                        icon={Eye}
                         onClick={() => handleViewDetails(sample)}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button 
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
-                        title="Upload Report"
+                        className="p-2"
+                      />
+                      <Button
+                        variant="ghost"
+                        role="nurse"
+                        size="xs"
+                        icon={Upload}
                         onClick={() => handleUploadReport(sample)}
-                      >
-                        <Upload className="w-4 h-4" />
-                      </button>
-                      <button 
-                        className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
-                        title="Generate Report"
-                      >
-                        <FileText className="w-4 h-4" />
-                      </button>
+                        className="p-2"
+                      />
+                      <Button
+                        variant="ghost"
+                        role="neutral"
+                        size="xs"
+                        icon={FileText}
+                        onClick={() => {}}
+                        className="p-2"
+                      />
                     </div>
                   </td>
                 </tr>
@@ -531,21 +545,30 @@ const Samples = () => {
                 {sample.collectedBy}
               </div>
               <div className="flex items-center space-x-2">
-                <button 
-                  className="p-2 text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                <Button
+                  variant="ghost"
+                  role="lab"
+                  size="xs"
+                  icon={Eye}
                   onClick={() => handleViewDetails(sample)}
-                >
-                  <Eye className="w-4 h-4" />
-                </button>
-                <button 
-                  className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  className="p-2"
+                />
+                <Button
+                  variant="ghost"
+                  role="nurse"
+                  size="xs"
+                  icon={Upload}
                   onClick={() => handleUploadReport(sample)}
-                >
-                  <Upload className="w-4 h-4" />
-                </button>
-                <button className="p-2 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">
-                  <FileText className="w-4 h-4" />
-                </button>
+                  className="p-2"
+                />
+                <Button
+                  variant="ghost"
+                  role="neutral"
+                  size="xs"
+                  icon={FileText}
+                  onClick={() => {}}
+                  className="p-2"
+                />
               </div>
             </div>
           </div>
@@ -686,24 +709,28 @@ const Samples = () => {
 
             {/* Action Buttons */}
             <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-              <button 
-                className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              <Button
+                variant="ghost"
+                role="neutral"
+                size="md"
                 onClick={() => {
                   setViewModalOpen(false);
                   setViewSample(null);
                 }}
               >
                 Close
-              </button>
-              <button 
-                className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+              </Button>
+              <Button
+                variant="primary"
+                role="nurse"
+                size="md"
                 onClick={() => {
                   setViewModalOpen(false);
                   handleUploadReport(viewSample);
                 }}
               >
                 Upload Report
-              </button>
+              </Button>
             </div>
           </div>
         )}
