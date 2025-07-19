@@ -43,7 +43,7 @@ const Login = ({ onLogin }) => {
           normalizedRole = "nurse";
           break;
         case "ADMIN":
-          normalizedRole = "systemadmin";
+          normalizedRole = "clinicadmin";
           break;
         default:
           normalizedRole = "doctor"; // fallback
@@ -71,7 +71,7 @@ const Login = ({ onLogin }) => {
         navigate("/lab");
       } else if (normalizedRole === "nurse") {
         navigate("/nurse");
-      } else if (normalizedRole === "systemadmin") {
+      } else if (normalizedRole === "clinicadmin") {
         navigate("/admin"); // add admin route in App if needed
       } else {
         setError("Unknown role");

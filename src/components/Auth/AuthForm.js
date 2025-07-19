@@ -25,21 +25,73 @@ const AuthForm = ({
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    // Mock login with all required fields
-    onLogin({
-      id: 1,
-      name:
-        credentials.role === "doctor"
-          ? "Dr.Dulmini Chathubhashini"
-          : credentials.role === "nurse"
-          ? "Nurse Likitha"
-          : credentials.role === "systemadmin"
-          ? "System Admin"
-          : "Lab Operator",
-      email: credentials.email || "demo@medivaultpro.com",
-      role: credentials.role,
-    });
+    setError("");
+
+    try {
+      console.log(credentials);
+
+      const data = await ApiService.login(credentials);
+      console.log("Login successful:", data);
+
+      const decodedToken = jwtDecode(data.token);
+      console.log("Decoded token:", decodedToken);
+
+      // Save token
+      localStorage.setItem("token", data.token);
+
+      // Normalize role to match App.js expectations
+      let normalizedRole;
+      switch (decodedToken.role) {
+        case "DOCTOR":
+          normalizedRole = "doctor";
+          break;
+        case "LAB_ASSISTANT":
+          normalizedRole = "lab";
+          break;
+        case "MEDICAL_STAFF":
+        case "NURSE":
+          normalizedRole = "nurse";
+          break;
+        case "ADMIN":
+          normalizedRole = "clinicadmin";
+          break;
+        default:
+          normalizedRole = "doctor"; // fallback
+      }
+
+      const userInfo = {
+        token: data.token,
+        role: normalizedRole,
+        email: decodedToken.email,
+        id: decodedToken.id,
+        firstName: decodedToken.firstName,
+        lastName: decodedToken.lastName,
+      };
+
+      // Also save user info to localStorage
+      localStorage.setItem("medivaultpro_user", JSON.stringify(userInfo));
+
+      // Notify App about logged-in user
+      onLogin(userInfo);
+
+      // Navigation will be handled by the parent component
+    } catch (err) {
+      setError(err.message);
+    }
   };
+
+  // const handleLoginSubmit = (e) => {
+  //   e.preventDefault();
+  //   // Mock login with all required fields
+  //   onLogin({
+  //     id: 1,
+  //     name: credentials.role === 'doctor' ? 'Dr.Dulmini Chathubhashini' :
+  //           credentials.role === 'nurse' ? 'Nurse Likitha' :
+  //           credentials.role === 'systemadmin' ? 'System Admin' : 'Lab Operator',
+  //     email: credentials.email || 'demo@medivaultpro.com',
+  //     role: credentials.role
+  //   });
+  // };
 
   const handleInputChange = (field, value) => {
     setCredentials({ ...credentials, [field]: value });
@@ -158,7 +210,7 @@ const AuthForm = ({
               <option value="doctor">Doctor</option>
               <option value="nurse">Nurse</option>
               <option value="lab">Lab Technician</option>
-              <option value="clinicadmin">Clinic Administrator</option>
+              <option value="systemadmin">System Administrator</option>
             </select>
           </div>
         </div> */}
