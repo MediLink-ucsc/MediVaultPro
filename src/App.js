@@ -11,7 +11,7 @@ import Auth from "./components/Auth/Auth";
 import DoctorDashboard from "./components/Doctor/DoctorDashboard";
 import NurseDashboard from "./components/Nurse/NurseDashboard";
 import LabDashboard from "./components/Lab/LabDashboard";
-import SystemAdminDashboard from "./components/SystemAdmin/SystemAdminDashboard";
+import ClinicAdminDashboard from "./components/ClinicAdmin/ClinicAdminDashboard";
 import Layout from "./components/Layout/Layout";
 import ApiService from "./services/apiService";
 import "./App.css";
@@ -116,10 +116,10 @@ function App() {
             }
           />
           <Route
-            path="/systemadmin/*"
+            path="/clinic-admin/*"
             element={
-              user.role === "systemadmin" ? (
-                <SystemAdminDashboard user={user} />
+              user.role === "clinicadmin" ? (
+                <ClinicAdminDashboard />
               ) : (
                 <Navigate to="/" />
               )
@@ -134,8 +134,8 @@ function App() {
                     ? "/doctor"
                     : user.role === "nurse"
                     ? "/nurse"
-                    : user.role === "systemadmin"
-                    ? "/systemadmin"
+                    : user.role === "clinicadmin"
+                    ? "/clinic-admin"
                     : "/lab"
                 }
               />

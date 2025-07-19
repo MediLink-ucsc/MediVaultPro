@@ -50,7 +50,7 @@ const Analytics = () => {
                 }`} />
               </div>
               <div className={`flex items-center text-sm font-medium ${
-                metric.change.startsWith('+') ? 'text-teal-600' : 'text-red-600'
+                metric.change.startsWith('+') ? 'text-teal-600' : 'text-orange-600'
               }`}>
                 <TrendingUp className={`w-4 h-4 mr-1 ${
                   metric.change.startsWith('-') ? 'transform rotate-180' : ''
@@ -188,7 +188,7 @@ const Analytics = () => {
                 <div className="text-right">
                   <div className="font-bold text-gray-900">{item.avgTime}</div>
                   <div className={`text-xs px-2 py-1 rounded-full ${
-                    item.status === 'excellent' ? 'bg-teal-100 text-teal-700' : 'bg-green-100 text-green-700'
+                    item.status === 'excellent' ? 'bg-teal-100 text-teal-700' : 'bg-teal-100 text-teal-700'
                   }`}>
                     {item.status}
                   </div>
@@ -215,7 +215,7 @@ const Analytics = () => {
                 <div className="text-right">
                   <div className="font-bold text-gray-900">{item.value}</div>
                   <div className={`text-xs px-2 py-1 rounded-full ${
-                    item.status === 'excellent' ? 'bg-teal-100 text-teal-700' : 'bg-green-100 text-green-700'
+                    item.status === 'excellent' ? 'bg-teal-100 text-teal-700' : 'bg-teal-100 text-teal-700'
                   }`}>
                     {item.status}
                   </div>

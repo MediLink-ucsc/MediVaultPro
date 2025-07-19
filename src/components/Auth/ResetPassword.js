@@ -205,7 +205,7 @@ const ResetPassword = ({
               type={showPassword ? "text" : "password"}
               required
               className={`w-full pl-10 pr-12 py-3 border ${
-                errors.password ? 'border-red-300' : 'border-gray-300'
+                errors.password ? 'border-orange-300' : 'border-gray-300'
               } rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
                 isModal ? 'transition-all' : ''
               }`}
@@ -223,8 +223,8 @@ const ResetPassword = ({
           </div>
           {errors.password && (
             <div className="mt-2">
-              <p className="text-red-600 text-sm">Password must contain:</p>
-              <ul className="text-red-600 text-xs mt-1 space-y-1">
+              <p className="text-orange-600 text-sm">Password must contain:</p>
+              <ul className="text-orange-600 text-xs mt-1 space-y-1">
                 {errors.password.map((error, index) => (
                   <li key={index}>• {error}</li>
                 ))}
@@ -244,7 +244,7 @@ const ResetPassword = ({
               type={showConfirmPassword ? "text" : "password"}
               required
               className={`w-full pl-10 pr-12 py-3 border ${
-                errors.confirmPassword ? 'border-red-300' : 'border-gray-300'
+                errors.confirmPassword ? 'border-orange-300' : 'border-gray-300'
               } rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent ${
                 isModal ? 'transition-all' : ''
               }`}
@@ -261,14 +261,14 @@ const ResetPassword = ({
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="mt-2 text-red-600 text-sm">{errors.confirmPassword}</p>
+            <p className="mt-2 text-orange-600 text-sm">{errors.confirmPassword}</p>
           )}
         </div>
 
         {/* Submit Error */}
         {errors.submit && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800 text-sm">{errors.submit}</p>
+          <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
+            <p className="text-orange-800 text-sm">{errors.submit}</p>
           </div>
         )}
 

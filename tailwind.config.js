@@ -43,7 +43,40 @@ module.exports = {
       animation: {
         'fade-in': 'fadeIn 0.3s ease-in-out',
         'slide-in': 'slideIn 0.3s ease-in-out',
-        'pulse-slow': 'pulse 3s infinite',
+        'pulse-slow': 'pulse-slow 4s ease-in-out infinite',
+        'float-gentle': 'float-gentle 8s ease-in-out infinite',
+        'shimmer': 'shimmer 3s ease-in-out infinite',
+      },
+      keyframes: {
+        'pulse-slow': {
+          '0%, 100%': {
+            opacity: '1',
+            transform: 'scale(1)',
+          },
+          '50%': {
+            opacity: '0.3',
+            transform: 'scale(1.1)',
+          },
+        },
+        'float-gentle': {
+          '0%, 100%': {
+            transform: 'translate(0, 0) rotate(0deg)',
+          },
+          '33%': {
+            transform: 'translate(20px, -10px) rotate(1deg)',
+          },
+          '66%': {
+            transform: 'translate(-15px, 15px) rotate(-1deg)',
+          },
+        },
+        'shimmer': {
+          '0%': {
+            'background-position': '-200% center',
+          },
+          '100%': {
+            'background-position': '200% center',
+          },
+        },
       }
     },
   },

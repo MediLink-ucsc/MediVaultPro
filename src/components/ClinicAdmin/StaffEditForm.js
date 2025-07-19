@@ -1,4 +1,4 @@
-// src/components/SystemAdmin/StaffEditForm.js
+// src/components/ClinicAdmin/StaffEditForm.js
 import React, { useState } from 'react';
 import { AlertCircle, Save, X } from 'lucide-react';
 

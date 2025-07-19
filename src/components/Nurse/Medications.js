@@ -1,6 +1,7 @@
 // src/components/Nurse/Medications.js
 import React, { useState } from 'react';
 import { Clock, User, Pill, Check, AlertTriangle, Search } from 'lucide-react';
+import Button from '../Common/Button';
 
 const Medications = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -11,7 +12,7 @@ const Medications = () => {
     {
       id: 1,
       patient: 'Likitha Chathubhashini',
-      room: 'ICU-101',
+      condition: 'Post-operative care',
       medication: 'Amoxicillin 500mg',
       time: '08:00',
       frequency: 'Every 8 hours',
@@ -21,7 +22,7 @@ const Medications = () => {
     {
       id: 2,
       patient: 'Hansaja Damsara',
-      room: 'Ward-205',
+      condition: 'Hypertension',
       medication: 'Lisinopril 10mg',
       time: '09:00',
       frequency: 'Once daily',
@@ -31,7 +32,7 @@ const Medications = () => {
     {
       id: 3,
       patient: 'Sathya Abeysinghe',
-      room: 'Maternity-302',
+      condition: 'Pregnancy care',
       medication: 'Prenatal vitamins',
       time: '10:00',
       frequency: 'Once daily',
@@ -41,7 +42,7 @@ const Medications = () => {
     {
       id: 4,
       patient: 'Saranga Dissanayake',
-      room: 'Ward-108',
+      condition: 'Arthritis',
       medication: 'Celecoxib 200mg',
       time: '12:00',
       frequency: 'Twice daily',
@@ -50,22 +51,20 @@ const Medications = () => {
     }
   ]);
 
-  const filteredMedications = medications.filter(med => {
-    const matchesSearch = med.patient.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         med.medication.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         med.room.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesTime = selectedTime === 'all' || med.status === selectedTime;
-    return matchesSearch && matchesTime;
-  });
+    const filteredMedications = medications.filter(med =>
+    med.patient.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    med.medication.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    med.condition.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const getStatusColor = (status) => {
     switch (status) {
       case 'completed':
-        return 'bg-green-100 text-green-800';
+        return 'bg-teal-100 text-teal-800';
       case 'pending':
         return 'bg-orange-100 text-orange-800';
       case 'overdue':
-        return 'bg-red-100 text-red-800';
+        return 'bg-orange-100 text-orange-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -73,7 +72,7 @@ const Medications = () => {
 
   const getPriorityIcon = (priority) => {
     if (priority === 'high') {
-      return <AlertTriangle className="w-4 h-4 text-red-500" />;
+      return <AlertTriangle className="w-4 h-4 text-orange-500" />;
     }
     return null;
   };
@@ -85,9 +84,21 @@ const Medications = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-800">Medication Schedule</h1>
-        <p className="text-gray-600 mt-2">Track and administer patient medications</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800">Medication Schedule</h1>
+          <p className="text-gray-600 mt-2">Time-based medication tracking and administration</p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Button
+            variant="outline"
+            role="nurse"
+            size="sm"
+            icon={Clock}
+          >
+            Today's Schedule
+          </Button>
+        </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200">
@@ -97,7 +108,7 @@ const Medications = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search medications, patients, or rooms..."
+                placeholder="Search medications or patients..."
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -138,7 +149,7 @@ const Medications = () => {
                     <div className="ml-13 space-y-1">
                       <div className="flex items-center space-x-2 text-sm text-gray-600">
                         <User className="w-4 h-4" />
-                        <span>{med.patient} - {med.room}</span>
+                        <span>{med.patient} - {med.condition}</span>
                       </div>
                       <div className="flex items-center space-x-2 text-sm text-gray-600">
                         <Clock className="w-4 h-4" />
@@ -153,13 +164,15 @@ const Medications = () => {
                     </span>
                     
                     {med.status !== 'completed' && (
-                      <button
+                      <Button
+                        variant="secondary"
+                        role="nurse"
+                        size="sm"
+                        icon={Check}
                         onClick={() => handleMarkCompleted(med.id)}
-                        className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors flex items-center space-x-2"
                       >
-                        <Check className="w-4 h-4" />
-                        <span>Mark Given</span>
-                      </button>
+                        Mark Given
+                      </Button>
                     )}
                   </div>
                 </div>

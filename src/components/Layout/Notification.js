@@ -6,13 +6,13 @@ const Notification = () => {
   const [notifications, setNotifications] = useState([
     {
       id: 1,
-      type: 'appointment',
-      title: 'Appointment Reminder',
-      message: 'Likitha has an appointment in 15 minutes',
+      type: 'calendar',
+      title: 'Calendar Event Reminder',
+      message: 'Likitha has a calendar event in 15 minutes',
       time: '2 min ago',
       isRead: false,
       icon: Calendar,
-      iconColor: 'text-blue-600'
+      iconColor: 'text-teal-600'
     },
     {
       id: 2,
@@ -22,7 +22,7 @@ const Notification = () => {
       time: '1 hour ago',
       isRead: false,
       icon: AlertCircle,
-      iconColor: 'text-red-600'
+      iconColor: 'text-orange-600'
     },
     {
       id: 3,
@@ -32,7 +32,7 @@ const Notification = () => {
       time: '3 hours ago',
       isRead: true,
       icon: User,
-      iconColor: 'text-green-600'
+      iconColor: 'text-teal-600'
     },
     {
       id: 4,
@@ -46,9 +46,9 @@ const Notification = () => {
     },
     {
       id: 5,
-      type: 'appointment',
+      type: 'calendar',
       title: 'Cancellation Notice',
-      message: 'Hansaja cancelled her 3 PM appointment',
+      message: 'Hansaja cancelled her 3 PM calendar event',
       time: '2 days ago',
       isRead: false,
       icon: Calendar,
@@ -178,7 +178,7 @@ const Notification = () => {
                       <button
                         onClick={() => markAsRead(notification.id)}
                         className={`w-full px-4 py-3 text-left hover:bg-gray-50 focus:outline-none focus:bg-gray-50 transition-colors duration-150 ${
-                          !notification.isRead ? 'bg-blue-50' : ''
+                          !notification.isRead ? 'bg-teal-50' : ''
                         }`}
                         role="menuitem"
                       >
@@ -212,7 +212,7 @@ const Notification = () => {
                                   e.stopPropagation();
                                   removeNotification(notification.id);
                                 }}
-                                className="text-xs text-gray-400 hover:text-red-600 focus:outline-none focus:text-red-600 transition-colors duration-150"
+                                className="text-xs text-gray-400 hover:text-orange-600 focus:outline-none focus:text-orange-600 transition-colors duration-150"
                                 aria-label="Remove notification"
                               >
                                 <X className="w-3 h-3" />

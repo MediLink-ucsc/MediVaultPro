@@ -16,27 +16,27 @@ const StatsCard = ({ title, value, icon: Icon, color, trend }) => {
       cardBg: 'bg-white'
     },
     blue: {
-      bg: 'bg-blue-100',
-      icon: 'text-blue-600',
-      border: 'border-blue-200',
+      bg: 'bg-teal-100',
+      icon: 'text-teal-600',
+      border: 'border-teal-200',
       cardBg: 'bg-white'
     },
     purple: {
-      bg: 'bg-purple-100',
-      icon: 'text-purple-600',
-      border: 'border-purple-200',
+      bg: 'bg-orange-100',
+      icon: 'text-orange-600',
+      border: 'border-orange-200',
       cardBg: 'bg-white'
     },
     green: {
-      bg: 'bg-green-100',
-      icon: 'text-green-600',
-      border: 'border-green-200',
+      bg: 'bg-teal-100',
+      icon: 'text-teal-600',
+      border: 'border-teal-200',
       cardBg: 'bg-white'
     }
   };
 
-  const trendColor = trend?.startsWith('+') ? 'text-green-600' : 
-                   trend?.startsWith('-') ? 'text-red-600' : 
+  const trendColor = trend?.startsWith('+') ? 'text-teal-600' : 
+                   trend?.startsWith('-') ? 'text-orange-600' : 
                    'text-gray-600';
 
   return (

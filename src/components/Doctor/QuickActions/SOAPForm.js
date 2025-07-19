@@ -1,7 +1,8 @@
 import { Save } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Button from '../../Common/Button';
 
-const SOAPForm = ({ onSubmit }) => {
+const SOAPForm = ({ onSubmit, selectedPatient }) => {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -37,20 +38,29 @@ const SOAPForm = ({ onSubmit }) => {
         <label className="block text-sm font-medium text-gray-700 mb-2">Patient *</label>
         <select
           required
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiAjd2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im02IDkgNiA2IDYtNiIvPjwvc3ZnPg==')] bg-no-repeat bg-[center_right_1rem]"
+          name="patientId"
+          value={selectedPatient?.id || ''}
+          disabled={!!selectedPatient}
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiAjd2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im02IDkgNiA2IDYtNiIvPjwvc3ZnPg==')] bg-no-repeat bg-[center_right_1rem]"
         >
           <option value="">Select patient</option>
           <option value="1">Hansaja Boss - ID: 001</option>
           <option value="2">Greatest Dulmini - ID: 002</option>
-          <option value="3">Moda Sathya - ID: 003</option>
+          <option value="3">Cute Anji - ID: 003</option>
+          <option value="4">Moda Sathya - ID: 004</option>
         </select>
+        {selectedPatient && (
+          <p className="mt-2 text-sm text-gray-600">
+            Selected: {selectedPatient.name} (Age: {selectedPatient.age})
+          </p>
+        )}
       </motion.div>
 
       <motion.div variants={itemVariants}>
         <label className="block text-sm font-medium text-gray-700 mb-2">Date & Time</label>
         <input
           type="datetime-local"
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
           defaultValue={new Date().toISOString().slice(0, 16)}
         />
       </motion.div>
@@ -60,7 +70,7 @@ const SOAPForm = ({ onSubmit }) => {
         <textarea
           rows="5"
           required
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
           placeholder="Patient's chief complaint, symptoms, and relevant history..."
         />
       </motion.div>
@@ -70,7 +80,7 @@ const SOAPForm = ({ onSubmit }) => {
         <textarea
           rows="5"
           required
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
           placeholder="Vital signs, physical examination findings, lab results..."
         />
       </motion.div>
@@ -80,7 +90,7 @@ const SOAPForm = ({ onSubmit }) => {
         <textarea
           rows="4"
           required
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
           placeholder="Primary and differential diagnoses, clinical impression..."
         />
       </motion.div>
@@ -90,7 +100,7 @@ const SOAPForm = ({ onSubmit }) => {
         <textarea
           rows="5"
           required
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
           placeholder="Treatment plan, medications, follow-up instructions..."
         />
       </motion.div>
@@ -99,15 +109,17 @@ const SOAPForm = ({ onSubmit }) => {
         className="pt-6 border-t border-gray-100"
         variants={itemVariants}
       >
-        <motion.button
+        <Button
           type="submit"
-          className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-4 px-6 rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg hover:shadow-purple-200"
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
+          variant="primary"
+          role="doctor"
+          size="lg"
+          icon={Save}
+          className="w-full shadow-lg hover:shadow-teal-200"
+          fullWidth
         >
-          <Save className="w-5 h-5" />
-          <span className="font-medium">Save SOAP Note</span>
-        </motion.button>
+          Save SOAP Note
+        </Button>
       </motion.div>
     </motion.form>
   );

@@ -1,4 +1,4 @@
-// src/components/SystemAdmin/ManageStaff.js
+// src/components/ClinicAdmin/ManageStaff.js
 import React, { useState } from 'react';
 import { 
   Users, 
@@ -17,6 +17,7 @@ import {
 import Modal from '../Common/Modal';
 import StaffEditForm from './StaffEditForm';
 import AddStaffModal from './StaffForms/AddStaffModal';
+import Button from '../Common/Button';
 
 const ManageStaff = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -29,17 +30,17 @@ const ManageStaff = () => {
   const itemsPerPage = 10;
 
   // In a real app, this would come from the logged-in admin's data
-  const adminInstitute = "City General Hospital";
+  const adminInstitute = "City Medical Center";
 
   // Mock data - in real app, this would come from API
   const [staffData, setStaffData] = useState([
     {
       id: 1,
       name: 'Dr. Dulmini Chathubhashini',
-      email: 'dulmini.chathubhashini@cityhospital.com',
+      email: 'dulmini.chathubhashini@citymedical.com',
       role: 'doctor',
       department: 'Cardiology',
-      institute: 'City General Hospital',
+      institute: 'City Medical Center',
       phone: '+94 xxx xxx xxx',
       status: 'active',
       joinDate: '2022-01-15',
@@ -48,10 +49,10 @@ const ManageStaff = () => {
     {
       id: 2,
       name: 'Likitha',
-      email: 'likitha@cityhospital.com',
+      email: 'likitha@citymedical.com',
       role: 'nurse',
       department: 'Emergency',
-      institute: 'City General Hospital',
+      institute: 'City Medical Center',
       phone: '+94 xxx xxx xxx',
       status: 'active',
       joinDate: '2022-03-20',
@@ -178,8 +179,8 @@ const ManageStaff = () => {
   const getRoleColor = (role) => {
     const colors = {
       doctor: 'bg-teal-100 text-teal-800',
-      nurse: 'bg-orange-100 text-orange-800',
-      lab: 'bg-blue-100 text-blue-800'
+      nurse: 'bg-teal-100 text-teal-800', // Changed from orange to teal for unified scheme
+      lab: 'bg-teal-100 text-teal-800'
     };
     return colors[role] || 'bg-gray-100 text-gray-800';
   };
@@ -195,17 +196,19 @@ const ManageStaff = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Manage Staff Data</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Manage Clinic Staff</h1>
           <p className="text-gray-600 mt-1">View, edit, and manage staff members for {adminInstitute}</p>
         </div>
         <div className="flex items-center space-x-3">
-          <button 
+          <Button 
             onClick={handleAddStaff}
-            className="px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-lg hover:from-teal-600 hover:to-teal-700 focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all flex items-center space-x-2"
+            variant="primary"
+            role="clinicadmin"
+            size="md"
+            icon={UserPlus}
           >
-            <UserPlus className="w-4 h-4" />
-            <span>Add Staff</span>
-          </button>
+            Add Staff
+          </Button>
           <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
             <Users className="w-6 h-6 text-white" />
           </div>
@@ -325,30 +328,38 @@ const ManageStaff = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center space-x-2">
-                      <button
+                      <Button
+                        variant="ghost"
+                        role="lab"
+                        size="xs"
+                        icon={Eye}
                         onClick={() => handleView(staff)}
-                        className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                        title="View Details"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button
+                        className="p-1"
+                      />
+                      <Button
+                        variant="ghost"
+                        role="lab"
+                        size="xs"
+                        icon={Edit3}
                         onClick={() => handleEdit(staff)}
-                        className="p-1 text-gray-400 hover:text-teal-600 transition-colors"
-                        title="Edit"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                      <button
+                        className="p-1"
+                      />
+                      <Button
+                        variant="ghost"
+                        role="danger"
+                        size="xs"
+                        icon={Trash2}
                         onClick={() => handleDelete(staff)}
-                        className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                      <button className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
-                        <MoreVertical className="w-4 h-4" />
-                      </button>
+                        className="p-1"
+                      />
+                      <Button
+                        variant="ghost"
+                        role="neutral"
+                        size="xs"
+                        icon={MoreVertical}
+                        onClick={() => {}}
+                        className="p-1"
+                      />
                     </div>
                   </td>
                 </tr>
@@ -364,35 +375,38 @@ const ManageStaff = () => {
               Showing {startIndex + 1} to {Math.min(endIndex, filteredStaff.length)} of {filteredStaff.length} results
             </div>
             <div className="flex items-center space-x-2">
-              <button
+              <Button
+                variant="ghost"
+                role="neutral"
+                size="sm"
+                icon={ChevronLeft}
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
+                className="p-2"
+              />
               
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                <button
+                <Button
                   key={page}
+                  variant={currentPage === page ? "primary" : "ghost"}
+                  role="lab"
+                  size="sm"
                   onClick={() => handlePageChange(page)}
-                  className={`px-3 py-2 rounded-lg transition-colors ${
-                    currentPage === page
-                      ? 'bg-teal-600 text-white'
-                      : 'border border-gray-300 hover:bg-gray-50 text-gray-700'
-                  }`}
+                  className="px-3 py-2"
                 >
                   {page}
-                </button>
+                </Button>
               ))}
               
-              <button
+              <Button
+                variant="ghost"
+                role="neutral"
+                size="sm"
+                icon={ChevronRight}
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronRight className="w-4 h-4" />
-              </button>
+                className="p-2"
+              />
             </div>
           </div>
         )}
@@ -481,18 +495,22 @@ const ManageStaff = () => {
               This action cannot be undone.
             </p>
             <div className="flex items-center justify-end space-x-3">
-              <button
+              <Button
+                variant="ghost"
+                role="neutral"
+                size="md"
                 onClick={closeModal}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="primary"
+                role="danger"
+                size="md"
                 onClick={confirmDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 Delete
-              </button>
+              </Button>
             </div>
           </div>
         )}

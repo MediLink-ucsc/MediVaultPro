@@ -188,7 +188,7 @@ const CreateTemplateForm = ({ onSubmit }) => {
           <button
             type="button"
             onClick={addField}
-            className="flex items-center space-x-1 px-2 py-1 text-teal-600 hover:text-teal-700"
+            className="flex items-center space-x-1 px-3 py-1.5 text-teal-600 hover:text-teal-700 hover:bg-teal-50 rounded-lg transition-all duration-200"
           >
             <Plus className="w-4 h-4" />
             <span className="text-sm">Add Field</span>
@@ -227,7 +227,7 @@ const CreateTemplateForm = ({ onSubmit }) => {
                   <button
                     type="button"
                     onClick={() => removeField(index)}
-                    className="p-1 text-red-500 hover:text-red-700"
+                    className="p-1 text-orange-500 hover:text-orange-700 hover:bg-orange-50 rounded transition-all duration-200"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
@@ -244,7 +244,7 @@ const CreateTemplateForm = ({ onSubmit }) => {
           <button
             type="button"
             onClick={addReferenceRange}
-            className="flex items-center space-x-1 px-2 py-1 text-teal-600 hover:text-teal-700"
+            className="flex items-center space-x-1 px-3 py-1.5 text-teal-600 hover:text-teal-700 hover:bg-teal-50 rounded-lg transition-all duration-200"
           >
             <Plus className="w-4 h-4" />
             <span className="text-sm">Add Range</span>
@@ -278,7 +278,7 @@ const CreateTemplateForm = ({ onSubmit }) => {
                 <button
                   type="button"
                   onClick={() => removeReferenceRange(index)}
-                  className="p-1 text-red-500 hover:text-red-700 justify-self-center"
+                  className="p-1 text-orange-500 hover:text-orange-700 hover:bg-orange-50 rounded transition-all duration-200 justify-self-center"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
@@ -306,13 +306,13 @@ const CreateTemplateForm = ({ onSubmit }) => {
         <button
           type="button"
           onClick={() => onSubmit(null)}
-          className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+          className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors duration-200"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
+          className="px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-md hover:from-teal-600 hover:to-teal-700 transition-all duration-200"
         >
           Create Template
         </button>
