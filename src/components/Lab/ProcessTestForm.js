@@ -1,6 +1,6 @@
 // src/components/Lab/ProcessTestForm.js
 import React, { useState } from 'react';
-import { Search, CheckCircle, AlertCircle, Clock } from 'lucide-react';
+import { Search, Clock } from 'lucide-react';
 
 const ProcessTestForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -10,7 +10,6 @@ const ProcessTestForm = ({ onSubmit }) => {
     results: '',
     technician: '',
     completedDate: '',
-    qualityCheck: false,
     notes: '',
   });
 
@@ -69,11 +68,6 @@ const ProcessTestForm = ({ onSubmit }) => {
       case 'urgent': return 'bg-orange-100 text-orange-700';
       default: return 'bg-gray-100 text-gray-700';
     }
-  };
-
-  const getStatusColor = (status) => {
-    const statusObj = statusOptions.find(s => s.value === status);
-    return statusObj ? statusObj.color : 'gray';
   };
 
   const handleSubmit = (e) => {
@@ -225,20 +219,6 @@ const ProcessTestForm = ({ onSubmit }) => {
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
           placeholder="Any additional notes or observations..."
         />
-      </div>
-
-      <div className="flex items-center space-x-2">
-        <input
-          type="checkbox"
-          name="qualityCheck"
-          checked={formData.qualityCheck}
-          onChange={handleInputChange}
-          className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
-        />
-        <label className="text-sm font-medium text-gray-700">
-          Quality check completed
-        </label>
-        <CheckCircle className="w-4 h-4 text-teal-600" />
       </div>
 
       <div className="flex justify-end space-x-3">
