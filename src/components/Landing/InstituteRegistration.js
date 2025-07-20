@@ -271,7 +271,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                 <p className="text-gray-600">Choose the option that best describes your healthcare facility</p>
               </div>
               
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 {instituteTypes.map((institute, index) => (
                   <motion.div
                     key={institute.type}
@@ -281,31 +281,31 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                     whileHover={{ y: -5, scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleTypeSelection(institute.type)}
-                    className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-gray-200"
+                    className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-gray-200"
                   >
-                    <div className={`w-16 h-16 bg-gradient-to-br ${institute.color} rounded-2xl flex items-center justify-center text-white mb-4 mx-auto`}>
-                      {React.cloneElement(institute.icon, { className: "w-8 h-8" })}
+                    <div className={`w-20 h-20 bg-gradient-to-br ${institute.color} rounded-2xl flex items-center justify-center text-white mb-6 mx-auto`}>
+                      {React.cloneElement(institute.icon, { className: "w-10 h-10" })}
                     </div>
                     
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{institute.title}</h3>
-                    <p className="text-gray-600 mb-4 text-center text-sm">{institute.description}</p>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">{institute.title}</h3>
+                    <p className="text-gray-600 mb-6 text-center">{institute.description}</p>
                     
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-gray-900 mb-2 text-sm">Key Features:</h4>
+                    <div className="space-y-3">
+                      <h4 className="font-semibold text-gray-900 mb-3">Key Features:</h4>
                       {institute.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center space-x-2">
-                          <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                          <span className="text-gray-600 text-sm">{feature}</span>
+                        <div key={idx} className="flex items-center space-x-3">
+                          <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                          <span className="text-gray-600">{feature}</span>
                         </div>
                       ))}
                     </div>
                     
                     <motion.div 
-                      className={`mt-4 bg-gradient-to-r ${institute.color} text-white py-2 px-4 rounded-lg text-center font-semibold flex items-center justify-center space-x-2 text-sm`}
+                      className={`mt-6 bg-gradient-to-r ${institute.color} text-white py-3 px-6 rounded-lg text-center font-semibold flex items-center justify-center space-x-2`}
                       whileHover={{ scale: 1.05 }}
                     >
                       <span>Select {institute.title}</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-5 h-5" />
                     </motion.div>
                   </motion.div>
                 ))}
