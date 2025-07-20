@@ -9,7 +9,9 @@ import {
   Building,
   Stethoscope,
   FlaskConical,
-  UserPlus
+  UserPlus,
+  Menu,
+  X
 } from 'lucide-react';
 import MediLinkLogo from '../resources/MediLinkLogo.jpeg';
 import AuthModal from '../Common/AuthModal';
@@ -24,6 +26,7 @@ const LandingPage = ({ onLogin, onSignup }) => {
   const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
   const [resetToken, setResetToken] = useState(null);
   const [showRegistration, setShowRegistration] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   // Modal navigation helpers
   const switchToForgotPassword = () => {
@@ -125,44 +128,208 @@ const LandingPage = ({ onLogin, onSignup }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-teal-50 via-white to-orange-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2 sm:space-x-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg overflow-hidden flex-shrink-0">
+          <div className="flex justify-between items-center h-16 lg:h-18">
+            {/* Logo Section */}
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              onClick={() => {
+                document.getElementById('hero-section')?.scrollIntoView({ 
+                  behavior: 'smooth' 
+                });
+              }}
+              className="flex items-center space-x-2 sm:space-x-3 cursor-pointer"
+            >
+              <motion.div 
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-xl overflow-hidden flex-shrink-0 shadow-lg ring-2 ring-teal-100"
+              >
                 <img 
                   src={MediLinkLogo} 
                   alt="MediLink Logo" 
                   className="w-full h-full object-cover"
                 />
-              </div>
+              </motion.div>
               <div className="flex flex-col min-w-0">
-                <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-teal-600 to-orange-600 bg-clip-text text-transparent truncate">
+                <motion.span 
+                  whileHover={{ scale: 1.02 }}
+                  className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-teal-600 via-teal-700 to-orange-600 bg-clip-text text-transparent truncate"
+                >
                   MediVaultPro
-                </span>
-                <span className="text-xs text-gray-500 hidden sm:block">Powered by MediLink</span>
+                </motion.span>
+                <span className="text-xs lg:text-sm text-gray-500 hidden sm:block font-medium">Powered by MediLink</span>
               </div>
-            </div>
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <button
+            </motion.div>
+
+            {/* Navigation Items - Hidden on mobile, shown on larger screens */}
+            <motion.nav 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="hidden lg:flex items-center space-x-8"
+            >
+              {[
+                { name: 'Features', href: '#features' },
+                { name: 'Solutions', href: '#solutions' },
+                { name: 'Products', href: '#products' }
+              ].map((item, index) => (
+                <motion.a
+                  key={item.name}
+                  href={item.href}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 * index }}
+                  whileHover={{ 
+                    y: -2,
+                    transition: { duration: 0.2 }
+                  }}
+                  className="relative text-gray-700 hover:text-teal-600 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 group"
+                >
+                  {item.name}
+                  <motion.div
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-teal-600 to-orange-600 rounded-full origin-left"
+                    initial={{ scaleX: 0 }}
+                    whileHover={{ scaleX: 1 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </motion.a>
+              ))}
+            </motion.nav>
+
+            {/* Action Buttons */}
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex items-center space-x-2 sm:space-x-4"
+            >
+              {/* Mobile Menu Button */}
+              <motion.button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="lg:hidden p-2 rounded-lg text-gray-700 hover:text-teal-600 hover:bg-gray-100 transition-all duration-200"
+              >
+                <motion.div
+                  animate={{ rotate: isMobileMenuOpen ? 180 : 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </motion.div>
+              </motion.button>
+
+              <motion.button
                 onClick={() => setIsLoginModalOpen(true)}
-                className="text-gray-600 hover:text-gray-900 px-2 sm:px-4 py-2 rounded-lg transition-colors text-sm sm:text-base"
+                whileHover={{ 
+                  scale: 1.05,
+                  y: -1,
+                  transition: { duration: 0.2 }
+                }}
+                whileTap={{ scale: 0.95 }}
+                className="hidden sm:block relative text-gray-700 hover:text-teal-600 px-3 sm:px-4 lg:px-6 py-2 lg:py-2.5 rounded-xl transition-all duration-200 text-sm sm:text-base lg:text-base font-medium group overflow-hidden"
               >
-                Sign In
-              </button>
-              <button
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-teal-50 to-orange-50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                />
+                <span className="relative">Sign In</span>
+              </motion.button>
+              
+              <motion.button
                 onClick={() => setShowRegistration(true)}
-                className="bg-teal-600 text-white px-3 sm:px-6 py-2 rounded-lg hover:bg-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl text-sm sm:text-base whitespace-nowrap"
+                whileHover={{ 
+                  scale: 1.05,
+                  y: -2,
+                  boxShadow: "0 10px 30px rgba(20, 184, 166, 0.3)"
+                }}
+                whileTap={{ scale: 0.95 }}
+                className="relative bg-gradient-to-r from-teal-600 to-teal-700 text-white px-4 sm:px-6 lg:px-8 py-2 lg:py-2.5 rounded-xl hover:from-teal-700 hover:to-teal-800 transition-all duration-300 shadow-lg hover:shadow-2xl text-sm sm:text-base lg:text-base font-semibold whitespace-nowrap overflow-hidden group"
               >
-                Get Started
-              </button>
-            </div>
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-orange-500 to-orange-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                />
+                <span className="relative flex items-center space-x-2">
+                  <span className="hidden sm:inline">Get Started</span>
+                  <span className="sm:hidden">Start</span>
+                  <motion.div
+                    animate={{ x: [0, 3, 0] }}
+                    transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                  </motion.div>
+                </span>
+              </motion.button>
+            </motion.div>
           </div>
         </div>
+        
+        {/* Mobile Menu */}
+        <motion.div
+          initial={false}
+          animate={{
+            height: isMobileMenuOpen ? 'auto' : 0,
+            opacity: isMobileMenuOpen ? 1 : 0
+          }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className="lg:hidden overflow-hidden bg-white/95 backdrop-blur-xl border-t border-gray-200/50"
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+            <nav className="flex flex-col space-y-3">
+              {[
+                { name: 'Features', href: '#features' },
+                { name: 'Solutions', href: '#solutions' },
+                { name: 'Products', href: '#products' }
+              ].map((item, index) => (
+                <motion.a
+                  key={item.name}
+                  href={item.href}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ 
+                    opacity: isMobileMenuOpen ? 1 : 0, 
+                    x: isMobileMenuOpen ? 0 : -20 
+                  }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="text-gray-700 hover:text-teal-600 py-2 px-3 rounded-lg text-base font-medium transition-all duration-200 hover:bg-gray-50"
+                >
+                  {item.name}
+                </motion.a>
+              ))}
+              
+              {/* Mobile Sign In Button */}
+              <motion.button
+                onClick={() => {
+                  setIsLoginModalOpen(true);
+                  setIsMobileMenuOpen(false);
+                }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ 
+                  opacity: isMobileMenuOpen ? 1 : 0, 
+                  x: isMobileMenuOpen ? 0 : -20 
+                }}
+                transition={{ duration: 0.3, delay: 0.4 }}
+                className="sm:hidden text-left text-gray-700 hover:text-teal-600 py-2 px-3 rounded-lg text-base font-medium transition-all duration-200 hover:bg-gray-50"
+              >
+                Sign In
+              </motion.button>
+            </nav>
+          </div>
+        </motion.div>
+        
+        {/* Modern underline animation */}
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal-200 to-transparent"
+          initial={{ scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 1, delay: 0.5 }}
+        />
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-12 sm:py-16 lg:py-20 xl:py-32 overflow-hidden min-h-screen flex items-center">
+      <section id="hero-section" className="relative py-12 sm:py-16 lg:py-20 xl:py-32 pt-20 lg:pt-24 overflow-hidden min-h-screen flex items-center">{/* Added padding-top to account for fixed header */}
         {/* Background Elements */}
         <div className="absolute inset-0 bg-gradient-to-br from-teal-50 via-white to-orange-50 z-0"></div>
         {/* Animated Background Circles - Enhanced for full screen visibility */}
@@ -250,7 +417,7 @@ const LandingPage = ({ onLogin, onSignup }) => {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 sm:py-20 bg-white relative overflow-hidden">
+      <section id="features" className="py-16 sm:py-20 bg-white relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{
@@ -303,7 +470,7 @@ const LandingPage = ({ onLogin, onSignup }) => {
       </section>
 
       {/* Role-based Solutions */}
-      <section className="py-16 sm:py-20 bg-gradient-to-br from-gray-50 to-teal-50 relative overflow-hidden">
+      <section id="solutions" className="py-16 sm:py-20 bg-gradient-to-br from-gray-50 to-teal-50 relative overflow-hidden">
         {/* Animated Background Elements */}
         <div className="absolute top-0 left-0 w-full h-full">
           <div className="absolute top-20 left-20 w-32 h-32 bg-teal-200 rounded-full opacity-20 animate-pulse-slow"></div>
@@ -439,6 +606,144 @@ const LandingPage = ({ onLogin, onSignup }) => {
               </motion.div>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Products Section */}
+      <section id="products" className="py-16 sm:py-20 bg-white relative overflow-hidden">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center mb-12 sm:mb-16"
+          >
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              Our Product Suite
+            </h2>
+            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto px-4">
+              Comprehensive healthcare solutions designed for modern medical facilities and patient care
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
+            {/* MediVaultPro Product Card */}
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="bg-gradient-to-br from-teal-50 to-white p-6 sm:p-8 rounded-2xl shadow-xl border border-teal-100 hover:shadow-2xl transition-all duration-300"
+            >
+              <div className="flex items-center mb-6">
+                <motion.div 
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  className="w-12 h-12 bg-teal-600 rounded-xl flex items-center justify-center text-white mr-4"
+                >
+                  <Building className="w-6 h-6" />
+                </motion.div>
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-teal-700">MediVaultPro</h3>
+                  <p className="text-teal-600">For Healthcare Facilities</p>
+                </div>
+              </div>
+              
+              <p className="text-gray-600 mb-6">
+                Complete healthcare management system for clinics, hospitals, and laboratories with advanced features for patient care, staff management, and operational efficiency.
+              </p>
+
+              <div className="space-y-3 mb-8">
+                {[
+                  'Electronic Health Records (EHR)',
+                  'Patient Management System',
+                  'Lab Integration & Results',
+                  'Staff Management',
+                  'Comprehensive Reporting',
+                  'HIPAA Compliant Security'
+                ].map((feature, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="flex items-center"
+                  >
+                    <div className="w-2 h-2 bg-teal-500 rounded-full mr-3"></div>
+                    <span className="text-gray-700">{feature}</span>
+                  </motion.div>
+                ))}
+              </div>
+
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowRegistration(true)}
+                className="w-full bg-teal-600 text-white px-6 py-3 rounded-lg hover:bg-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
+              >
+                Start Free Trial
+              </motion.button>
+            </motion.div>
+
+            {/* HealthTracker Product Card */}
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="bg-gradient-to-br from-orange-50 to-white p-6 sm:p-8 rounded-2xl shadow-xl border border-orange-100 hover:shadow-2xl transition-all duration-300"
+            >
+              <div className="flex items-center mb-6">
+                <motion.div 
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  className="w-12 h-12 bg-orange-600 rounded-xl flex items-center justify-center text-white mr-4"
+                >
+                  <Activity className="w-6 h-6" />
+                </motion.div>
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-orange-700">HealthTracker</h3>
+                  <p className="text-orange-600">For Patients</p>
+                </div>
+              </div>
+              
+              <p className="text-gray-600 mb-6">
+                Personal health management app that connects patients with their healthcare providers, enabling better health monitoring and care coordination.
+              </p>
+
+              <div className="space-y-3 mb-8">
+                {[
+                  'Personal Health Dashboard',
+                  'Vital Signs Tracking',
+                  'Medication Reminders',
+                  'Test Results Access',
+                  'Health Goal Setting',
+                  'Provider Communication',
+                  'Emergency Health Info'
+                ].map((feature, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className="flex items-center"
+                  >
+                    <div className="w-2 h-2 bg-orange-500 rounded-full mr-3"></div>
+                    <span className="text-gray-700">{feature}</span>
+                  </motion.div>
+                ))}
+              </div>
+
+              <motion.button
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl font-semibold"
+              >
+                Download App
+              </motion.button>
+            </motion.div>
+          </div>
         </div>
       </section>
 

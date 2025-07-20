@@ -30,9 +30,11 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
     licenseNumber: '',
     website: '',
     logo: null,
-    adminName: '',
+    adminFirstName: '',
+    adminLastName: '',
     adminEmail: '',
-    adminPhone: ''
+    adminPhone: '',
+    adminPassword: ''
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -154,8 +156,12 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
       newErrors.email = 'Email is invalid';
     }
 
-    if (!formData.adminName.trim()) {
-      newErrors.adminName = 'Administrator name is required';
+    if (!formData.adminFirstName.trim()) {
+      newErrors.adminFirstName = 'Administrator first name is required';
+    }
+
+    if (!formData.adminLastName.trim()) {
+      newErrors.adminLastName = 'Administrator last name is required';
     }
 
     if (!formData.adminEmail.trim()) {
@@ -166,6 +172,12 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
 
     if (!formData.adminPhone.trim()) {
       newErrors.adminPhone = 'Administrator phone is required';
+    }
+
+    if (!formData.adminPassword.trim()) {
+      newErrors.adminPassword = 'Administrator password is required';
+    } else if (formData.adminPassword.length < 8) {
+      newErrors.adminPassword = 'Password must be at least 8 characters long';
     }
 
     setErrors(newErrors);
@@ -213,9 +225,11 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
       licenseNumber: '',
       website: '',
       logo: null,
-      adminName: '',
+      adminFirstName: '',
+      adminLastName: '',
       adminEmail: '',
-      adminPhone: ''
+      adminPhone: '',
+      adminPassword: ''
     });
     setErrors({});
     setSelectedType('');
@@ -546,21 +560,41 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Administrator Information</h3>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Administrator Name *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Administrator First Name *</label>
                       <input
                         type="text"
-                        name="adminName"
-                        value={formData.adminName}
+                        name="adminFirstName"
+                        value={formData.adminFirstName}
                         onChange={handleInputChange}
                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
-                          errors.adminName ? 'border-red-500' : 'border-gray-300'
+                          errors.adminFirstName ? 'border-red-500' : 'border-gray-300'
                         }`}
-                        placeholder="Dr. Priyani Fernando"
+                        placeholder="Priyani"
                       />
-                      {errors.adminName && (
+                      {errors.adminFirstName && (
                         <p className="mt-1 text-sm text-red-600 flex items-center">
                           <AlertCircle className="w-4 h-4 mr-1" />
-                          {errors.adminName}
+                          {errors.adminFirstName}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Administrator Last Name *</label>
+                      <input
+                        type="text"
+                        name="adminLastName"
+                        value={formData.adminLastName}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
+                          errors.adminLastName ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder="Fernando"
+                      />
+                      {errors.adminLastName && (
+                        <p className="mt-1 text-sm text-red-600 flex items-center">
+                          <AlertCircle className="w-4 h-4 mr-1" />
+                          {errors.adminLastName}
                         </p>
                       )}
                     </div>
@@ -601,6 +635,26 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                         <p className="mt-1 text-sm text-red-600 flex items-center">
                           <AlertCircle className="w-4 h-4 mr-1" />
                           {errors.adminPhone}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Administrator Password *</label>
+                      <input
+                        type="password"
+                        name="adminPassword"
+                        value={formData.adminPassword}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
+                          errors.adminPassword ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder="Enter secure password"
+                      />
+                      {errors.adminPassword && (
+                        <p className="mt-1 text-sm text-red-600 flex items-center">
+                          <AlertCircle className="w-4 h-4 mr-1" />
+                          {errors.adminPassword}
                         </p>
                       )}
                     </div>
