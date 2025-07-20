@@ -79,11 +79,6 @@ const LandingPage = ({ onLogin, onSignup }) => {
       description: "HIPAA compliant with advanced encryption and security measures to protect patient data."
     },
     {
-      icon: <Activity className="w-8 h-8" />,
-      title: "Real-time Monitoring",
-      description: "Monitor patient vitals and health metrics in real-time with instant alerts."
-    },
-    {
       icon: <Users className="w-8 h-8" />,
       title: "Multi-Role Access",
       description: "Designed for doctors, nurses, lab technicians, and administrators with role-based permissions."

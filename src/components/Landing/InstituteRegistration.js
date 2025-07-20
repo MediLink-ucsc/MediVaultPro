@@ -65,20 +65,6 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
         'Clinic Integration Support',
         'Lab Technician & Admin Access'
       ]
-    },
-    {
-      type: 'clinic_lab',
-      title: 'Medical Center + Lab',
-      description: 'For medical centers with integrated in-house laboratory services',
-      icon: <Building2 className="w-12 h-12" />,
-      color: 'from-orange-500 to-orange-600',
-      features: [
-        'Complete Patient Management',
-        'Integrated Lab Services',
-        'Seamless Test Processing',
-        'Unified Patient Reports',
-        'All Roles Access (Doctors, Nurses, Lab Techs, Admin)'
-      ]
     }
   ];
 
