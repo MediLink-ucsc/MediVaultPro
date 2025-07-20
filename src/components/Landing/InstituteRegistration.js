@@ -15,6 +15,7 @@ import {
   CheckCircle,
   AlertCircle
 } from 'lucide-react';
+import axios from 'axios';
 
 const InstituteRegistration = ({ onBack, onComplete }) => {
   const [currentStep, setCurrentStep] = useState('type'); // 'type', 'details', 'confirmation'
@@ -170,9 +171,9 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
       newErrors.adminEmail = 'Administrator email is invalid';
     }
 
-    if (!formData.adminPhone.trim()) {
-      newErrors.adminPhone = 'Administrator phone is required';
-    }
+    // if (!formData.adminPhone.trim()) {
+    //   newErrors.adminPhone = 'Administrator phone is required';
+    // }
 
     if (!formData.adminPassword.trim()) {
       newErrors.adminPassword = 'Administrator password is required';
@@ -184,34 +185,106 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
     
-    if (!validateForm()) {
-      return;
+  //   if (!validateForm()) {
+  //     return;
+  //   }
+
+  //   setIsSubmitting(true);
+    
+  //   try {
+  //     // Simulate API call
+  //     await new Promise(resolve => setTimeout(resolve, 2000));
+      
+  //     const registrationData = {
+  //       ...formData,
+  //       instituteType: selectedType,
+  //       registrationDate: new Date().toISOString()
+  //     };
+      
+  //     console.log('Institute Registration Data:', registrationData);
+  //     setCurrentStep('confirmation');
+  //   } catch (error) {
+  //     console.error('Registration failed:', error);
+  //     setErrors({ submit: 'Registration failed. Please try again.' });
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
+  
+
+// inside your component
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  console.log('Submit triggered');
+
+  console.log('Validating form...');
+  if (!validateForm()) {
+    console.log('Validation failed:');
+    return;
+  }
+  setIsSubmitting(true);
+
+  try {
+    console.log('Form Data:', formData);
+
+    // Prepare payload as a plain JS object (JSON)
+    const payload = {
+      institutionName: formData.instituteName,
+      address: formData.address,
+      city: formData.city,
+      provinceState: formData.state,
+      postalCode: formData.zipCode,
+      phoneNumber: formData.phone,
+      emailAddress: formData.email,
+      licenseNumber: formData.licenseNumber,
+      website: formData.website,
+      firstName: formData.adminFirstName,
+      lastName: formData.adminLastName,
+      username: formData.adminEmail,
+      password: formData.adminPassword,
+      institutionLogo: formData.logoUrl || "", // must be a URL string or empty string
+    };
+
+    console.log('Payload:', payload);
+
+    // Set API endpoint based on selectedType
+    const apiUrl =
+      selectedType === 'lab'
+        ? 'http://localhost:3000/api/v1/auth/medvaultpro/labadmin/register'
+        : 'http://localhost:3000/api/v1/auth/medvaultpro/clinicadmin/register';
+    console.log('API URL:', apiUrl);
+
+    // Send POST request with JSON body
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // tell backend we send JSON
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Backend error response:', errorData);
+      console.error('Validation errors:', errorData.errors);
+      throw new Error(errorData.message || 'Registration failed');
     }
 
-    setIsSubmitting(true);
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const registrationData = {
-        ...formData,
-        instituteType: selectedType,
-        registrationDate: new Date().toISOString()
-      };
-      
-      console.log('Institute Registration Data:', registrationData);
-      setCurrentStep('confirmation');
-    } catch (error) {
-      console.error('Registration failed:', error);
-      setErrors({ submit: 'Registration failed. Please try again.' });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    // Success
+    setCurrentStep('confirmation');
+  } catch (error) {
+    setErrors({ submit: error.message });
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
+
+
 
   const resetForm = () => {
     setFormData({
@@ -619,7 +692,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                       )}
                     </div>
 
-                    <div>
+                    {/* <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Administrator Phone *</label>
                       <input
                         type="tel"
@@ -637,7 +710,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                           {errors.adminPhone}
                         </p>
                       )}
-                    </div>
+                    </div> */}
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">Administrator Password *</label>
