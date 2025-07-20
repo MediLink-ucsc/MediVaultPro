@@ -88,6 +88,46 @@ class ApiService {
       method: "DELETE",
     });
   }
+
+  // Lab workflow methods
+  static async getTestTypes() {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.LAB_REPORT.GET_TEST_TYPES
+    );
+    return response.json();
+  }
+
+  static async getTestTypeById(id) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.LAB_REPORT.GET_TEST_TYPE_BY_ID(id)
+    );
+    return response.json();
+  }
+
+  static async getLabSamples() {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.LAB_REPORT.GET_SAMPLES
+    );
+    return response.json();
+  }
+
+  static async getLabSampleById(id) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.LAB_REPORT.GET_SAMPLES_BY_ID(id)
+    );
+    return response.json();
+  }
+
+  static async createLabSample(sampleData) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.LAB_REPORT.CREATE_SAMPLE,
+      {
+        method: "POST",
+        body: JSON.stringify(sampleData),
+      }
+    );
+    return response.json();
+  }
 }
 
 export default ApiService;

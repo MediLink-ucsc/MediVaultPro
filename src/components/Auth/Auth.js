@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import AuthForm from './AuthForm';
+import React, { useState } from "react";
+import AuthForm from "./AuthForm";
 
-const Auth = ({ 
-  context = 'page', // 'page' or 'modal'
-  onLogin, 
+const Auth = ({
+  context = "page", // 'page' or 'modal'
+  onLogin,
   onSwitchToForgotPassword,
   onBackToLanding,
-  onSwitchToRegistration
+  onSwitchToRegistration,
 }) => {
-  const [mode, setMode] = useState('login'); // Only 'login' mode now
+  const [mode, setMode] = useState("login"); // Only 'login' mode now
 
   // For full page context, wrap with layout
-  if (context === 'page') {
+  if (context === "page") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative">
-          <AuthForm 
+          <AuthForm
             mode={mode}
             context={context}
             onLogin={onLogin}
@@ -30,7 +30,7 @@ const Auth = ({
 
   // For modal context, return form directly
   return (
-    <AuthForm 
+    <AuthForm
       mode={mode}
       context={context}
       onLogin={onLogin}

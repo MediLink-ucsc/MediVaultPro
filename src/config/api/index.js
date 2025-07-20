@@ -1,19 +1,32 @@
 const API_BASE_URL =
   process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
 
+const VERSION = "v1";
+
 export const API_ENDPOINTS = {
   BASE_URL: API_BASE_URL,
   AUTH: {
-    LOGIN: `${API_BASE_URL}/api/v1/auth/medvaultpro/login`,
-    LOGOUT: `${API_BASE_URL}/api/v1/auth/medvaultpro/logout`,
-    REGISTER: `${API_BASE_URL}/api/v1/auth/medvaultpro/register`,
+    LOGIN: `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/login`,
+    LOGOUT: `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/logout`,
+    REGISTER: `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/register`,
   },
   PATIENTS: {
-    GET_ALL: `${API_BASE_URL}/api/v1/patients`,
-    GET_BY_ID: (id) => `${API_BASE_URL}/api/v1/patients/${id}`,
-    CREATE: `${API_BASE_URL}/api/v1/patients`,
-    UPDATE: (id) => `${API_BASE_URL}/api/v1/patients/${id}`,
-    DELETE: (id) => `${API_BASE_URL}/api/v1/patients/${id}`,
+    GET_ALL: `${API_BASE_URL}/api/${VERSION}/patients`,
+    GET_BY_ID: (id) => `${API_BASE_URL}/api/${VERSION}/patients/${id}`,
+    CREATE: `${API_BASE_URL}/api/${VERSION}/patients`,
+    UPDATE: (id) => `${API_BASE_URL}/api/${VERSION}/patients/${id}`,
+    DELETE: (id) => `${API_BASE_URL}/api/${VERSION}/patients/${id}`,
+  },
+  LAB_REPORT: {
+    GET_TEST_TYPES: `${API_BASE_URL}/api/${VERSION}/labReport/report/testTypes`,
+    GET_TEST_TYPE_BY_ID: (id) =>
+      `${API_BASE_URL}/api/${VERSION}/labReport/report/testType/${id}`,
+    GET_SAMPLES: `${API_BASE_URL}/api/${VERSION}/labReport/workflow/samples`,
+    GET_SAMPLES_BY_ID: (id) =>
+      `${API_BASE_URL}/api/${VERSION}/labReport/workflow/samples/${id}`,
+    CREATE_SAMPLE: `${API_BASE_URL}/api/${VERSION}/labReport/workflow/samples`,
+    UPDATE: (id) =>
+      `${API_BASE_URL}/api/${VERSION}/labReport/workflow/samples/${id}`,
   },
 };
 

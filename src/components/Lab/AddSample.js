@@ -1,114 +1,138 @@
 // src/components/Lab/AddSample.js
-import React, { useState } from 'react';
-import { 
-  FlaskConical, 
-  User, 
-  Calendar, 
-  Clock, 
+import React, { useEffect, useState } from "react";
+import {
+  FlaskConical,
+  User,
+  Calendar,
+  Clock,
   AlertCircle,
   TestTube2,
   Beaker,
   Microscope,
   Save,
-  X
-} from 'lucide-react';
+  X,
+} from "lucide-react";
+import ApiService from "../../services/apiService";
 
 const AddSample = ({ onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
-    patientId: '',
-    patientName: '',
-    testType: '',
-    sampleType: 'blood',
-    priority: 'normal',
-    receivedDate: new Date().toISOString().split('T')[0],
-    receivedTime: new Date().toLocaleTimeString('en-US', { 
-      hour12: false, 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    patientId: "",
+    patientName: "",
+    testTypeId: "",
+    sampleType: "blood",
+    priority: "normal",
+    receivedDate: new Date().toISOString().split("T")[0],
+    receivedTime: new Date().toLocaleTimeString("en-US", {
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
     }),
-    expectedTime: '',
-    collectedBy: '',
-    notes: '',
-    volume: '',
-    container: ''
+    expectedDate: new Date().toISOString().split("T")[0],
+    expectedTime: "",
+    collectedBy: "",
+    notes: "",
+    volume: "",
+    container: "",
   });
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [testTypes, setTestTypes] = useState([]);
 
   const sampleTypes = [
-    { value: 'blood', label: 'Blood', icon: TestTube2, color: 'text-orange-600' },
-    { value: 'urine', label: 'Urine', icon: Beaker, color: 'text-orange-400' },
-    { value: 'swab', label: 'Swab', icon: Microscope, color: 'text-teal-600' },
-    { value: 'other', label: 'Other', icon: FlaskConical, color: 'text-teal-500' }
+    {
+      value: "blood",
+      label: "Blood",
+      icon: TestTube2,
+      color: "text-orange-600",
+    },
+    { value: "urine", label: "Urine", icon: Beaker, color: "text-orange-400" },
+    { value: "swab", label: "Swab", icon: Microscope, color: "text-teal-600" },
+    {
+      value: "other",
+      label: "Other",
+      icon: FlaskConical,
+      color: "text-teal-500",
+    },
   ];
 
-  const testTypes = [
-    'Complete Blood Count',
-    'Urinalysis',
-    'Lipid Panel',
-    'Blood Culture',
-    'Glucose Test',
-    'Throat Culture',
-    'Liver Function Test',
-    'Kidney Function Test',
-    'Thyroid Function Test',
-    'Hemoglobin A1C',
-    'Cholesterol Panel',
-    'Blood Gas Analysis'
-  ];
+  // const testTypes = [
+  //   "Complete Blood Count",
+  //   "Urinalysis",
+  //   "Lipid Panel",
+  //   "Blood Culture",
+  //   "Glucose Test",
+  //   "Throat Culture",
+  //   "Liver Function Test",
+  //   "Kidney Function Test",
+  //   "Thyroid Function Test",
+  //   "Hemoglobin A1C",
+  //   "Cholesterol Panel",
+  //   "Blood Gas Analysis",
+  // ];
 
   const containers = {
-    blood: ['EDTA Tube', 'SST Tube', 'Heparinized Tube', 'Fluoride Tube', 'Culture Bottle'],
-    urine: ['Sterile Cup', 'Non-sterile Cup', '24-hour Container'],
-    swab: ['Transport Media', 'Dry Swab', 'Viral Transport Media'],
-    other: ['Plain Tube', 'Special Container']
+    blood: [
+      "EDTA Tube",
+      "SST Tube",
+      "Heparinized Tube",
+      "Fluoride Tube",
+      "Culture Bottle",
+    ],
+    urine: ["Sterile Cup", "Non-sterile Cup", "24-hour Container"],
+    swab: ["Transport Media", "Dry Swab", "Viral Transport Media"],
+    other: ["Plain Tube", "Special Container"],
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: "",
       }));
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.patientId.trim()) {
-      newErrors.patientId = 'Patient ID is required';
+      newErrors.patientId = "Patient ID is required";
     }
-    
+
     if (!formData.patientName.trim()) {
-      newErrors.patientName = 'Patient name is required';
+      newErrors.patientName = "Patient name is required";
     }
-    
-    if (!formData.testType.trim()) {
-      newErrors.testType = 'Test type is required';
+
+    if (!formData.testTypeId.trim()) {
+      newErrors.testType = "Test type is required";
     }
-    
+
     if (!formData.collectedBy.trim()) {
-      newErrors.collectedBy = 'Collected by is required';
+      newErrors.collectedBy = "Collected by is required";
     }
-    
+
     if (!formData.volume.trim()) {
-      newErrors.volume = 'Volume is required';
+      newErrors.volume = "Volume is required";
     }
-    
+
     if (!formData.container.trim()) {
-      newErrors.container = 'Container type is required';
+      newErrors.container = "Container type is required";
     }
-    
+
+    if (!formData.expectedDate.trim()) {
+      newErrors.expectedDate = "Expected date is required";
+    }
+
     if (!formData.expectedTime.trim()) {
-      newErrors.expectedTime = 'Expected time is required';
+      newErrors.expectedTime = "Expected time is required";
     }
 
     return newErrors;
@@ -116,7 +140,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     const newErrors = validateForm();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -124,27 +148,51 @@ const AddSample = ({ onSubmit, onCancel }) => {
     }
 
     // Generate sample ID (in real app, this would be from backend)
-    const sampleId = `S${String(Date.now()).slice(-3).padStart(3, '0')}`;
+    const sampleId = `S${String(Date.now()).slice(-3).padStart(3, "0")}`;
     const barcode = `BC${String(Date.now()).slice(-9)}`;
 
     const sampleData = {
       ...formData,
       id: sampleId,
       barcode,
-      status: 'pending'
+      status: "pending",
     };
 
+    console.log("Sample Data to Submit:", sampleData);
     onSubmit(sampleData);
   };
 
   const getSampleTypeIcon = (type) => {
-    const sampleType = sampleTypes.find(st => st.value === type);
+    const sampleType = sampleTypes.find((st) => st.value === type);
     if (sampleType) {
       const IconComponent = sampleType.icon;
       return <IconComponent className={`w-5 h-5 ${sampleType.color}`} />;
     }
     return <FlaskConical className="w-5 h-5 text-gray-500" />;
   };
+
+  useEffect(() => {
+    const fetchTestTypes = async () => {
+      try {
+        setLoading(true);
+        const response = await ApiService.getTestTypes();
+        console.log("Test types response:", response);
+
+        if (response.success && Array.isArray(response.data)) {
+          setTestTypes(response.data);
+        } else {
+          console.error("Invalid test types response format");
+          setTestTypes([]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch test types:", error);
+        setTestTypes([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTestTypes();
+  }, []);
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -165,7 +213,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
               value={formData.patientId}
               onChange={handleInputChange}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 ${
-                errors.patientId ? 'border-red-300' : 'border-gray-300'
+                errors.patientId ? "border-red-300" : "border-gray-300"
               }`}
               placeholder="e.g., P001"
             />
@@ -176,7 +224,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
               </p>
             )}
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Patient Name *
@@ -187,7 +235,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
               value={formData.patientName}
               onChange={handleInputChange}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 ${
-                errors.patientName ? 'border-red-300' : 'border-gray-300'
+                errors.patientName ? "border-red-300" : "border-gray-300"
               }`}
               placeholder="Enter patient name"
             />
@@ -213,26 +261,31 @@ const AddSample = ({ onSubmit, onCancel }) => {
               Test Type *
             </label>
             <select
-              name="testType"
-              value={formData.testType}
+              name="testTypeId" // Changed from testType to testTypeId
+              value={formData.testTypeId}
               onChange={handleInputChange}
+              disabled={loading}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 ${
-                errors.testType ? 'border-red-300' : 'border-gray-300'
-              }`}
+                errors.testTypeId ? "border-red-300" : "border-gray-300"
+              } ${loading ? "bg-gray-100 cursor-not-allowed" : ""}`}
             >
-              <option value="">Select test type</option>
-              {testTypes.map(test => (
-                <option key={test} value={test}>{test}</option>
+              <option value="">
+                {loading ? "Loading test types..." : "Select test type"}
+              </option>
+              {testTypes.map((test) => (
+                <option key={test.id} value={test.id}>
+                  {test.label} ({test.category})
+                </option>
               ))}
             </select>
-            {errors.testType && (
+            {errors.testTypeId && (
               <p className="text-red-500 text-sm mt-1 flex items-center">
                 <AlertCircle className="w-4 h-4 mr-1" />
-                {errors.testType}
+                {errors.testTypeId}
               </p>
             )}
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Sample Type *
@@ -247,13 +300,15 @@ const AddSample = ({ onSubmit, onCancel }) => {
                 onChange={handleInputChange}
                 className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 appearance-none"
               >
-                {sampleTypes.map(type => (
-                  <option key={type.value} value={type.value}>{type.label}</option>
+                {sampleTypes.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
                 ))}
               </select>
             </div>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Volume *
@@ -264,7 +319,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
               value={formData.volume}
               onChange={handleInputChange}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 ${
-                errors.volume ? 'border-red-300' : 'border-gray-300'
+                errors.volume ? "border-red-300" : "border-gray-300"
               }`}
               placeholder="e.g., 5ml, 50ml"
             />
@@ -275,7 +330,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
               </p>
             )}
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Container *
@@ -285,12 +340,14 @@ const AddSample = ({ onSubmit, onCancel }) => {
               value={formData.container}
               onChange={handleInputChange}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 ${
-                errors.container ? 'border-red-300' : 'border-gray-300'
+                errors.container ? "border-red-300" : "border-gray-300"
               }`}
             >
               <option value="">Select container</option>
-              {containers[formData.sampleType]?.map(container => (
-                <option key={container} value={container}>{container}</option>
+              {containers[formData.sampleType]?.map((container) => (
+                <option key={container} value={container}>
+                  {container}
+                </option>
               ))}
             </select>
             {errors.container && (
@@ -300,7 +357,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
               </p>
             )}
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Priority
@@ -338,7 +395,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Received Time
@@ -351,20 +408,39 @@ const AddSample = ({ onSubmit, onCancel }) => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Expected Completion *
+              Expected Completion Date *
             </label>
             <input
-              type="text"
+              type="date"
+              name="expectedDate"
+              value={formData.expectedDate || formData.receivedDate}
+              onChange={handleInputChange}
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 ${
+                errors.expectedDate ? "border-red-300" : "border-gray-300"
+              }`}
+            />
+            {errors.expectedDate && (
+              <p className="text-red-500 text-sm mt-1 flex items-center">
+                <AlertCircle className="w-4 h-4 mr-1" />
+                {errors.expectedDate}
+              </p>
+            )}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Expected Completion Time *
+            </label>
+            <input
+              type="time"
               name="expectedTime"
               value={formData.expectedTime}
               onChange={handleInputChange}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 ${
-                errors.expectedTime ? 'border-red-300' : 'border-gray-300'
+                errors.expectedTime ? "border-red-300" : "border-gray-300"
               }`}
-              placeholder="e.g., 2:30 PM, 24 hours, 48 hours"
             />
             {errors.expectedTime && (
               <p className="text-red-500 text-sm mt-1 flex items-center">
@@ -393,7 +469,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
               value={formData.collectedBy}
               onChange={handleInputChange}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 ${
-                errors.collectedBy ? 'border-red-300' : 'border-gray-300'
+                errors.collectedBy ? "border-red-300" : "border-gray-300"
               }`}
               placeholder="e.g., Nurse Likitha"
             />
@@ -404,7 +480,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
               </p>
             )}
           </div>
-          
+
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Notes
