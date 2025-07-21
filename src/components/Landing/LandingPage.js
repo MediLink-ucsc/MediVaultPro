@@ -103,13 +103,13 @@ const LandingPage = ({ onLogin, onSignup }) => {
       icon: <Stethoscope className="w-12 h-12" />,
       title: "Doctors",
       description: "Comprehensive patient management, diagnostics, and treatment planning tools.",
-      color: "bg-teal-600" // Unified teal theme
+      color: "bg-teal-600" 
     },
     {
       icon: <Users className="w-12 h-12" />,
       title: "Nurses",
       description: "Patient care coordination, vital signs monitoring, and medication management.",
-      color: "bg-teal-500" // Changed from orange to teal for unified theme
+      color: "bg-teal-500"
     },
     {
       icon: <FlaskConical className="w-12 h-12" />,
@@ -120,8 +120,8 @@ const LandingPage = ({ onLogin, onSignup }) => {
     {
       icon: <Building className="w-12 h-12" />,
       title: "Administrators",
-      description: "Staff management, system oversight, and institutional administration.",
-      color: "bg-teal-600" // Changed from orange to teal for unified theme
+      description: "Staff Registering, system oversight, and institutional administration.",
+      color: "bg-teal-600" 
     }
   ];
 
@@ -329,32 +329,23 @@ const LandingPage = ({ onLogin, onSignup }) => {
       </header>
 
       {/* Hero Section */}
-      <section id="hero-section" className="relative py-12 sm:py-16 lg:py-20 xl:py-32 pt-20 lg:pt-24 overflow-hidden min-h-screen flex items-center">{/* Added padding-top to account for fixed header */}
-        {/* Background Elements */}
+      <section id="hero-section" className="relative py-12 sm:py-16 lg:py-20 xl:py-32 pt-20 lg:pt-24 overflow-hidden min-h-screen flex items-center">
         <div className="absolute inset-0 bg-gradient-to-br from-teal-50 via-white to-orange-50 z-0"></div>
-        {/* Animated Background Circles - Enhanced for full screen visibility */}
         <div className="absolute inset-0 z-0">
-          {/* Top Left Circle */}
           <div className="absolute top-0 left-0 w-64 h-64 sm:w-96 sm:h-96 lg:w-[32rem] lg:h-[32rem] xl:w-[40rem] xl:h-[40rem] bg-teal-200 rounded-full mix-blend-multiply filter blur-2xl opacity-40 animate-pulse-slow transform -translate-x-1/2 -translate-y-1/2"></div>
           
-          {/* Top Right Circle */}
           <div className="absolute top-0 right-0 w-72 h-72 sm:w-[28rem] sm:h-[28rem] lg:w-[36rem] lg:h-[36rem] xl:w-[44rem] xl:h-[44rem] bg-orange-200 rounded-full mix-blend-multiply filter blur-2xl opacity-35 animate-pulse-slow transform translate-x-1/3 -translate-y-1/3" style={{animationDelay: '2s'}}></div>
           
-          {/* Bottom Left Circle */}
           <div className="absolute bottom-0 left-0 w-80 h-80 sm:w-[30rem] sm:h-[30rem] lg:w-[38rem] lg:h-[38rem] xl:w-[46rem] xl:h-[46rem] bg-teal-300 rounded-full mix-blend-multiply filter blur-2xl opacity-30 animate-pulse-slow transform -translate-x-1/4 translate-y-1/4" style={{animationDelay: '4s'}}></div>
           
-          {/* Center Circle for extra coverage */}
           <div className="absolute top-1/2 left-1/2 w-56 h-56 sm:w-80 sm:h-80 lg:w-[28rem] lg:h-[28rem] xl:w-[32rem] xl:h-[32rem] bg-gradient-to-r from-teal-100 to-orange-100 rounded-full mix-blend-multiply filter blur-3xl opacity-25 animate-pulse-slow transform -translate-x-1/2 -translate-y-1/2" style={{animationDelay: '6s'}}></div>
           
-          {/* Bottom Right Circle */}
           <div className="absolute bottom-0 right-0 w-68 h-68 sm:w-[26rem] sm:h-[26rem] lg:w-[34rem] lg:h-[34rem] xl:w-[42rem] xl:h-[42rem] bg-orange-300 rounded-full mix-blend-multiply filter blur-2xl opacity-28 animate-pulse-slow transform translate-x-1/3 translate-y-1/3" style={{animationDelay: '1s'}}></div>
           
-          {/* Additional floating circles for more dynamic effect */}
           <div className="absolute top-1/4 right-1/4 w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-teal-100 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float-gentle" style={{animationDelay: '3s'}}></div>
           
           <div className="absolute bottom-1/3 left-1/3 w-40 h-40 sm:w-56 sm:h-56 lg:w-72 lg:h-72 bg-orange-100 rounded-full mix-blend-multiply filter blur-xl opacity-25 animate-float-gentle" style={{animationDelay: '5s'}}></div>
           
-          {/* Shimmer overlay for extra visual interest */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent animate-shimmer"></div>
         </div>
         
@@ -418,7 +409,6 @@ const LandingPage = ({ onLogin, onSignup }) => {
 
       {/* Features Section */}
       <section id="features" className="py-16 sm:py-20 bg-white relative overflow-hidden">
-        {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23059669' fill-opacity='0.1'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
@@ -471,7 +461,6 @@ const LandingPage = ({ onLogin, onSignup }) => {
 
       {/* Role-based Solutions */}
       <section id="solutions" className="py-16 sm:py-20 bg-gradient-to-br from-gray-50 to-teal-50 relative overflow-hidden">
-        {/* Animated Background Elements */}
         <div className="absolute top-0 left-0 w-full h-full">
           <div className="absolute top-20 left-20 w-32 h-32 bg-teal-200 rounded-full opacity-20 animate-pulse-slow"></div>
           <div className="absolute bottom-20 right-20 w-40 h-40 bg-orange-200 rounded-full opacity-20 animate-pulse-slow" style={{animationDelay: '3s'}}></div>
@@ -658,7 +647,7 @@ const LandingPage = ({ onLogin, onSignup }) => {
                   'Electronic Health Records (EHR)',
                   'Patient Management System',
                   'Lab Integration & Results',
-                  'Staff Management',
+                  'Staff Registering',
                   'Comprehensive Reporting',
                   'HIPAA Compliant Security'
                 ].map((feature, index) => (
@@ -749,7 +738,6 @@ const LandingPage = ({ onLogin, onSignup }) => {
 
       {/* CTA Section */}
       <section className="py-16 sm:py-20 bg-gradient-to-r from-teal-600 to-orange-600 relative overflow-hidden">
-        {/* Animated Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse-slow"></div>
           <div className="absolute bottom-10 right-10 w-32 h-32 bg-white/5 rounded-full animate-pulse-slow" style={{animationDelay: '2s'}}></div>
@@ -827,7 +815,6 @@ const LandingPage = ({ onLogin, onSignup }) => {
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12 sm:py-16 relative overflow-hidden">
-        {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0" style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M0 0h40v40H0z'/%3E%3Cpath d='M20 20h20v20H20z'/%3E%3C/g%3E%3C/svg%3E")`,
@@ -835,7 +822,6 @@ const LandingPage = ({ onLogin, onSignup }) => {
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Main Footer Content */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 sm:mb-12">
             {/* Company Info */}
             <motion.div 

@@ -33,7 +33,6 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
     adminFirstName: '',
     adminLastName: '',
     adminEmail: '',
-    adminPhone: '',
     adminPassword: ''
   });
   const [errors, setErrors] = useState({});
@@ -170,10 +169,6 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
       newErrors.adminEmail = 'Administrator email is invalid';
     }
 
-    if (!formData.adminPhone.trim()) {
-      newErrors.adminPhone = 'Administrator phone is required';
-    }
-
     if (!formData.adminPassword.trim()) {
       newErrors.adminPassword = 'Administrator password is required';
     } else if (formData.adminPassword.length < 8) {
@@ -228,7 +223,6 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
       adminFirstName: '',
       adminLastName: '',
       adminEmail: '',
-      adminPhone: '',
       adminPassword: ''
     });
     setErrors({});
@@ -615,26 +609,6 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                         <p className="mt-1 text-sm text-red-600 flex items-center">
                           <AlertCircle className="w-4 h-4 mr-1" />
                           {errors.adminEmail}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Administrator Phone *</label>
-                      <input
-                        type="tel"
-                        name="adminPhone"
-                        value={formData.adminPhone}
-                        onChange={handleInputChange}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
-                          errors.adminPhone ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                        placeholder="+94 77 123 4567"
-                      />
-                      {errors.adminPhone && (
-                        <p className="mt-1 text-sm text-red-600 flex items-center">
-                          <AlertCircle className="w-4 h-4 mr-1" />
-                          {errors.adminPhone}
                         </p>
                       )}
                     </div>
