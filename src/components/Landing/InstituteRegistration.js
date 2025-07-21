@@ -50,7 +50,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
         'Prescription & Treatment Records',
         'Lab Integration & Reports',
         'Electronic Health Records',
-        'Multi-role Access (Doctors, Nurses, Admin)'
+        'Multi-role Access (Doctors, Nurses/Assistants, Admin)'
       ]
     },
     {
