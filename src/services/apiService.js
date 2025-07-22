@@ -128,6 +128,42 @@ class ApiService {
     );
     return response.json();
   }
+
+  static async processLabReport(sampleId, reportData) {
+    const token = localStorage.getItem("token");
+
+    // For FormData, we need to handle headers differently
+    const headers = {};
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+
+    // Don't set Content-Type for FormData - browser will set it automatically with boundary
+    const config = {
+      method: "POST",
+      headers: headers,
+      body: reportData, // FormData object
+    };
+
+    try {
+      const response = await fetch(
+        API_ENDPOINTS.LAB_REPORT.PROCESS_REPORT(sampleId),
+        config
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `HTTP ${response.status}: ${response.statusText}`
+        );
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error("API request failed:", error);
+      throw error;
+    }
+  }
 }
 
 export default ApiService;

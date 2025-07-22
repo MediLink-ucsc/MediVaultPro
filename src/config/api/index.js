@@ -27,6 +27,8 @@ export const API_ENDPOINTS = {
     CREATE_SAMPLE: `${API_BASE_URL}/api/${VERSION}/labReport/workflow/samples`,
     UPDATE: (id) =>
       `${API_BASE_URL}/api/${VERSION}/labReport/workflow/samples/${id}`,
+    PROCESS_REPORT: (sampleId) =>
+      `${API_BASE_URL}/api/${VERSION}/labReport/workflow/samples/${sampleId}/process-report`,
   },
 };
 

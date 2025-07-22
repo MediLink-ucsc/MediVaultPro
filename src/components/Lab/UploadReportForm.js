@@ -325,7 +325,16 @@ const UploadReportForm = ({ onSubmit, sampleData }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    // Safety check for event object
+    if (e && typeof e.preventDefault === "function") {
+      e.preventDefault();
+    }
+
+    // Prevent double submissions
+    if (isUploading) {
+      console.warn("Upload already in progress, ignoring duplicate submission");
+      return;
+    }
 
     if (!validateForm()) {
       return;
@@ -335,10 +344,10 @@ const UploadReportForm = ({ onSubmit, sampleData }) => {
     setUploadProgress(0);
 
     try {
-      // Simulate upload progress
+      // Simulate upload progress for file upload
       const interval = setInterval(() => {
         setUploadProgress((prev) => {
-          if (prev >= 90) {
+          if (prev >= 70) {
             clearInterval(interval);
             return prev;
           }
@@ -346,43 +355,100 @@ const UploadReportForm = ({ onSubmit, sampleData }) => {
         });
       }, 200);
 
-      // Add timestamp and generate report ID
-      const reportData = {
-        ...formData,
-        reportId: `RPT${Date.now()}`,
-        uploadedAt: new Date().toISOString(),
-        status: "uploaded",
-      };
+      setUploadProgress(80);
 
-      await onSubmit(reportData);
+      // Create FormData for file upload (multipart/form-data)
+      const formDataToSend = new FormData();
+      formDataToSend.append("reportFilePath", formData.reportFile); // The actual file
+      formDataToSend.append("technician", formData.technician);
+      formDataToSend.append("resultDate", formData.resultDate);
+      formDataToSend.append("urgency", formData.urgency);
+      formDataToSend.append("notes", formData.notes);
+      formDataToSend.append("referringPhysician", formData.referringPhysician);
+      formDataToSend.append(
+        "criticalValues",
+        formData.criticalValues.toString()
+      );
+      formDataToSend.append(
+        "followUpRequired",
+        formData.followUpRequired.toString()
+      );
+
+      console.log("Processing report for sample:", formData.sampleId);
+      console.log("FormData entries:");
+      for (let [key, value] of formDataToSend.entries()) {
+        console.log(key, value);
+      }
+
+      const response = await ApiService.processLabReport(
+        formData.sampleId,
+        formDataToSend
+      );
+      console.log("Lab report processing response:", response);
+
       setUploadProgress(100);
 
-      // Reset form after successful upload
-      setTimeout(() => {
-        setFormData({
-          patientId: "",
-          patientName: "",
-          testType: "",
-          reportFile: null,
-          urgency: "routine",
-          notes: "",
-          resultDate: "",
-          technician: "",
-          department: "",
-          referringPhysician: "",
-          criticalValues: false,
-          followUpRequired: false,
-        });
-        setIsUploading(false);
-        setUploadProgress(0);
-      }, 1000);
+      if (response.success) {
+        // Show success message
+        alert(
+          `Lab report processing started successfully! Sample ID: ${response.data.labSampleId}, Status: ${response.data.status}`
+        );
+
+        // Call the parent's onSubmit with the response data
+        const reportData = {
+          ...formData,
+          reportId: `RPT${Date.now()}`,
+          uploadedAt: new Date().toISOString(),
+          status: response.data.status,
+          labSampleId: response.data.labSampleId,
+          message: response.data.message,
+          apiResponse: response.data,
+        };
+
+        await onSubmit(reportData);
+
+        // Reset form after successful upload
+        setTimeout(() => {
+          setFormData({
+            patientId: "",
+            patientName: "",
+            testType: "",
+            reportFile: null,
+            urgency: "routine",
+            notes: "",
+            resultDate: new Date().toISOString().split("T")[0],
+            technician: "",
+            department: "",
+            referringPhysician: "",
+            criticalValues: false,
+            followUpRequired: false,
+            sampleId: "",
+          });
+          setIsUploading(false);
+          setUploadProgress(0);
+        }, 1000);
+      } else {
+        throw new Error(response.message || "Failed to process lab report");
+      }
     } catch (error) {
       console.error("Upload failed:", error);
+
+      // Ensure we always reset the uploading state
       setIsUploading(false);
       setUploadProgress(0);
+
+      // Show error message to user
+      // const errorMessage =
+      //   error?.message || "An unexpected error occurred during upload";
+      // alert(`Upload failed: ${errorMessage}`);
+    } finally {
+      // Additional safety net to ensure state is reset
+      setTimeout(() => {
+        setIsUploading(false);
+        setUploadProgress(0);
+      }, 100);
     }
   };
-
   return (
     <div className="max-w-4xl mx-auto">
       {/* Header */}
