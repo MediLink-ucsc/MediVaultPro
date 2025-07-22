@@ -1,6 +1,6 @@
 // src/components/Lab/Analytics.js
 import React, { useState } from 'react';
-import { BarChart3, TrendingUp, Activity, Users, TestTube, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
+import { BarChart3, TrendingUp, Activity, Users, TestTube, Clock, CheckCircle } from 'lucide-react';
 
 const Analytics = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('today');
@@ -33,12 +33,11 @@ const Analytics = () => {
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[
           { title: 'Total Tests', value: '156', icon: TestTube, color: 'teal', change: '+12%' },
           { title: 'Completed', value: '134', icon: CheckCircle, color: 'teal', change: '+15%' },
-          { title: 'Pending', value: '22', icon: Clock, color: 'orange', change: '-5%' },
-          { title: 'Efficiency', value: '94%', icon: TrendingUp, color: 'teal', change: '+3%' }
+          { title: 'Pending', value: '22', icon: Clock, color: 'orange', change: '-5%' }
         ].map((metric, index) => (
           <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
             <div className="flex items-center justify-between mb-4">
@@ -160,17 +159,12 @@ const Analytics = () => {
               <div className="text-sm font-medium text-orange-700">Tests Pending</div>
               <div className="text-xs text-orange-600 mt-1">-5% from yesterday</div>
             </div>
-            <div className="text-center p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200">
-              <div className="text-3xl font-bold text-gray-600 mb-1">94%</div>
-              <div className="text-sm font-medium text-gray-700">Efficiency Rate</div>
-              <div className="text-xs text-gray-600 mt-1">+3% improvement</div>
-            </div>
           </div>
         </div>
       </div>
 
       {/* Additional Analytics Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Response Times</h3>
           <div className="space-y-4">
@@ -187,33 +181,6 @@ const Analytics = () => {
                 </div>
                 <div className="text-right">
                   <div className="font-bold text-gray-900">{item.avgTime}</div>
-                  <div className={`text-xs px-2 py-1 rounded-full ${
-                    item.status === 'excellent' ? 'bg-teal-100 text-teal-700' : 'bg-teal-100 text-teal-700'
-                  }`}>
-                    {item.status}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Quality Metrics</h3>
-          <div className="space-y-4">
-            {[
-              { metric: 'Sample Rejection Rate', value: '2.1%', target: '<3%', status: 'good' },
-              { metric: 'Repeat Tests', value: '1.8%', target: '<2%', status: 'good' },
-              { metric: 'TAT Compliance', value: '96%', target: '>95%', status: 'excellent' },
-              { metric: 'Critical Value Alerts', value: '100%', target: '100%', status: 'excellent' },
-            ].map((item, i) => (
-              <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <div className="font-medium text-gray-800">{item.metric}</div>
-                  <div className="text-sm text-gray-600">Target: {item.target}</div>
-                </div>
-                <div className="text-right">
-                  <div className="font-bold text-gray-900">{item.value}</div>
                   <div className={`text-xs px-2 py-1 rounded-full ${
                     item.status === 'excellent' ? 'bg-teal-100 text-teal-700' : 'bg-teal-100 text-teal-700'
                   }`}>

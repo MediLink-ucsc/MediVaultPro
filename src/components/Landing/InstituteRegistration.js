@@ -30,9 +30,10 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
     licenseNumber: '',
     website: '',
     logo: null,
-    adminName: '',
+    adminFirstName: '',
+    adminLastName: '',
     adminEmail: '',
-    adminPhone: ''
+    adminPassword: ''
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,7 +50,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
         'Prescription & Treatment Records',
         'Lab Integration & Reports',
         'Electronic Health Records',
-        'Multi-role Access (Doctors, Nurses, Admin)'
+        'Multi-role Access (Doctors, Nurses/Assistants, Admin)'
       ]
     },
     {
@@ -154,8 +155,12 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
       newErrors.email = 'Email is invalid';
     }
 
-    if (!formData.adminName.trim()) {
-      newErrors.adminName = 'Administrator name is required';
+    if (!formData.adminFirstName.trim()) {
+      newErrors.adminFirstName = 'Administrator first name is required';
+    }
+
+    if (!formData.adminLastName.trim()) {
+      newErrors.adminLastName = 'Administrator last name is required';
     }
 
     if (!formData.adminEmail.trim()) {
@@ -164,8 +169,10 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
       newErrors.adminEmail = 'Administrator email is invalid';
     }
 
-    if (!formData.adminPhone.trim()) {
-      newErrors.adminPhone = 'Administrator phone is required';
+    if (!formData.adminPassword.trim()) {
+      newErrors.adminPassword = 'Administrator password is required';
+    } else if (formData.adminPassword.length < 8) {
+      newErrors.adminPassword = 'Password must be at least 8 characters long';
     }
 
     setErrors(newErrors);
@@ -213,9 +220,10 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
       licenseNumber: '',
       website: '',
       logo: null,
-      adminName: '',
+      adminFirstName: '',
+      adminLastName: '',
       adminEmail: '',
-      adminPhone: ''
+      adminPassword: ''
     });
     setErrors({});
     setSelectedType('');
@@ -271,7 +279,7 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                 <p className="text-gray-600">Choose the option that best describes your healthcare facility</p>
               </div>
               
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 {instituteTypes.map((institute, index) => (
                   <motion.div
                     key={institute.type}
@@ -281,31 +289,31 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                     whileHover={{ y: -5, scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleTypeSelection(institute.type)}
-                    className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-gray-200"
+                    className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-gray-200"
                   >
-                    <div className={`w-16 h-16 bg-gradient-to-br ${institute.color} rounded-2xl flex items-center justify-center text-white mb-4 mx-auto`}>
-                      {React.cloneElement(institute.icon, { className: "w-8 h-8" })}
+                    <div className={`w-20 h-20 bg-gradient-to-br ${institute.color} rounded-2xl flex items-center justify-center text-white mb-6 mx-auto`}>
+                      {React.cloneElement(institute.icon, { className: "w-10 h-10" })}
                     </div>
                     
-                    <h3 className="text-xl font-bold text-gray-900 mb-3 text-center">{institute.title}</h3>
-                    <p className="text-gray-600 mb-4 text-center text-sm">{institute.description}</p>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">{institute.title}</h3>
+                    <p className="text-gray-600 mb-6 text-center">{institute.description}</p>
                     
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-gray-900 mb-2 text-sm">Key Features:</h4>
+                    <div className="space-y-3">
+                      <h4 className="font-semibold text-gray-900 mb-3">Key Features:</h4>
                       {institute.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center space-x-2">
-                          <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                          <span className="text-gray-600 text-sm">{feature}</span>
+                        <div key={idx} className="flex items-center space-x-3">
+                          <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                          <span className="text-gray-600">{feature}</span>
                         </div>
                       ))}
                     </div>
                     
                     <motion.div 
-                      className={`mt-4 bg-gradient-to-r ${institute.color} text-white py-2 px-4 rounded-lg text-center font-semibold flex items-center justify-center space-x-2 text-sm`}
+                      className={`mt-6 bg-gradient-to-r ${institute.color} text-white py-3 px-6 rounded-lg text-center font-semibold flex items-center justify-center space-x-2`}
                       whileHover={{ scale: 1.05 }}
                     >
                       <span>Select {institute.title}</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-5 h-5" />
                     </motion.div>
                   </motion.div>
                 ))}
@@ -546,21 +554,41 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Administrator Information</h3>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Administrator Name *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Administrator First Name *</label>
                       <input
                         type="text"
-                        name="adminName"
-                        value={formData.adminName}
+                        name="adminFirstName"
+                        value={formData.adminFirstName}
                         onChange={handleInputChange}
                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
-                          errors.adminName ? 'border-red-500' : 'border-gray-300'
+                          errors.adminFirstName ? 'border-red-500' : 'border-gray-300'
                         }`}
-                        placeholder="Dr. Priyani Fernando"
+                        placeholder="Priyani"
                       />
-                      {errors.adminName && (
+                      {errors.adminFirstName && (
                         <p className="mt-1 text-sm text-red-600 flex items-center">
                           <AlertCircle className="w-4 h-4 mr-1" />
-                          {errors.adminName}
+                          {errors.adminFirstName}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Administrator Last Name *</label>
+                      <input
+                        type="text"
+                        name="adminLastName"
+                        value={formData.adminLastName}
+                        onChange={handleInputChange}
+                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
+                          errors.adminLastName ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder="Fernando"
+                      />
+                      {errors.adminLastName && (
+                        <p className="mt-1 text-sm text-red-600 flex items-center">
+                          <AlertCircle className="w-4 h-4 mr-1" />
+                          {errors.adminLastName}
                         </p>
                       )}
                     </div>
@@ -586,21 +614,21 @@ const InstituteRegistration = ({ onBack, onComplete }) => {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Administrator Phone *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Administrator Password *</label>
                       <input
-                        type="tel"
-                        name="adminPhone"
-                        value={formData.adminPhone}
+                        type="password"
+                        name="adminPassword"
+                        value={formData.adminPassword}
                         onChange={handleInputChange}
                         className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all ${
-                          errors.adminPhone ? 'border-red-500' : 'border-gray-300'
+                          errors.adminPassword ? 'border-red-500' : 'border-gray-300'
                         }`}
-                        placeholder="+94 77 123 4567"
+                        placeholder="Enter secure password"
                       />
-                      {errors.adminPhone && (
+                      {errors.adminPassword && (
                         <p className="mt-1 text-sm text-red-600 flex items-center">
                           <AlertCircle className="w-4 h-4 mr-1" />
-                          {errors.adminPhone}
+                          {errors.adminPassword}
                         </p>
                       )}
                     </div>

@@ -66,7 +66,6 @@ const AddLabTechForm = ({ onSubmit, onCancel, adminInstitute = "Central Diagnost
     'Phlebotomy Technician Certification',
     'Clinical Laboratory Improvement Amendments (CLIA)',
     'Biosafety Certification',
-    'Quality Control Certification',
     'Molecular Diagnostics Certification',
     'Cytotechnology Certification',
     'Histotechnology Certification'
