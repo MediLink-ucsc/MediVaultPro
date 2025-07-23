@@ -63,7 +63,7 @@ const VitalSigns = () => {
       case 'elevated':
         return 'bg-orange-100 text-orange-800';
       case 'concerning':
-        return 'bg-red-100 text-red-800';
+        return 'bg-orange-200 text-orange-900';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -77,7 +77,7 @@ const VitalSigns = () => {
       case 'elevated':
         return <TrendingUp className="w-4 h-4 text-orange-600" />;
       case 'concerning':
-        return <Heart className="w-4 h-4 text-red-600" />;
+        return <Heart className="w-4 h-4 text-orange-700" />;
       default:
         return <Activity className="w-4 h-4 text-gray-600" />;
     }

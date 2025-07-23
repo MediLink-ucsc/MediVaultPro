@@ -1,6 +1,6 @@
 // src/components/Nurse/NursePatients.js
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, UserPlus, Eye, User, Phone, ClipboardList, FileText, Activity } from 'lucide-react';
+import { Search, Filter, UserPlus, Eye, User, Phone, ClipboardList, FileText, Activity, Pill } from 'lucide-react';
 import Button from '../Common/Button';
 import Modal from '../Common/Modal';
 import NewPatientForm from './NewPatientForm';
@@ -145,6 +145,15 @@ const NursePatients = () => {
     return plans.filter(plan => plan.status === 'active').length;
   };
 
+  const getPatientMedications = (patientId) => {
+    return dataStore.getMedications(patientId);
+  };
+
+  const getActiveMedications = (patientId) => {
+    const medications = getPatientMedications(patientId);
+    return medications.filter(med => med.status === 'Active');
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -171,7 +180,7 @@ const NursePatients = () => {
               <input
                 type="text"
                 placeholder="Search patients..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -395,9 +404,9 @@ const NursePatients = () => {
                         {new Date(plan.startDate).toLocaleDateString()} - {new Date(plan.endDate).toLocaleDateString()}
                       </span>
                       <span className={`px-2 py-1 rounded-full text-xs ${
-                        plan.priority === 'High' ? 'bg-red-100 text-red-800' :
-                        plan.priority === 'Medium' ? 'bg-orange-100 text-orange-800' :
-                        'bg-green-100 text-green-800'
+                        plan.priority === 'High' ? 'bg-orange-100 text-orange-800' :
+                        plan.priority === 'Medium' ? 'bg-amber-100 text-amber-800' :
+                        'bg-teal-100 text-teal-800'
                       }`}>
                         {plan.priority}
                       </span>
@@ -530,8 +539,61 @@ const NursePatients = () => {
               </div>
             </div>
 
+            {/* Current Medications */}
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h4 className="font-medium text-gray-800 mb-3 flex items-center space-x-2">
+                <Pill className="w-5 h-5 text-orange-600" />
+                <span>Current Medications</span>
+              </h4>
+              <div className="space-y-3">
+                {(() => {
+                  const activeMedications = getActiveMedications(selectedPatient.id);
+                  if (activeMedications.length > 0) {
+                    return activeMedications.map((medication, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-2">
+                            <span className="font-medium text-gray-800">{medication.medicationName}</span>
+                            <span className="text-sm text-gray-600">{medication.dosage}</span>
+                          </div>
+                          <div className="text-sm text-gray-600 mt-1">
+                            {medication.frequency} • {medication.route}
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            Prescribed by {medication.prescribedBy}
+                          </div>
+                          {medication.instructions && (
+                            <div className="text-xs text-gray-500 mt-1 italic">
+                              {medication.instructions}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-right">
+                          <div className="text-xs text-gray-500">
+                            {medication.startDate} - {medication.endDate}
+                          </div>
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            medication.status === 'Active' ? 'bg-teal-100 text-teal-800' : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {medication.status}
+                          </span>
+                        </div>
+                      </div>
+                    ));
+                  } else {
+                    return (
+                      <div className="text-center py-8 text-gray-500">
+                        <Pill className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                        <p>No active medications</p>
+                      </div>
+                    );
+                  }
+                })()}
+              </div>
+            </div>
+
             {/* Quick Stats */}
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-4 gap-4">
               <div className="text-center p-4 bg-gray-50 rounded-lg">
                 <div className="text-2xl font-bold text-orange-600">{getPatientVitalSigns(selectedPatient.id).length}</div>
                 <div className="text-sm text-gray-600">Vital Sign Records</div>
@@ -539,6 +601,10 @@ const NursePatients = () => {
               <div className="text-center p-4 bg-gray-50 rounded-lg">
                 <div className="text-2xl font-bold text-orange-600">{getActiveCarePlans(selectedPatient.id)}</div>
                 <div className="text-sm text-gray-600">Active Care Plans</div>
+              </div>
+              <div className="text-center p-4 bg-gray-50 rounded-lg">
+                <div className="text-2xl font-bold text-orange-600">{getActiveMedications(selectedPatient.id).length}</div>
+                <div className="text-sm text-gray-600">Active Medications</div>
               </div>
               <div className="text-center p-4 bg-gray-50 rounded-lg">
                 <div className="text-2xl font-bold text-orange-600">

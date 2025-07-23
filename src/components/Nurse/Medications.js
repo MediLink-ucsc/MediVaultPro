@@ -411,10 +411,10 @@ const Medications = () => {
       </div>
 
       {/* Filters and Search */}
-      <div className="bg-white rounded-lg shadow-sm border border-orange-200 p-4">
+      <div className="bg-white rounded-lg shadow-sm border border-teal-200 p-4">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           {/* Filter Tabs */}
-          <div className="flex bg-orange-50 rounded-lg p-1 border border-orange-200">
+          <div className="flex bg-teal-50 rounded-lg p-1 border border-teal-200">
             {[
               { key: 'today', label: 'Today', icon: Calendar },
               { key: 'pending', label: 'Pending', icon: Clock },
@@ -425,8 +425,8 @@ const Medications = () => {
                 onClick={() => setActiveFilter(key)}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                   activeFilter === key
-                    ? 'bg-orange-500 text-white shadow-sm'
-                    : 'text-orange-700 hover:text-orange-800 hover:bg-orange-100'
+                    ? 'bg-teal-500 text-white shadow-sm'
+                    : 'text-teal-700 hover:text-teal-800 hover:bg-teal-100'
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -437,11 +437,11 @@ const Medications = () => {
 
           {/* Search */}
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-orange-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-teal-400" />
             <input
               type="text"
               placeholder="Search patient, drug, or ID..."
-              className="w-full pl-10 pr-4 py-2 border border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent text-sm"
+              className="w-full pl-10 pr-4 py-2 border border-teal-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent text-sm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
