@@ -1,6 +1,6 @@
 // src/components/Doctor/DashboardOverview.js
 import React, { useState } from 'react';
-import { Users, Calendar, FileText, Pill, Clipboard, FlaskConical, Stethoscope } from 'lucide-react';
+import { Users, Calendar, FileText, Pill, Clipboard, FlaskConical, Stethoscope, Activity } from 'lucide-react';
 import StatsCard from '../Common/StatsCard';
 import Modal from '../Common/Modal';
 import PrescriptionForm from './QuickActions/PrescriptionForm';
@@ -17,6 +17,8 @@ const DashboardOverview = ({user}) => {
   const stats = [
     { title: 'Total Patients', value: '1,234', icon: Users, color: 'teal', trend: '+12%' },
     { title: 'Today\'s Calendar Events', value: '24', icon: Calendar, color: 'orange', trend: '+3%' }, // Orange for urgent appointments
+    { title: 'Patient Visits', value: '245', icon: Users, color: 'teal', trend: '+12%' },
+    { title: 'Prescriptions', value: '189', icon: Activity, color: 'teal', trend: '+8%' },
     { title: 'Pending Reports', value: '8', icon: FileText, color: 'orange', trend: '-2%' }, // Orange for pending urgent reports
   ];
 
@@ -71,7 +73,7 @@ const DashboardOverview = ({user}) => {
         <p className="text-gray-600 mt-2">Welcome back, Dr. {user.firstName} {user.lastName}</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         {stats.map((stat, index) => (
           <StatsCard key={index} {...stat} />
         ))}

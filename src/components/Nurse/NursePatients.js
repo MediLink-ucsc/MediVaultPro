@@ -40,8 +40,7 @@ const NursePatients = () => {
     const searchLower = searchTerm.toLowerCase();
     return patient.firstName.toLowerCase().includes(searchLower) ||
            patient.lastName.toLowerCase().includes(searchLower) ||
-           patient.condition.toLowerCase().includes(searchLower) ||
-           patient.assignedNurse.toLowerCase().includes(searchLower);
+           patient.condition.toLowerCase().includes(searchLower);
   });
 
   const getConditionColor = (condition) => {
@@ -223,10 +222,6 @@ const NursePatients = () => {
                   </div>
                   
                   <div className="space-y-2 mb-4">
-                    <div className="flex items-center space-x-2 text-sm text-gray-600">
-                      <User className="w-4 h-4" />
-                      <span>Assigned to: {patient.assignedNurse}</span>
-                    </div>
                     <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <Phone className="w-4 h-4" />
                       <span>{patient.phone}</span>
@@ -416,6 +411,66 @@ const NursePatients = () => {
                 {getPatientCarePlans(selectedPatient.id).filter(plan => plan.status === 'active').length === 0 && (
                   <p className="text-gray-500 text-sm">No active care plans.</p>
                 )}
+              </div>
+            </div>
+
+            {/* Medication History */}
+            <div className="border border-gray-200 rounded-lg p-4">
+              <h4 className="font-medium text-gray-800 mb-3 flex items-center space-x-2">
+                <Pill className="w-5 h-5 text-orange-600" />
+                <span>Medication History</span>
+              </h4>
+              <div className="space-y-3">
+                {(() => {
+                  const allMedications = getPatientMedications(selectedPatient.id);
+                  if (allMedications.length > 0) {
+                    return allMedications.map((medication, index) => (
+                      <div key={index} className="p-3 bg-gray-50 rounded-lg border-l-4 border-l-orange-200">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <span className="font-medium text-gray-800">{medication.medicationName}</span>
+                              <span className="text-sm text-gray-600">{medication.dosage}</span>
+                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                medication.status === 'Active' ? 'bg-teal-100 text-teal-800' : 'bg-gray-100 text-gray-800'
+                              }`}>
+                                {medication.status}
+                              </span>
+                            </div>
+                            <div className="text-sm text-gray-600 mb-1">
+                              {medication.frequency} • {medication.route}
+                            </div>
+                            <div className="text-xs text-gray-500 mb-1">
+                              Prescribed by {medication.prescribedBy}
+                            </div>
+                            {medication.instructions && (
+                              <div className="text-xs text-gray-500 italic">
+                                Instructions: {medication.instructions}
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-right text-xs text-gray-500 ml-4">
+                            <div className="mb-1">
+                              {medication.startDate} - {medication.endDate}
+                            </div>
+                            {medication.administeredBy && medication.administeredBy.length > 0 && (
+                              <div className="text-teal-600 font-medium">
+                                Administered: {medication.administeredBy.length} times
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ));
+                  } else {
+                    return (
+                      <div className="text-center py-8 text-gray-500">
+                        <Pill className="w-12 h-12 text-gray-300 mx-auto mb-2" />
+                        <p>No medications prescribed yet.</p>
+                      </div>
+                    );
+                  }
+                })()}
               </div>
             </div>
           </div>

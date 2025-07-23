@@ -40,7 +40,6 @@ const Sidebar = ({ user }) => {
           { icon: LayoutDashboard, label: "Dashboard", path: "/doctor" },
           { icon: Users, label: "Patients", path: "/doctor/patients" },
           { icon: Calendar, label: "Calendar", path: "/doctor/calendar" },
-          { icon: BarChart3, label: "Analytics", path: "/doctor/analytics" },
           { icon: Settings, label: "Settings", path: "/doctor/settings" },
         ];
       case "nurse":

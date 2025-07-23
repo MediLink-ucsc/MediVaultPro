@@ -4,7 +4,6 @@ import { Routes, Route } from 'react-router-dom';
 import DashboardOverview from './DashboardOverview';
 import PatientList from './PatientList';
 import Calendar from './Calendar';
-import Analytics from './Analytics';
 import Settings from './Settings';
 
 const DoctorDashboard = ({user}) => {
@@ -13,7 +12,6 @@ const DoctorDashboard = ({user}) => {
       <Route path="/" element={<DashboardOverview user={user}/>} />
       <Route path="/patients" element={<PatientList />} />
       <Route path="/calendar" element={<Calendar />} />
-      <Route path="/analytics" element={<Analytics />} />
       <Route path="/settings" element={<Settings />} />
     </Routes>
   );
