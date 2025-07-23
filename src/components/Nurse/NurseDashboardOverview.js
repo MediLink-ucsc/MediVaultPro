@@ -17,7 +17,7 @@ const NurseDashboardOverview = () => {
 
   const stats = [
     {
-      title: "Assigned Patients",
+      title: "Total Patients",
       value: "24",
       icon: Users,
       color: "teal",
