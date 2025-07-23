@@ -13,6 +13,7 @@ import {
   UserPlus,
   BookTemplate,
   Clock,
+  Pill,
 } from "lucide-react";
 import MediLinkLogo from "../resources/MediLinkLogo.jpeg";
 
@@ -47,8 +48,8 @@ const Sidebar = ({ user }) => {
           { icon: LayoutDashboard, label: "Dashboard", path: "/nurse" },
           { icon: Users, label: "Patient Care", path: "/nurse/patients" },
           {
-            icon: Clock,
-            label: "Medication Schedule",
+            icon: Pill,
+            label: "Prescriptions",
             path: "/nurse/medications",
           },
           { icon: Settings, label: "Settings", path: "/nurse/settings" },
