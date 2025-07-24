@@ -256,6 +256,32 @@ const Medications = () => {
       doctor: 'Dr. Wilson',
       status: 'pending',
       isUrgent: false
+    },
+    {
+      id: 18,
+      patientName: 'Arjuna Silva',
+      patientId: 'P008',
+      drug: 'Ibuprofen',
+      dosage: '400mg',
+      instructions: 'Take every 8 hours with food for pain relief. Max 3 doses per day',
+      prescribedDate: '2025-07-24',
+      prescribedTime: '09:15',
+      doctor: 'Dr. Smith',
+      status: 'pending',
+      isUrgent: false
+    },
+    {
+      id: 19,
+      patientName: 'Malini Jayawardena',
+      patientId: 'P009',
+      drug: 'Losartan',
+      dosage: '50mg',
+      instructions: 'Take once daily in the morning for blood pressure control',
+      prescribedDate: '2025-07-24',
+      prescribedTime: '10:30',
+      doctor: 'Dr. Johnson',
+      status: 'pending',
+      isUrgent: true
     }
   ]);
 

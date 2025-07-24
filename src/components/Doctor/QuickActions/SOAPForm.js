@@ -44,10 +44,10 @@ const SOAPForm = ({ onSubmit, selectedPatient }) => {
           className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiAjd2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im02IDkgNiA2IDYtNiIvPjwvc3ZnPg==')] bg-no-repeat bg-[center_right_1rem]"
         >
           <option value="">Select patient</option>
-          <option value="1">Hansaja Boss - ID: 001</option>
-          <option value="2">Greatest Dulmini - ID: 002</option>
-          <option value="3">Cute Anji - ID: 003</option>
-          <option value="4">Moda Sathya - ID: 004</option>
+          <option value="1">Likitha Chathubhashini - ID: 001</option>
+          <option value="2">Dulmini Nureka - ID: 002</option>
+          <option value="3">Hansaja Damsara - ID: 003</option>
+          <option value="4">Sathya Abeysinghe - ID: 004</option>
         </select>
         {selectedPatient && (
           <p className="mt-2 text-sm text-gray-600">

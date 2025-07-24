@@ -31,13 +31,6 @@ const NurseDashboardOverview = () => {
       trend: "0%",
     }, // Orange for urgent medications
     {
-      title: "Vital Signs Pending",
-      value: "12",
-      icon: Activity,
-      color: "teal",
-      trend: "-3%",
-    },
-    {
       title: "Care Plans Active",
       value: "18",
       icon: ClipboardList,
@@ -85,7 +78,7 @@ const NurseDashboardOverview = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {stats.map((stat, index) => (
           <StatsCard key={index} {...stat} />
         ))}
