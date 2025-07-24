@@ -104,7 +104,7 @@ const Sidebar = ({ user }) => {
           <div>
             <div className="font-bold text-gray-800 text-lg">MedivaultPro</div>
             <div className="text-xs text-gray-600 font-medium capitalize">
-              {user.role} Portal
+              {user.role === "nurse" ? "Assistant" : user.role} Portal
             </div>
           </div>
         </div>

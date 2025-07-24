@@ -24,24 +24,24 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit, adminInstitute = "City Medic
     },
     {
       id: 'nurse',
-      title: 'Nurse',
+      title: 'Assistant',
       description: 'Add registered nurses and nursing staff',
       icon: Heart,
       color: 'orange',
       bgColor: 'bg-orange-50',
       iconColor: 'text-orange-600',
       borderColor: 'border-orange-200'
-    },
-    {
-      id: 'lab',
-      title: 'Lab Technician',
-      description: 'Add laboratory technicians and staff',
-      icon: TestTube,
-      color: 'teal',
-      bgColor: 'bg-teal-50',
-      iconColor: 'text-teal-600',
-      borderColor: 'border-teal-200'
     }
+    // {
+    //   id: 'lab',
+    //   title: 'Lab Technician',
+    //   description: 'Add laboratory technicians and staff',
+    //   icon: TestTube,
+    //   color: 'teal',
+    //   bgColor: 'bg-teal-50',
+    //   iconColor: 'text-teal-600',
+    //   borderColor: 'border-teal-200'
+    // }
   ];
 
   const handleRoleSelect = (role) => {
@@ -69,7 +69,7 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit, adminInstitute = "City Medic
         <p className="text-lg text-gray-600">Select the type of staff member you want to add</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto">
         {roles.map((role) => {
           const IconComponent = role.icon;
           return (
@@ -106,8 +106,8 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit, adminInstitute = "City Medic
         return <AddDoctorForm {...commonProps} />;
       case 'nurse':
         return <AddNurseForm {...commonProps} />;
-      case 'lab':
-        return <AddLabTechForm {...commonProps} />;
+      // case 'lab':
+      //   return <AddLabTechForm {...commonProps} />;
       default:
         return null;
     }
@@ -116,8 +116,8 @@ const AddStaffModal = ({ isOpen, onClose, onSubmit, adminInstitute = "City Medic
   const getFormTitle = () => {
     const roleNames = {
       doctor: 'Add New Doctor',
-      nurse: 'Add New Nurse',
-      lab: 'Add New Lab Technician'
+      nurse: 'Add New Assistant'
+      // lab: 'Add New Lab Technician'
     };
     return roleNames[selectedRole] || 'Add Staff Member';
   };

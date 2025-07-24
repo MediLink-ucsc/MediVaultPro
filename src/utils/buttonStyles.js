@@ -6,6 +6,7 @@ export const buttonVariants = {
   primary: {
     doctor: 'bg-gradient-to-r from-teal-500 to-teal-600 text-white hover:from-teal-600 hover:to-teal-700 focus:ring-teal-500 shadow-lg hover:shadow-teal-200',
     nurse: 'bg-gradient-to-r from-teal-500 to-teal-600 text-white hover:from-teal-600 hover:to-teal-700 focus:ring-teal-500 shadow-lg hover:shadow-teal-200',
+    assistant: 'bg-gradient-to-r from-teal-500 to-teal-600 text-white hover:from-teal-600 hover:to-teal-700 focus:ring-teal-500 shadow-lg hover:shadow-teal-200',
     lab: 'bg-gradient-to-r from-teal-500 to-teal-600 text-white hover:from-teal-600 hover:to-teal-700 focus:ring-teal-500 shadow-lg hover:shadow-teal-200',
     clinicadmin: 'bg-gradient-to-r from-teal-500 to-teal-600 text-white hover:from-teal-600 hover:to-teal-700 focus:ring-teal-500 shadow-lg hover:shadow-teal-200',
     urgent: 'bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 focus:ring-orange-500 shadow-lg hover:shadow-orange-200',
@@ -17,6 +18,7 @@ export const buttonVariants = {
   secondary: {
     doctor: 'bg-teal-50 text-teal-700 border-2 border-teal-200 hover:bg-teal-100 hover:border-teal-300 focus:ring-teal-500',
     nurse: 'bg-teal-50 text-teal-700 border-2 border-teal-200 hover:bg-teal-100 hover:border-teal-300 focus:ring-teal-500',
+    assistant: 'bg-teal-50 text-teal-700 border-2 border-teal-200 hover:bg-teal-100 hover:border-teal-300 focus:ring-teal-500',
     lab: 'bg-teal-50 text-teal-700 border-2 border-teal-200 hover:bg-teal-100 hover:border-teal-300 focus:ring-teal-500',
     clinicadmin: 'bg-teal-50 text-teal-700 border-2 border-teal-200 hover:bg-teal-100 hover:border-teal-300 focus:ring-teal-500',
     urgent: 'bg-orange-50 text-orange-700 border-2 border-orange-200 hover:bg-orange-100 hover:border-orange-300 focus:ring-orange-500',
@@ -28,6 +30,7 @@ export const buttonVariants = {
   outline: {
     doctor: 'border-2 border-teal-500 text-teal-500 bg-transparent hover:bg-teal-500 hover:text-white focus:ring-teal-500',
     nurse: 'border-2 border-teal-500 text-teal-500 bg-transparent hover:bg-teal-500 hover:text-white focus:ring-teal-500',
+    assistant: 'border-2 border-teal-500 text-teal-500 bg-transparent hover:bg-teal-500 hover:text-white focus:ring-teal-500',
     lab: 'border-2 border-teal-500 text-teal-500 bg-transparent hover:bg-teal-500 hover:text-white focus:ring-teal-500',
     clinicadmin: 'border-2 border-teal-500 text-teal-500 bg-transparent hover:bg-teal-500 hover:text-white focus:ring-teal-500',
     urgent: 'border-2 border-orange-500 text-orange-500 bg-transparent hover:bg-orange-500 hover:text-white focus:ring-orange-500',
@@ -39,6 +42,7 @@ export const buttonVariants = {
   ghost: {
     doctor: 'text-teal-600 bg-transparent hover:bg-teal-50 focus:ring-teal-500',
     nurse: 'text-teal-600 bg-transparent hover:bg-teal-50 focus:ring-teal-500',
+    assistant: 'text-teal-600 bg-transparent hover:bg-teal-50 focus:ring-teal-500',
     lab: 'text-teal-600 bg-transparent hover:bg-teal-50 focus:ring-teal-500',
     clinicadmin: 'text-teal-600 bg-transparent hover:bg-teal-50 focus:ring-teal-500',
     urgent: 'text-orange-600 bg-transparent hover:bg-orange-50 focus:ring-orange-500',

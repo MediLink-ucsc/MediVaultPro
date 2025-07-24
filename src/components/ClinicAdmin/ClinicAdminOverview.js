@@ -15,7 +15,6 @@ const ClinicAdminOverview = () => {
   const stats = [
     { title: 'Total Staff', value: '23', icon: Users, color: 'teal', trend: '+3' }, 
     { title: 'Active Staff Today', value: '19', icon: UserCheck, color: 'teal', trend: '+2' },
-    { title: 'Clinic Health', value: '99.8%', icon: Activity, color: 'teal', trend: '+0.2%' },
   ];
 
   const quickActions = [
@@ -39,13 +38,6 @@ const ClinicAdminOverview = () => {
       color: 'teal', 
       description: 'Configure clinic parameters',
       path: '/clinic-admin/settings'
-    },
-    { 
-      title: 'Analytics', 
-      icon: TrendingUp, 
-      color: 'orange', 
-      description: 'View clinic analytics',
-      path: '/clinic-admin/analytics'
     },
   ];
 
@@ -189,10 +181,6 @@ const ClinicAdminOverview = () => {
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Clinic Overview</h3>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-gray-600">Departments</span>
-              <span className="font-semibold text-gray-900">8</span>
-            </div>
-            <div className="flex justify-between items-center">
               <span className="text-gray-600">Doctors</span>
               <span className="font-semibold text-gray-900">12</span>
             </div>
@@ -221,10 +209,6 @@ const ClinicAdminOverview = () => {
             <div className="flex justify-between items-center">
               <span className="text-gray-600">System Updates</span>
               <span className="font-semibold text-gray-900">2</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Settings Changed</span>
-              <span className="font-semibold text-gray-900">1</span>
             </div>
           </div>
         </div>

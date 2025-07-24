@@ -158,7 +158,7 @@ const NursePatients = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Patient Care Hub</h1>
-          <p className="text-gray-600 mt-2">Unified patient management with quick access to all nursing activities</p>
+          <p className="text-gray-600 mt-2">Unified patient management with quick access to all assistant activities</p>
         </div>
         <Button
           variant="primary"

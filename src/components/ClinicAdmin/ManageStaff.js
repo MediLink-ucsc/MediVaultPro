@@ -99,7 +99,7 @@ const ManageStaff = () => {
   const roles = [
     { value: '', label: 'All Roles' },
     { value: 'doctor', label: 'Doctor' },
-    { value: 'nurse', label: 'Nurse' },
+    { value: 'nurse', label: 'Assistant' },
     { value: 'lab', label: 'Lab Technician' }
   ];
 
@@ -149,7 +149,7 @@ const ManageStaff = () => {
     };
     setStaffData(prev => [...prev, staffWithId]);
     setModalType(null);
-    setActionMessage({ type: 'success', text: `${newStaff.role.charAt(0).toUpperCase() + newStaff.role.slice(1)} added successfully` });
+    setActionMessage({ type: 'success', text: `${getRoleDisplayName(newStaff.role)} added successfully` });
     setTimeout(() => setActionMessage(null), 3000);
   };
 
@@ -183,6 +183,15 @@ const ManageStaff = () => {
       lab: 'bg-teal-100 text-teal-800'
     };
     return colors[role] || 'bg-gray-100 text-gray-800';
+  };
+
+  const getRoleDisplayName = (role) => {
+    const displayNames = {
+      doctor: 'Doctor',
+      nurse: 'Assistant',
+      lab: 'Lab Technician'
+    };
+    return displayNames[role] || role.charAt(0).toUpperCase() + role.slice(1);
   };
 
   const getStatusColor = (status) => {
@@ -310,7 +319,7 @@ const ManageStaff = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleColor(staff.role)}`}>
-                        {staff.role.charAt(0).toUpperCase() + staff.role.slice(1)}
+                        {getRoleDisplayName(staff.role)}
                       </span>
                       <div className="text-sm text-gray-500 mt-1">{staff.department}</div>
                     </div>

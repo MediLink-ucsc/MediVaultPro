@@ -79,9 +79,9 @@ const NurseDashboardOverview = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-800">Nurse Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-800">Assistant Dashboard</h1>
         <p className="text-gray-600 mt-2">
-          Streamlined nursing workflow with consolidated patient care
+          Streamlined assistant workflow with consolidated patient care
         </p>
       </div>
 
@@ -103,7 +103,7 @@ const NurseDashboardOverview = () => {
                 key={index}
                 onClick={() => handleQuickAction(action)}
                 variant="secondary"
-                role={action.color === "orange" ? "urgent" : "nurse"}
+                role={action.color === "orange" ? "urgent" : "assistant"}
                 size="lg"
                 icon={IconComponent}
                 className="flex-col h-auto py-6 text-center"

@@ -107,7 +107,7 @@ const VitalSignsForm = ({ patient, onSubmit, onCancel }) => {
       weight: formData.weight ? `${formData.weight} ${formData.weightUnit}` : '',
       height: formData.height ? `${formData.height} ${formData.heightUnit}` : '',
       notes: formData.notes,
-      recordedBy: 'Current Nurse' // In real app, get from user context
+      recordedBy: 'Current Assistant' // In real app, get from user context
     };
 
     // Save to data store
