@@ -389,11 +389,6 @@ const UploadReportForm = ({ onSubmit, sampleData }) => {
       setUploadProgress(100);
 
       if (response.success) {
-        // Show success message
-        alert(
-          `Lab report processing started successfully! Sample ID: ${response.data.labSampleId}, Status: ${response.data.status}`
-        );
-
         // Call the parent's onSubmit with the response data
         const reportData = {
           ...formData,
@@ -405,28 +400,37 @@ const UploadReportForm = ({ onSubmit, sampleData }) => {
           apiResponse: response.data,
         };
 
-        await onSubmit(reportData);
+        // Reset uploading state immediately
+        setIsUploading(false);
+        setUploadProgress(100);
 
-        // Reset form after successful upload
+        // Reset form data immediately
+        setFormData({
+          patientId: "",
+          patientName: "",
+          testType: "",
+          reportFile: null,
+          urgency: "routine",
+          notes: "",
+          resultDate: new Date().toISOString().split("T")[0],
+          technician: "",
+          department: "",
+          referringPhysician: "",
+          criticalValues: false,
+          followUpRequired: false,
+          sampleId: "",
+        });
+        setUploadProgress(0);
+
+        // Call parent's onSubmit to handle successful upload and close form
+        // Pass the report data for updating the parent state, then signal to close
+        onSubmit(reportData);
+
+        // Fallback: Force close the form if parent doesn't handle it properly
         setTimeout(() => {
-          setFormData({
-            patientId: "",
-            patientName: "",
-            testType: "",
-            reportFile: null,
-            urgency: "routine",
-            notes: "",
-            resultDate: new Date().toISOString().split("T")[0],
-            technician: "",
-            department: "",
-            referringPhysician: "",
-            criticalValues: false,
-            followUpRequired: false,
-            sampleId: "",
-          });
-          setIsUploading(false);
-          setUploadProgress(0);
-        }, 1000);
+          console.log("Attempting to force close form...");
+          onSubmit(null);
+        }, 500);
       } else {
         throw new Error(response.message || "Failed to process lab report");
       }

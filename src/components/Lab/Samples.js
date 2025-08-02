@@ -207,11 +207,25 @@ const Samples = () => {
     setViewModalOpen(true);
   };
 
-  const handleUploadSubmit = (e) => {
-    e.preventDefault();
+  const handleUploadSubmit = (reportData) => {
+    // If reportData is null, user cancelled
+    if (reportData === null) {
+      console.log("Upload cancelled by user");
+      setUploadModalOpen(false);
+      setSelectedSample(null);
+      return;
+    }
+
+    // Handle successful upload
     console.log("Report uploaded for sample:", selectedSample?.id);
+    console.log("Report data:", reportData);
+
+    // Close the modal and reset state
     setUploadModalOpen(false);
     setSelectedSample(null);
+
+    // Optionally refresh the samples list here
+    // fetchSamples();
   };
 
   const handleAddSample = () => {
