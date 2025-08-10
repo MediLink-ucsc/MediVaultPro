@@ -1,47 +1,89 @@
+import { useState } from 'react';
 import { Save } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Button from '../../Common/Button';
+import axios from 'axios';
 
-const SOAPForm = ({ onSubmit, selectedPatient }) => {
+const SOAPForm = ({ selectedPatient }) => {
+  const [patientId, setPatientId] = useState(selectedPatient?.id || '');
+  const [subjective, setSubjective] = useState('');
+  const [objective, setObjective] = useState('');
+  const [assessment, setAssessment] = useState('');
+  const [plan, setPlan] = useState('');
+  const [dateTime, setDateTime] = useState(new Date().toISOString().slice(0, 16));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const token = localStorage.getItem('token'); // Assuming JWT stored in localStorage
+
+      if (!token) {
+        alert('Unauthorized: No token found');
+        return;
+      }
+
+      const payload = {
+        patientId:patientId,
+        subjective,
+        objective,
+        assessment,
+        plan,
+        dateTime,
+      };
+
+      console.log('Submitting SOAP note:', payload);
+
+      const response = await axios.post(
+        'http://localhost:3000/api/v1/patientRecords/soapnotes/insert',
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log('SOAP Note saved:', response.data);
+      alert('SOAP Note saved successfully!');
+    } catch (error) {
+      console.error('Error saving SOAP note:', error);
+      alert('Failed to save SOAP note.');
+    }
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        when: "beforeChildren"
-      }
-    }
+      transition: { staggerChildren: 0.1, when: 'beforeChildren' },
+    },
   };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100
-      }
-    }
+    visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100 } },
   };
 
   return (
-    <motion.form 
-      onSubmit={onSubmit} 
+    <motion.form
+      onSubmit={handleSubmit}
       className="space-y-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
+      {/* Patient */}
       <motion.div variants={itemVariants}>
         <label className="block text-sm font-medium text-gray-700 mb-2">Patient *</label>
         <select
           required
           name="patientId"
-          value={selectedPatient?.id || ''}
+          value={patientId}
+          onChange={(e) => setPatientId(e.target.value)}
           disabled={!!selectedPatient}
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiAjd2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im02IDkgNiA2IDYtNiIvPjwvc3ZnPg==')] bg-no-repeat bg-[center_right_1rem]"
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
         >
           {selectedPatient ? (
             <option value={selectedPatient.id}>
@@ -57,66 +99,77 @@ const SOAPForm = ({ onSubmit, selectedPatient }) => {
             </>
           )}
         </select>
-        {selectedPatient && (
-          <p className="mt-2 text-sm text-gray-600">
-            Selected: {selectedPatient.firstName} {selectedPatient.lastName} (Age: {selectedPatient.age})
-          </p>
-        )}
       </motion.div>
 
+      {/* Date & Time */}
       <motion.div variants={itemVariants}>
         <label className="block text-sm font-medium text-gray-700 mb-2">Date & Time</label>
         <input
           type="datetime-local"
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
-          defaultValue={new Date().toISOString().slice(0, 16)}
+          value={dateTime}
+          onChange={(e) => setDateTime(e.target.value)}
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500"
         />
       </motion.div>
 
+      {/* Subjective */}
       <motion.div variants={itemVariants}>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Subjective (S) - Chief Complaint & History *</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Subjective (S) - Chief Complaint & History *
+        </label>
         <textarea
           rows="5"
           required
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
-          placeholder="Patient's chief complaint, symptoms, and relevant history..."
+          value={subjective}
+          onChange={(e) => setSubjective(e.target.value)}
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500"
         />
       </motion.div>
 
+      {/* Objective */}
       <motion.div variants={itemVariants}>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Objective (O) - Physical Examination & Tests *</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Objective (O) - Physical Examination & Tests *
+        </label>
         <textarea
           rows="5"
           required
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
-          placeholder="Vital signs, physical examination findings, lab results..."
+          value={objective}
+          onChange={(e) => setObjective(e.target.value)}
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500"
         />
       </motion.div>
 
+      {/* Assessment */}
       <motion.div variants={itemVariants}>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Assessment (A) - Diagnosis *</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Assessment (A) - Diagnosis *
+        </label>
         <textarea
           rows="4"
           required
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
-          placeholder="Primary and differential diagnoses, clinical impression..."
+          value={assessment}
+          onChange={(e) => setAssessment(e.target.value)}
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500"
         />
       </motion.div>
 
+      {/* Plan */}
       <motion.div variants={itemVariants}>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Plan (P) - Treatment Plan *</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Plan (P) - Treatment Plan *
+        </label>
         <textarea
           rows="5"
           required
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
-          placeholder="Treatment plan, medications, follow-up instructions..."
+          value={plan}
+          onChange={(e) => setPlan(e.target.value)}
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500"
         />
       </motion.div>
 
-      <motion.div 
-        className="pt-6 border-t border-gray-100"
-        variants={itemVariants}
-      >
+      {/* Submit */}
+      <motion.div className="pt-6 border-t border-gray-100" variants={itemVariants}>
         <Button
           type="submit"
           variant="primary"
