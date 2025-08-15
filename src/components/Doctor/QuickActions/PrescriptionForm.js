@@ -6,8 +6,10 @@ import Button from '../../Common/Button';
 const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
   const [medications, setMedications] = useState([{ name: '', dosage: '', frequency: '', duration: '' }]);
   const [additionalInstructions, setAdditionalInstructions] = useState('');
-  const [patientId, setPatientId] = useState(selectedPatient?.id || '');
-
+  const [patientId, setPatientId] = useState(selectedPatient?.patientId || '');
+  const [username, setUsername] = useState('');
+  const [fetchedPatient, setFetchedPatient] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (index, field, value) => {
     const newMeds = [...medications];
@@ -23,11 +25,45 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
     setMedications(medications.filter((_, i) => i !== index));
   };
 
+  const fetchPatientByUsername = async () => {
+    if (!username) return alert('Enter username/contact number');
+
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3000/api/v1/auth/medvaultpro/doctor/patient/${username}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await response.json();
+      console.log('patient data:', data);
+
+      if (response.ok) {
+        setFetchedPatient(data);
+        setPatientId(data.patientId.toString());
+      } else {
+        alert(data.message || 'Patient not found');
+        setFetchedPatient(null);
+        setPatientId('');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Failed to fetch patient');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
+     if (e && typeof e.preventDefault === 'function') {
     e.preventDefault();
+  }
+
+    if (!patientId) return alert('Please select or fetch a patient first');
+    console.log('patientid', patientId);
 
     const payload = {
-      patientId,
+      patientId: patientId.toString(),
       medications: medications.map((med) => ({
         medicineName: med.name,
         dosage: med.dosage,
@@ -36,10 +72,10 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
       })),
       additionalInstructions,
     };
-
+    console.log('payload', payload);
 
     try {
-      const token = localStorage.getItem('token'); 
+      const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:3000/api/v1/patientRecords/prescriptions/insert', {
         method: 'POST',
         headers: {
@@ -49,49 +85,60 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json();
-      if (response.ok) {
-        alert('Prescription created: ' + data.prescriptionId);
-      } else {
-        alert('Error: ' + data.message);
+      const data = await response.json(); // parse once
+
+      if (!response.ok) {
+        return alert('Error: ' + (data.message || 'Failed to send prescription'));
       }
+
+      alert('Prescription created successfully! ID: ' + data.prescriptionId);
+      if (onSubmit) onSubmit(data);
+
     } catch (err) {
       console.error(err);
-      alert('Failed to send prescription');
+      alert('Failed to send prescription due to network/server error');
     }
   };
 
   return (
     <motion.form onSubmit={handleSubmit} className="space-y-6" initial="hidden" animate="visible">
-      {/* Patient Dropdown */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Patient *</label>
-        <select
-          required
-          name="patientId"
-          value={patientId}
-          onChange={(e) => setPatientId(e.target.value)}
-          disabled={!!selectedPatient}
-          className="w-full p-3.5 border border-gray-200 rounded-xl"
-        >
-          {selectedPatient ? (
-            <option value={selectedPatient.id}>
-              {selectedPatient.firstName} {selectedPatient.lastName} - ID: {selectedPatient.id}
-            </option>
-          ) : (
-            <>
-              <option value="">Select patient</option>
-              <option value="1">Likitha Chathubhashini - ID: 001</option>
-              <option value="2">Dulmini Nureka - ID: 002</option>
-              <option value="3">Hansaja Damsara - ID: 003</option>
-              <option value="4">Sathya Abeysinghe - ID: 004</option>
-            </>
-          )}
-        </select>
-
+      {/* Username & Fetch */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Patient Username / Contact *</label>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Enter username or contact"
+            className="flex-1 p-3 border rounded-xl"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            disabled={!!selectedPatient}
+          />
+          <Button type="button" onClick={fetchPatientByUsername} size="sm" disabled={loading}>
+            {loading ? 'Loading...' : 'Get ID'}
+          </Button>
+        </div>
       </div>
 
-      {/* Medications */}
+      {/* Patient ID Field */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Patient ID *</label>
+        <input
+          type="text"
+          className="w-full p-3.5 border border-gray-200 rounded-xl"
+          value={patientId}
+          readOnly
+          placeholder="Fetch patient first"
+          required
+        />
+        {fetchedPatient && (
+          <p className="mt-2 text-green-600">
+            ✅ Patient: {fetchedPatient.user.firstName} {fetchedPatient.user.lastName} ({fetchedPatient.user.username})
+          </p>
+        )}
+      </div>
+
+      {/* Medications Section */}
       <div>
         <div className="flex justify-between mb-4">
           <label className="text-sm font-medium">Medications *</label>
@@ -114,7 +161,6 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
                   />
                 )}
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <input
                   type="text"
@@ -171,8 +217,15 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
         />
       </div>
 
+      {/* Submit */}
       <div className="pt-6 border-t">
-        <Button type="submit" variant="primary" size="lg" icon={Save} fullWidth>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          icon={Save}
+          fullWidth
+        >
           Generate Prescription
         </Button>
       </div>
@@ -181,3 +234,4 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
 };
 
 export default PrescriptionForm;
+
