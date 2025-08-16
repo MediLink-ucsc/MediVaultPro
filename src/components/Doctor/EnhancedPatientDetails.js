@@ -23,6 +23,7 @@ import {
   CheckCircle,
   Circle
 } from 'lucide-react';
+import MedicalHistory from './MedicalHistory';
 import dataStore from '../../utils/dataStore';
 
 const EnhancedPatientDetails = ({ patient, onBack }) => {
@@ -403,12 +404,7 @@ const EnhancedPatientDetails = ({ patient, onBack }) => {
       case 'carePlans':
         return renderCarePlans();
       case 'history':
-        return (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-6">Medical History</h3>
-            <p className="text-gray-600">Medical history will be displayed here.</p>
-          </div>
-        );
+        return <MedicalHistory patient={patientData} />;
       case 'medications':
         return (
           <div className="bg-white rounded-lg border border-gray-200 p-6">
