@@ -1,30 +1,72 @@
 import { useState } from 'react';
-import { Save } from 'lucide-react';
+import { Save, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Button from '../../Common/Button';
 import axios from 'axios';
 
-const SOAPForm = ({ selectedPatient }) => {
+const SOAPForm = ({ selectedPatient, onSubmit }) => {
   const [patientId, setPatientId] = useState(selectedPatient?.id || '');
+  const [username, setUsername] = useState('');
   const [subjective, setSubjective] = useState('');
   const [objective, setObjective] = useState('');
   const [assessment, setAssessment] = useState('');
   const [plan, setPlan] = useState('');
+  const [patientInfo, setPatientInfo] = useState(null);
   const [dateTime, setDateTime] = useState(new Date().toISOString().slice(0, 16));
+
+  // ✅ Fetch patient by username (same logic as PrescriptionForm)
+  const fetchPatientByUsername = async () => {
+    if (!username) {
+      alert('Please enter a username.');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Unauthorized: No token found');
+        return;
+      }
+
+      const response = await axios.get(
+        `http://localhost:3000/api/v1/auth/medvaultpro/doctor/patient/${username}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log('Fetched patient:', response.data);
+
+      if (response.data && response.data.patientId) {
+        setPatientId(response.data.patientId.toString());
+        setPatientInfo(response.data);
+      } else {
+        alert('Patient not found.');
+      }
+    } catch (error) {
+      console.error('Error fetching patient:', error);
+      alert('Failed to fetch patient.');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const token = localStorage.getItem('token'); // Assuming JWT stored in localStorage
+    if (!patientId) {
+      alert('Please fetch a valid patient before submitting.');
+      return;
+    }
 
+    try {
+      const token = localStorage.getItem('token');
       if (!token) {
         alert('Unauthorized: No token found');
         return;
       }
 
       const payload = {
-        patientId:patientId,
+        patientId,
         subjective,
         objective,
         assessment,
@@ -47,6 +89,8 @@ const SOAPForm = ({ selectedPatient }) => {
 
       console.log('SOAP Note saved:', response.data);
       alert('SOAP Note saved successfully!');
+
+      if (onSubmit) onSubmit(e); // ✅ Keep Dashboard logic intact
     } catch (error) {
       console.error('Error saving SOAP note:', error);
       alert('Failed to save SOAP note.');
@@ -74,31 +118,42 @@ const SOAPForm = ({ selectedPatient }) => {
       initial="hidden"
       animate="visible"
     >
-      {/* Patient */}
+      {/* Username Search */}
+      {!selectedPatient && (
+        <motion.div variants={itemVariants} className="flex gap-3">
+          <input
+            type="text"
+            placeholder="Enter patient username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="flex-1 p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500"
+          />
+          <Button
+            type="button"
+            variant="primary"  // Change to primary for consistency
+            size="lg"          // Match the size of the Save button
+            icon={Search}
+            className="shadow-lg hover:shadow-teal-200 w-full sm:w-auto"
+            onClick={fetchPatientByUsername}
+          >
+            Get ID
+          </Button>
+        </motion.div>
+      )}
+
+      {/* Patient ID */}
       <motion.div variants={itemVariants}>
         <label className="block text-sm font-medium text-gray-700 mb-2">Patient *</label>
-        <select
-          required
-          name="patientId"
+        <input
+          type="text"
           value={patientId}
-          onChange={(e) => setPatientId(e.target.value)}
-          disabled={!!selectedPatient}
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
-        >
-          {selectedPatient ? (
-            <option value={selectedPatient.id}>
-              {selectedPatient.firstName} {selectedPatient.lastName} - ID: {selectedPatient.id}
-            </option>
-          ) : (
-            <>
-              <option value="">Select patient</option>
-              <option value="1">Likitha Chathubhashini - ID: 001</option>
-              <option value="2">Dulmini Nureka - ID: 002</option>
-              <option value="3">Hansaja Damsara - ID: 003</option>
-              <option value="4">Sathya Abeysinghe - ID: 004</option>
-            </>
-          )}
-        </select>
+          readOnly
+          className="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-100"
+        />
+        {patientInfo && (
+          <p className="mt-2 text-green-600">
+            Patient: {patientInfo.user.firstName} {patientInfo.user.lastName} ({patientInfo.user.username})          </p>
+        )}
       </motion.div>
 
       {/* Date & Time */}
@@ -187,3 +242,4 @@ const SOAPForm = ({ selectedPatient }) => {
 };
 
 export default SOAPForm;
+

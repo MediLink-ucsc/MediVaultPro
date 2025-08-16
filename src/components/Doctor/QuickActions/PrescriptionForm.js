@@ -141,7 +141,7 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
         />
         {fetchedPatient && (
           <p className="mt-2 text-green-600">
-            ✅ Patient: {fetchedPatient.user.firstName} {fetchedPatient.user.lastName} ({fetchedPatient.user.username})
+            Patient: {fetchedPatient.user.firstName} {fetchedPatient.user.lastName} ({fetchedPatient.user.username})
           </p>
         )}
       </div>
