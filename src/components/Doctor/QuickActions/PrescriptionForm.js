@@ -55,50 +55,58 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
   };
 
   const handleSubmit = async (e) => {
-     if (e && typeof e.preventDefault === 'function') {
     e.preventDefault();
-  }
-
-    if (!patientId) return alert('Please select or fetch a patient first');
-    console.log('patientid', patientId);
-
-    const payload = {
-      patientId: patientId.toString(),
-      medications: medications.map((med) => ({
-        medicineName: med.name,
-        dosage: med.dosage,
-        frequency: med.frequency,
-        duration: med.duration,
-      })),
-      additionalInstructions,
-    };
-    console.log('payload', payload);
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:3000/api/v1/patientRecords/prescriptions/insert', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
 
-      const data = await response.json(); // parse once
+      // ✅ Proper payload
+      const payload = {
+        patientId: patientId.toString(),
+        medications: medications.map((med) => ({
+          medicineName: med.name,
+          dosage: med.dosage,
+          frequency: med.frequency,
+          duration: med.duration,
+        })),
+        additionalInstructions,
+      };
+
+      console.log('payload', payload);
+
+      const token = localStorage.getItem('token');
+
+      // ✅ Use fetch with correct API path
+      const response = await fetch(
+        'http://localhost:3000/api/v1/patientRecords/prescriptions/insert',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`, // attach token for auth
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      const result = await response.json();
 
       if (!response.ok) {
-        return alert('Error: ' + (data.message || 'Failed to send prescription'));
+        alert('Error: ' + (result.message || 'Failed to send prescription.'));
+        return;
       }
 
-      alert('Prescription created successfully! ID: ' + data.prescriptionId);
-      if (onSubmit) onSubmit(data);
+      console.log('Response:', result);
+      alert('Prescription sent successfully! ID: ' + result.prescriptionId);
+
+      // ✅ Keep DashboardOverview logic intact
+      if (onSubmit) onSubmit(e);
 
     } catch (err) {
       console.error(err);
-      alert('Failed to send prescription due to network/server error');
+      alert('Failed to send prescription due to network or server error.');
     }
   };
+
 
   return (
     <motion.form onSubmit={handleSubmit} className="space-y-6" initial="hidden" animate="visible">
