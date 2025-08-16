@@ -21,6 +21,11 @@ export const API_ENDPOINTS = {
     GET_TEST_TYPES: `${API_BASE_URL}/api/${VERSION}/labReport/report/testTypes`,
     GET_TEST_TYPE_BY_ID: (id) =>
       `${API_BASE_URL}/api/${VERSION}/labReport/report/testType/${id}`,
+    CREATE_TEST_TYPE: `${API_BASE_URL}/api/${VERSION}/labReport/report/addTestType`,
+    UPDATE_TEST_TYPE: (id) =>
+      `${API_BASE_URL}/api/${VERSION}/labReport/template/test-types/${id}`,
+    DELETE_TEST_TYPE: (id) =>
+      `${API_BASE_URL}/api/${VERSION}/labReport/template/test-types/${id}`,
     GET_SAMPLES: `${API_BASE_URL}/api/${VERSION}/labReport/workflow/samples`,
     GET_SAMPLES_BY_ID: (id) =>
       `${API_BASE_URL}/api/${VERSION}/labReport/workflow/samples/${id}`,

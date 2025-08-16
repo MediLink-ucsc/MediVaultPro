@@ -1,102 +1,137 @@
 // src/components/Lab/CreateTemplateForm.js
-import React, { useState } from 'react';
-import { Plus, Minus } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { Plus, Minus } from "lucide-react";
 
-const CreateTemplateForm = ({ onSubmit }) => {
+const CreateTemplateForm = ({
+  onSubmit,
+  initialData = null,
+  isEditing = false,
+}) => {
   const [formData, setFormData] = useState({
-    templateName: '',
-    testType: '',
-    category: '',
-    description: '',
+    templateName: "",
+    testType: "",
+    category: "",
+    description: "",
     fields: [
-      { name: '', type: 'text', required: true, options: [] }
+      {
+        name: "",
+        type: "text",
+        required: true,
+        unit: "",
+        normalRange: "",
+        options: [],
+      },
     ],
-    referenceRanges: [
-      { parameter: '', normalRange: '', unit: '' }
-    ],
-    instructions: '',
+    instructions: "",
   });
 
+  // Initialize form data when editing
+  useEffect(() => {
+    if (initialData && isEditing) {
+      setFormData({
+        templateName: initialData.templateName || "",
+        testType: initialData.testType || "",
+        category: initialData.category || "",
+        description: initialData.description || "",
+        fields:
+          initialData.fields && initialData.fields.length > 0
+            ? initialData.fields.map((field) => ({
+                name: field.name || "",
+                type:
+                  field.type === "decimal"
+                    ? "number"
+                    : field.type === "string"
+                    ? "text"
+                    : field.type === "boolean"
+                    ? "checkbox"
+                    : field.type || "text",
+                required: field.required !== undefined ? field.required : true,
+                unit: field.unit || "",
+                normalRange: field.normalRange || "",
+                options: field.options || [],
+              }))
+            : [
+                {
+                  name: "",
+                  type: "text",
+                  required: true,
+                  unit: "",
+                  normalRange: "",
+                  options: [],
+                },
+              ],
+        instructions: initialData.instructions || "",
+      });
+    }
+  }, [initialData, isEditing]);
+
   const testCategories = [
-    'Blood Tests',
-    'Urine Tests',
-    'Imaging',
-    'Cultures',
-    'Cardiac Tests',
-    'Hormone Tests',
-    'Metabolic Tests',
-    'Immunology',
+    "Blood Tests",
+    "Urine Tests",
+    "Imaging",
+    "Cultures",
+    "Cardiac Tests",
+    "Hormone Tests",
+    "Metabolic Tests",
+    "Immunology",
   ];
 
   const fieldTypes = [
-    { value: 'text', label: 'Text' },
-    { value: 'number', label: 'Number' },
-    { value: 'dropdown', label: 'Dropdown' },
-    { value: 'checkbox', label: 'Checkbox' },
-    { value: 'date', label: 'Date' },
-    { value: 'textarea', label: 'Text Area' },
+    { value: "text", label: "Text" },
+    { value: "number", label: "Number" },
+    { value: "dropdown", label: "Dropdown" },
+    { value: "checkbox", label: "Checkbox" },
+    { value: "date", label: "Date" },
+    { value: "textarea", label: "Text Area" },
   ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const addField = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      fields: [...prev.fields, { name: '', type: 'text', required: true, options: [] }]
+      fields: [
+        ...prev.fields,
+        {
+          name: "",
+          type: "text",
+          required: true,
+          unit: "",
+          normalRange: "",
+          options: [],
+        },
+      ],
     }));
   };
 
   const removeField = (index) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      fields: prev.fields.filter((_, i) => i !== index)
+      fields: prev.fields.filter((_, i) => i !== index),
     }));
   };
 
   const updateField = (index, field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      fields: prev.fields.map((f, i) => 
+      fields: prev.fields.map((f, i) =>
         i === index ? { ...f, [field]: value } : f
-      )
-    }));
-  };
-
-  const addReferenceRange = () => {
-    setFormData(prev => ({
-      ...prev,
-      referenceRanges: [...prev.referenceRanges, { parameter: '', normalRange: '', unit: '' }]
-    }));
-  };
-
-  const removeReferenceRange = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      referenceRanges: prev.referenceRanges.filter((_, i) => i !== index)
-    }));
-  };
-
-  const updateReferenceRange = (index, field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      referenceRanges: prev.referenceRanges.map((r, i) => 
-        i === index ? { ...r, [field]: value } : r
-      )
+      ),
     }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // Basic validation
     if (!formData.templateName || !formData.testType || !formData.category) {
-      alert('Please fill in all required fields');
+      alert("Please fill in all required fields");
       return;
     }
 
@@ -117,7 +152,10 @@ const CreateTemplateForm = ({ onSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-h-96 overflow-y-auto">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 max-h-96 overflow-y-auto"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -163,7 +201,9 @@ const CreateTemplateForm = ({ onSubmit }) => {
         >
           <option value="">Select category</option>
           {testCategories.map((category, index) => (
-            <option key={index} value={category}>{category}</option>
+            <option key={index} value={category}>
+              {category}
+            </option>
           ))}
         </select>
       </div>
@@ -184,7 +224,9 @@ const CreateTemplateForm = ({ onSubmit }) => {
 
       <div>
         <div className="flex items-center justify-between mb-3">
-          <label className="text-sm font-medium text-gray-700">Report Fields</label>
+          <label className="text-sm font-medium text-gray-700">
+            Report Fields
+          </label>
           <button
             type="button"
             onClick={addField}
@@ -196,92 +238,82 @@ const CreateTemplateForm = ({ onSubmit }) => {
         </div>
         <div className="space-y-3">
           {formData.fields.map((field, index) => (
-            <div key={index} className="p-3 border border-gray-200 rounded-md">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                <input
-                  type="text"
-                  placeholder="Field name"
-                  value={field.name}
-                  onChange={(e) => updateField(index, 'name', e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
-                />
-                <select
-                  value={field.type}
-                  onChange={(e) => updateField(index, 'type', e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
-                >
-                  {fieldTypes.map((type) => (
-                    <option key={type.value} value={type.value}>{type.label}</option>
-                  ))}
-                </select>
-                <div className="flex items-center space-x-2">
+            <div key={index} className="p-4 border border-gray-200 rounded-md">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Field Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., TSH, Hemoglobin"
+                    value={field.name}
+                    onChange={(e) => updateField(index, "name", e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Type
+                  </label>
+                  <select
+                    value={field.type}
+                    onChange={(e) => updateField(index, "type", e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  >
+                    {fieldTypes.map((type) => (
+                      <option key={type.value} value={type.value}>
+                        {type.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Unit
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., mg/dL, mIU/L"
+                    value={field.unit}
+                    onChange={(e) => updateField(index, "unit", e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Normal Range
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., 0.4-4.0, <200"
+                    value={field.normalRange}
+                    onChange={(e) =>
+                      updateField(index, "normalRange", e.target.value)
+                    }
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+                <div className="flex items-center justify-between">
                   <label className="flex items-center text-sm">
                     <input
                       type="checkbox"
                       checked={field.required}
-                      onChange={(e) => updateField(index, 'required', e.target.checked)}
-                      className="mr-1"
+                      onChange={(e) =>
+                        updateField(index, "required", e.target.checked)
+                      }
+                      className="mr-2"
                     />
                     Required
                   </label>
                   <button
                     type="button"
                     onClick={() => removeField(index)}
-                    className="p-1 text-orange-500 hover:text-orange-700 hover:bg-orange-50 rounded transition-all duration-200"
+                    className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-all duration-200"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <label className="text-sm font-medium text-gray-700">Reference Ranges</label>
-          <button
-            type="button"
-            onClick={addReferenceRange}
-            className="flex items-center space-x-1 px-3 py-1.5 text-teal-600 hover:text-teal-700 hover:bg-teal-50 rounded-lg transition-all duration-200"
-          >
-            <Plus className="w-4 h-4" />
-            <span className="text-sm">Add Range</span>
-          </button>
-        </div>
-        <div className="space-y-3">
-          {formData.referenceRanges.map((range, index) => (
-            <div key={index} className="p-3 border border-gray-200 rounded-md">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-                <input
-                  type="text"
-                  placeholder="Parameter name"
-                  value={range.parameter}
-                  onChange={(e) => updateReferenceRange(index, 'parameter', e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Normal range"
-                  value={range.normalRange}
-                  onChange={(e) => updateReferenceRange(index, 'normalRange', e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Unit"
-                  value={range.unit}
-                  onChange={(e) => updateReferenceRange(index, 'unit', e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeReferenceRange(index)}
-                  className="p-1 text-orange-500 hover:text-orange-700 hover:bg-orange-50 rounded transition-all duration-200 justify-self-center"
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
               </div>
             </div>
           ))}
@@ -314,7 +346,7 @@ const CreateTemplateForm = ({ onSubmit }) => {
           type="submit"
           className="px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-md hover:from-teal-600 hover:to-teal-700 transition-all duration-200"
         >
-          Create Template
+          {isEditing ? "Update Template" : "Create Template"}
         </button>
       </div>
     </form>

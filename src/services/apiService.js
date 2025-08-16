@@ -104,6 +104,34 @@ class ApiService {
     return response.json();
   }
 
+  static async createTestType(testTypeData) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.LAB_REPORT.CREATE_TEST_TYPE,
+      {
+        method: "POST",
+        body: JSON.stringify(testTypeData),
+      }
+    );
+    return response.json();
+  }
+
+  static async updateTestType(id, testTypeData) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.LAB_REPORT.UPDATE_TEST_TYPE(id),
+      {
+        method: "PUT",
+        body: JSON.stringify(testTypeData),
+      }
+    );
+    return response.json();
+  }
+
+  static async deleteTestType(id) {
+    return this.makeRequest(API_ENDPOINTS.LAB_REPORT.DELETE_TEST_TYPE(id), {
+      method: "DELETE",
+    });
+  }
+
   static async getLabSamples() {
     const response = await this.makeRequest(
       API_ENDPOINTS.LAB_REPORT.GET_SAMPLES
