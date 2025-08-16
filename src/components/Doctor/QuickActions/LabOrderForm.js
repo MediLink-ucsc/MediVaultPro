@@ -2,11 +2,15 @@ import { useState } from 'react';
 import { Save, Plus, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../../Common/Button';
+import axios from 'axios';
 
 const LabOrderForm = ({ onSubmit, selectedPatient }) => {
   const [tests, setTests] = useState([{ name: '', urgency: '', specialInstructions: '' }]);
   const [clinicalInformation, setClinicalInformation] = useState('');
   const [patientId, setPatientId] = useState(selectedPatient?.id || '');
+  const [username, setUsername] = useState('');
+  const [fetchedPatient, setFetchedPatient] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleInputChange = (index, field, value) => {
     const newTests = [...tests];
@@ -14,77 +18,101 @@ const LabOrderForm = ({ onSubmit, selectedPatient }) => {
     setTests(newTests);
   };
 
-  const addTest = () => {
-    setTests([...tests, { name: '', urgency: '', specialInstructions: '' }]);
-  };
+  const addTest = () => setTests([...tests, { name: '', urgency: '', specialInstructions: '' }]);
+  const removeTest = (index) => setTests(tests.filter((_, i) => i !== index));
 
-  const removeTest = (index) => {
-    setTests(tests.filter((_, i) => i !== index));
+  const fetchPatientByUsername = async () => {
+    if (!username) return alert('Enter username/contact number');
+
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      const { data } = await axios.get(
+        `http://localhost:3000/api/v1/auth/medvaultpro/doctor/patient/${username}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setFetchedPatient(data);
+      setPatientId(data.patientId.toString());
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || 'Patient not found');
+      setFetchedPatient(null);
+      setPatientId('');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!patientId) return alert('Fetch a valid patient first');
 
     const payload = {
       patientId: Number(patientId),
       clinicalInformation,
-      tests
+      tests,
     };
 
     try {
-      const token = localStorage.getItem('token'); // adjust based on your auth setup
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      const { data } = await axios.post(
+        'http://localhost:3000/api/v1/patientRecords/laborders/insert',
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      const response = await fetch('http://localhost:3000/api/v1/patientRecords/laborders/insert', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`, // ✅ include token
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-      if (response.ok) {
-        alert('Lab order created: ' + data.labOrderId);
-      } else {
-        alert('Error: ' + data.message);
-      }
+      alert('Lab order created: ' + data.labOrderId);
+      if (onSubmit) onSubmit(e);
     } catch (err) {
       console.error(err);
-      alert('Failed to send lab order');
+      alert(err.response?.data?.message || 'Failed to send lab order');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <motion.form onSubmit={handleSubmit} className="space-y-6" initial="hidden" animate="visible">
-      {/* Patient Dropdown */}
-      <div>
-        <label className="block text-sm font-medium mb-2">Patient *</label>
-        <select
-          required
-          name="patientId"
-          value={patientId}
-          onChange={(e) => setPatientId(e.target.value)}
-          disabled={!!selectedPatient}
-          className="w-full p-3.5 border rounded-xl"
-        >
-          {selectedPatient ? (
-            <option value={selectedPatient.id}>
-              {selectedPatient.firstName} {selectedPatient.lastName} - ID: {selectedPatient.id}
-            </option>
-          ) : (
-            <>
-              <option value="">Select patient</option>
-              <option value="102">Patient 102</option>
-              <option value="103">Patient 103</option>
-            </>
-          )}
-        </select>
+      
+      {/* Username & Fetch */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Patient Username / Contact *</label>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Enter username or contact"
+            className="flex-1 p-3 border rounded-xl"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            disabled={!!selectedPatient}
+          />
+          <Button type="button" onClick={fetchPatientByUsername} size="sm" disabled={loading}>
+            {loading ? 'Loading...' : 'Get ID'}
+          </Button>
+        </div>
       </div>
 
-      
+      {/* Patient ID */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Patient ID *</label>
+        <input
+          type="text"
+          className="w-full p-3.5 border border-gray-200 rounded-xl"
+          value={patientId}
+          readOnly
+          placeholder="Fetch patient first"
+          required
+        />
+        {fetchedPatient && (
+          <p className="mt-2 text-green-600">
+            Patient: {fetchedPatient.user.firstName} {fetchedPatient.user.lastName} ({fetchedPatient.user.username})
+          </p>
+        )}
+      </div>
 
-      {/* Tests */}
+      {/* Tests Section */}
       <div>
         <div className="flex justify-between mb-4">
           <label className="text-sm font-medium">Tests *</label>
@@ -154,8 +182,8 @@ const LabOrderForm = ({ onSubmit, selectedPatient }) => {
 
       {/* Submit */}
       <div className="pt-6 border-t">
-        <Button type="submit" variant="primary" size="lg" icon={Save} fullWidth>
-          Create Lab Order
+        <Button type="submit" variant="primary" size="lg" icon={Save} fullWidth disabled={loading}>
+          {loading ? 'Saving...' : 'Create Lab Order'}
         </Button>
       </div>
     </motion.form>
@@ -163,3 +191,4 @@ const LabOrderForm = ({ onSubmit, selectedPatient }) => {
 };
 
 export default LabOrderForm;
+

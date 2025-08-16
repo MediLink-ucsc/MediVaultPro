@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Save, Plus, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../../Common/Button';
+import axios from 'axios';
 
 const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
   const [medications, setMedications] = useState([{ name: '', dosage: '', frequency: '', duration: '' }]);
@@ -31,24 +32,19 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3000/api/v1/auth/medvaultpro/doctor/patient/${username}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
 
-      const data = await response.json();
-      console.log('patient data:', data);
+      const { data } = await axios.get(
+        `http://localhost:3000/api/v1/auth/medvaultpro/doctor/patient/${username}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-      if (response.ok) {
-        setFetchedPatient(data);
-        setPatientId(data.patientId.toString());
-      } else {
-        alert(data.message || 'Patient not found');
-        setFetchedPatient(null);
-        setPatientId('');
-      }
+      setFetchedPatient(data);
+      setPatientId(data.patientId.toString());
     } catch (error) {
       console.error(error);
-      alert('Failed to fetch patient');
+      alert(error.response?.data?.message || 'Failed to fetch patient');
+      setFetchedPatient(null);
+      setPatientId('');
     } finally {
       setLoading(false);
     }
@@ -56,10 +52,12 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!patientId) return alert('Fetch a valid patient first');
 
     try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
 
-      // ✅ Proper payload
       const payload = {
         patientId: patientId.toString(),
         medications: medications.map((med) => ({
@@ -71,42 +69,22 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
         additionalInstructions,
       };
 
-      console.log('payload', payload);
-
-      const token = localStorage.getItem('token');
-
-      // ✅ Use fetch with correct API path
-      const response = await fetch(
+      const { data } = await axios.post(
         'http://localhost:3000/api/v1/patientRecords/prescriptions/insert',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`, // attach token for auth
-          },
-          body: JSON.stringify(payload),
-        }
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      const result = await response.json();
+      alert('Prescription sent successfully! ID: ' + data.prescriptionId);
 
-      if (!response.ok) {
-        alert('Error: ' + (result.message || 'Failed to send prescription.'));
-        return;
-      }
-
-      console.log('Response:', result);
-      alert('Prescription sent successfully! ID: ' + result.prescriptionId);
-
-      // ✅ Keep DashboardOverview logic intact
       if (onSubmit) onSubmit(e);
-
-    } catch (err) {
-      console.error(err);
-      alert('Failed to send prescription due to network or server error.');
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || 'Failed to send prescription');
+    } finally {
+      setLoading(false);
     }
   };
-
 
   return (
     <motion.form onSubmit={handleSubmit} className="space-y-6" initial="hidden" animate="visible">
@@ -233,8 +211,9 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
           size="lg"
           icon={Save}
           fullWidth
+          disabled={loading}
         >
-          Generate Prescription
+          {loading ? 'Saving...' : 'Generate Prescription'}
         </Button>
       </div>
     </motion.form>
@@ -242,4 +221,5 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
 };
 
 export default PrescriptionForm;
+
 
