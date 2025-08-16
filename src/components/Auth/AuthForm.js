@@ -19,7 +19,7 @@ const AuthForm = ({
   const [credentials, setCredentials] = useState({
     username: "",
     password: "",
-    role: "doctor",
+    // role: "doctor",
   });
   const [error, setError] = useState("");
 

@@ -2,9 +2,21 @@ import { useState } from 'react';
 import { Save, Plus, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Button from '../../Common/Button';
+import axios from 'axios';
 
 const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
   const [medications, setMedications] = useState([{ name: '', dosage: '', frequency: '', duration: '' }]);
+  const [additionalInstructions, setAdditionalInstructions] = useState('');
+  const [patientId, setPatientId] = useState(selectedPatient?.patientId || '');
+  const [username, setUsername] = useState('');
+  const [fetchedPatient, setFetchedPatient] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleInputChange = (index, field, value) => {
+    const newMeds = [...medications];
+    newMeds[index][field] = value;
+    setMedications(newMeds);
+  };
 
   const addMedication = () => {
     setMedications([...medications, { name: '', dosage: '', frequency: '', duration: '' }]);
@@ -14,114 +26,116 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
     setMedications(medications.filter((_, i) => i !== index));
   };
 
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        when: "beforeChildren"
-      }
+  const fetchPatientByUsername = async () => {
+    if (!username) return alert('Enter username/contact number');
+
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+
+      const { data } = await axios.get(
+        `http://localhost:3000/api/v1/auth/medvaultpro/doctor/patient/${username}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setFetchedPatient(data);
+      setPatientId(data.patientId.toString());
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || 'Failed to fetch patient');
+      setFetchedPatient(null);
+      setPatientId('');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100
-      }
-    }
-  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!patientId) return alert('Fetch a valid patient first');
 
-  const medicationVariants = {
-    hidden: { opacity: 0, height: 0 },
-    visible: {
-      opacity: 1,
-      height: "auto",
-      transition: {
-        duration: 0.3
-      }
-    },
-    exit: {
-      opacity: 0,
-      height: 0,
-      transition: {
-        duration: 0.2
-      }
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+
+      const payload = {
+        patientId: patientId.toString(),
+        medications: medications.map((med) => ({
+          medicineName: med.name,
+          dosage: med.dosage,
+          frequency: med.frequency,
+          duration: med.duration,
+        })),
+        additionalInstructions,
+      };
+
+      const { data } = await axios.post(
+        'http://localhost:3000/api/v1/patientRecords/prescriptions/insert',
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      alert('Prescription sent successfully! ID: ' + data.prescriptionId);
+
+      if (onSubmit) onSubmit(e);
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || 'Failed to send prescription');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <motion.form 
-      onSubmit={onSubmit} 
-      className="space-y-6"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      <motion.div variants={itemVariants}>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Patient *</label>
-        <select
-          required
-          name="patientId"
-          value={selectedPatient?.id || ''}
-          disabled={!!selectedPatient}
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiAjd2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im02IDkgNiA2IDYtNiIvPjwvc3ZnPg==')] bg-no-repeat bg-[center_right_1rem]"
-        >
-          {selectedPatient ? (
-            <option value={selectedPatient.id}>
-              {selectedPatient.firstName} {selectedPatient.lastName} - ID: {selectedPatient.id}
-            </option>
-          ) : (
-            <>
-              <option value="">Select patient</option>
-              <option value="1">Likitha Chathubhashini - ID: 001</option>
-              <option value="2">Dulmini Nureka - ID: 002</option>
-              <option value="3">Hansaja Damsara - ID: 003</option>
-              <option value="4">Sathya Abeysinghe - ID: 004</option>
-            </>
-          )}
-        </select>
-        {selectedPatient && (
-          <p className="mt-2 text-sm text-gray-600">
-            Selected: {selectedPatient.firstName} {selectedPatient.lastName} (Age: {selectedPatient.age})
-          </p>
-        )}
-      </motion.div>
-
-      <motion.div variants={itemVariants}>
-        <div className="flex items-center justify-between mb-4">
-          <label className="block text-sm font-medium text-gray-700">Medications *</label>
-          <Button
-            type="button"
-            variant="secondary"
-            role="doctor"
-            size="sm"
-            icon={Plus}
-            onClick={addMedication}
-          >
-            Add Medication
+    <motion.form onSubmit={handleSubmit} className="space-y-6" initial="hidden" animate="visible">
+      {/* Username & Fetch */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Patient Username / Contact *</label>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Enter username or contact"
+            className="flex-1 p-3 border rounded-xl"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            disabled={!!selectedPatient}
+          />
+          <Button type="button" onClick={fetchPatientByUsername} size="sm" disabled={loading}>
+            {loading ? 'Loading...' : 'Get ID'}
           </Button>
         </div>
-        
+      </div>
+
+      {/* Patient ID Field */}
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Patient ID *</label>
+        <input
+          type="text"
+          className="w-full p-3.5 border border-gray-200 rounded-xl"
+          value={patientId}
+          readOnly
+          placeholder="Fetch patient first"
+          required
+        />
+        {fetchedPatient && (
+          <p className="mt-2 text-green-600">
+            Patient: {fetchedPatient.user.firstName} {fetchedPatient.user.lastName} ({fetchedPatient.user.username})
+          </p>
+        )}
+      </div>
+
+      {/* Medications Section */}
+      <div>
+        <div className="flex justify-between mb-4">
+          <label className="text-sm font-medium">Medications *</label>
+          <Button type="button" onClick={addMedication} icon={Plus} size="sm">Add Medication</Button>
+        </div>
+
         <AnimatePresence>
           {medications.map((med, index) => (
-            <motion.div 
-              key={index} 
-              className="border border-gray-200 rounded-xl p-5 mb-4 bg-white shadow-sm hover:shadow-md transition-shadow"
-              variants={medicationVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              layout
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="font-medium text-gray-700">Medication {index + 1}</h4>
+            <motion.div key={index} className="border p-4 mb-4 rounded-lg shadow-sm bg-white">
+              <div className="flex justify-between">
+                <h4 className="font-medium">Medication {index + 1}</h4>
                 {medications.length > 1 && (
                   <Button
                     type="button"
@@ -130,86 +144,82 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
                     size="xs"
                     icon={Trash2}
                     onClick={() => removeMedication(index)}
-                    className="p-1"
                   />
                 )}
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Medicine Name</label>
-                  <input
-                    type="text"
-                    required
-                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                    placeholder="e.g., Paracetamol"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Dosage</label>
-                  <input
-                    type="text"
-                    required
-                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                    placeholder="e.g., 500mg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Frequency</label>
-                  <select
-                    required
-                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                  >
-                    <option value="">Select frequency</option>
-                    <option value="once">Once daily</option>
-                    <option value="twice">Twice daily</option>
-                    <option value="thrice">Three times daily</option>
-                    <option value="four">Four times daily</option>
-                    <option value="as-needed">As needed</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Duration</label>
-                  <input
-                    type="text"
-                    required
-                    className="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
-                    placeholder="e.g., 7 days"
-                  />
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <input
+                  type="text"
+                  required
+                  placeholder="Medicine Name"
+                  className="p-3 border rounded-lg"
+                  value={med.name}
+                  onChange={(e) => handleInputChange(index, 'name', e.target.value)}
+                />
+                <input
+                  type="text"
+                  required
+                  placeholder="Dosage"
+                  className="p-3 border rounded-lg"
+                  value={med.dosage}
+                  onChange={(e) => handleInputChange(index, 'dosage', e.target.value)}
+                />
+                <select
+                  required
+                  className="p-3 border rounded-lg"
+                  value={med.frequency}
+                  onChange={(e) => handleInputChange(index, 'frequency', e.target.value)}
+                >
+                  <option value="">Select frequency</option>
+                  <option value="once">Once daily</option>
+                  <option value="twice">Twice daily</option>
+                  <option value="thrice">Three times daily</option>
+                  <option value="four">Four times daily</option>
+                  <option value="as-needed">As needed</option>
+                </select>
+                <input
+                  type="text"
+                  required
+                  placeholder="Duration"
+                  className="p-3 border rounded-lg"
+                  value={med.duration}
+                  onChange={(e) => handleInputChange(index, 'duration', e.target.value)}
+                />
               </div>
             </motion.div>
           ))}
         </AnimatePresence>
-      </motion.div>
+      </div>
 
-      <motion.div variants={itemVariants}>
+      {/* Additional Instructions */}
+      <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Additional Instructions</label>
         <textarea
           rows="4"
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
+          className="w-full p-3.5 border border-gray-200 rounded-xl"
+          value={additionalInstructions}
+          onChange={(e) => setAdditionalInstructions(e.target.value)}
           placeholder="Special instructions for the patient..."
         />
-      </motion.div>
+      </div>
 
-      <motion.div 
-        className="pt-6 border-t border-gray-100"
-        variants={itemVariants}
-      >
+      {/* Submit */}
+      <div className="pt-6 border-t">
         <Button
           type="submit"
           variant="primary"
-          role="doctor"
           size="lg"
           icon={Save}
-          className="w-full shadow-lg hover:shadow-teal-200"
           fullWidth
+          disabled={loading}
         >
-          Generate Prescription
+          {loading ? 'Saving...' : 'Generate Prescription'}
         </Button>
-      </motion.div>
+      </div>
     </motion.form>
   );
 };
 
 export default PrescriptionForm;
+
+

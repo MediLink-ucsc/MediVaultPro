@@ -1,122 +1,230 @@
-import { Save } from 'lucide-react';
+import { useState } from 'react';
+import { Save, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Button from '../../Common/Button';
+import axios from 'axios';
 
-const SOAPForm = ({ onSubmit, selectedPatient }) => {
+const SOAPForm = ({ selectedPatient, onSubmit }) => {
+  const [patientId, setPatientId] = useState(selectedPatient?.id || '');
+  const [username, setUsername] = useState('');
+  const [subjective, setSubjective] = useState('');
+  const [objective, setObjective] = useState('');
+  const [assessment, setAssessment] = useState('');
+  const [plan, setPlan] = useState('');
+  const [patientInfo, setPatientInfo] = useState(null);
+  const [dateTime, setDateTime] = useState(new Date().toISOString().slice(0, 16));
+
+  // ✅ Fetch patient by username (same logic as PrescriptionForm)
+  const fetchPatientByUsername = async () => {
+    if (!username) {
+      alert('Please enter a username.');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Unauthorized: No token found');
+        return;
+      }
+
+      const response = await axios.get(
+        `http://localhost:3000/api/v1/auth/medvaultpro/doctor/patient/${username}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      console.log('Fetched patient:', response.data);
+
+      if (response.data && response.data.patientId) {
+        setPatientId(response.data.patientId.toString());
+        setPatientInfo(response.data);
+      } else {
+        alert('Patient not found.');
+      }
+    } catch (error) {
+      console.error('Error fetching patient:', error);
+      alert('Failed to fetch patient.');
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!patientId) {
+      alert('Please fetch a valid patient before submitting.');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Unauthorized: No token found');
+        return;
+      }
+
+      const payload = {
+        patientId,
+        subjective,
+        objective,
+        assessment,
+        plan,
+        dateTime,
+      };
+
+      console.log('Submitting SOAP note:', payload);
+
+      const response = await axios.post(
+        'http://localhost:3000/api/v1/patientRecords/soapnotes/insert',
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log('SOAP Note saved:', response.data);
+      alert('SOAP Note saved successfully!');
+
+      if (onSubmit) onSubmit(e); // ✅ Keep Dashboard logic intact
+    } catch (error) {
+      console.error('Error saving SOAP note:', error);
+      alert('Failed to save SOAP note.');
+    }
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        when: "beforeChildren"
-      }
-    }
+      transition: { staggerChildren: 0.1, when: 'beforeChildren' },
+    },
   };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100
-      }
-    }
+    visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100 } },
   };
 
   return (
-    <motion.form 
-      onSubmit={onSubmit} 
+    <motion.form
+      onSubmit={handleSubmit}
       className="space-y-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
     >
+      {/* Username Search */}
+      {!selectedPatient && (
+        <motion.div variants={itemVariants} className="flex gap-3">
+          <input
+            type="text"
+            placeholder="Enter patient username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="flex-1 p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500"
+          />
+          <Button
+            type="button"
+            variant="primary"  // Change to primary for consistency
+            size="lg"          // Match the size of the Save button
+            icon={Search}
+            className="shadow-lg hover:shadow-teal-200 w-full sm:w-auto"
+            onClick={fetchPatientByUsername}
+          >
+            Get ID
+          </Button>
+        </motion.div>
+      )}
+
+      {/* Patient ID */}
       <motion.div variants={itemVariants}>
         <label className="block text-sm font-medium text-gray-700 mb-2">Patient *</label>
-        <select
-          required
-          name="patientId"
-          value={selectedPatient?.id || ''}
-          disabled={!!selectedPatient}
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md appearance-none bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiAjd2hpdGUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jaGV2cm9uLWRvd24iPjxwYXRoIGQ9Im02IDkgNiA2IDYtNiIvPjwvc3ZnPg==')] bg-no-repeat bg-[center_right_1rem]"
-        >
-          {selectedPatient ? (
-            <option value={selectedPatient.id}>
-              {selectedPatient.firstName} {selectedPatient.lastName} - ID: {selectedPatient.id}
-            </option>
-          ) : (
-            <>
-              <option value="">Select patient</option>
-              <option value="1">Likitha Chathubhashini - ID: 001</option>
-              <option value="2">Dulmini Nureka - ID: 002</option>
-              <option value="3">Hansaja Damsara - ID: 003</option>
-              <option value="4">Sathya Abeysinghe - ID: 004</option>
-            </>
-          )}
-        </select>
-        {selectedPatient && (
-          <p className="mt-2 text-sm text-gray-600">
-            Selected: {selectedPatient.firstName} {selectedPatient.lastName} (Age: {selectedPatient.age})
-          </p>
+        <input
+          type="text"
+          value={patientId}
+          readOnly
+          className="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-100"
+        />
+        {patientInfo && (
+          <p className="mt-2 text-green-600">
+            Patient: {patientInfo.user.firstName} {patientInfo.user.lastName} ({patientInfo.user.username})          </p>
         )}
       </motion.div>
 
+      {/* Date & Time */}
       <motion.div variants={itemVariants}>
         <label className="block text-sm font-medium text-gray-700 mb-2">Date & Time</label>
         <input
           type="datetime-local"
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
-          defaultValue={new Date().toISOString().slice(0, 16)}
+          value={dateTime}
+          onChange={(e) => setDateTime(e.target.value)}
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500"
         />
       </motion.div>
 
+      {/* Subjective */}
       <motion.div variants={itemVariants}>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Subjective (S) - Chief Complaint & History *</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Subjective (S) - Chief Complaint & History *
+        </label>
         <textarea
           rows="5"
           required
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
-          placeholder="Patient's chief complaint, symptoms, and relevant history..."
+          value={subjective}
+          onChange={(e) => setSubjective(e.target.value)}
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500"
         />
       </motion.div>
 
+      {/* Objective */}
       <motion.div variants={itemVariants}>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Objective (O) - Physical Examination & Tests *</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Objective (O) - Physical Examination & Tests *
+        </label>
         <textarea
           rows="5"
           required
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
-          placeholder="Vital signs, physical examination findings, lab results..."
+          value={objective}
+          onChange={(e) => setObjective(e.target.value)}
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500"
         />
       </motion.div>
 
+      {/* Assessment */}
       <motion.div variants={itemVariants}>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Assessment (A) - Diagnosis *</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Assessment (A) - Diagnosis *
+        </label>
         <textarea
           rows="4"
           required
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
-          placeholder="Primary and differential diagnoses, clinical impression..."
+          value={assessment}
+          onChange={(e) => setAssessment(e.target.value)}
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500"
         />
       </motion.div>
 
+      {/* Plan */}
       <motion.div variants={itemVariants}>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Plan (P) - Treatment Plan *</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Plan (P) - Treatment Plan *
+        </label>
         <textarea
           rows="5"
           required
-          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 shadow-sm hover:shadow-md"
-          placeholder="Treatment plan, medications, follow-up instructions..."
+          value={plan}
+          onChange={(e) => setPlan(e.target.value)}
+          className="w-full p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500"
         />
       </motion.div>
 
-      <motion.div 
-        className="pt-6 border-t border-gray-100"
-        variants={itemVariants}
-      >
+      {/* Submit */}
+      <motion.div className="pt-6 border-t border-gray-100" variants={itemVariants}>
         <Button
           type="submit"
           variant="primary"
@@ -134,3 +242,4 @@ const SOAPForm = ({ onSubmit, selectedPatient }) => {
 };
 
 export default SOAPForm;
+
