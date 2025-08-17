@@ -24,6 +24,7 @@ import {
   Circle
 } from 'lucide-react';
 import MedicalHistory from './MedicalHistory';
+import Prescriptions from './Prescriptions';
 import dataStore from '../../utils/dataStore';
 
 const EnhancedPatientDetails = ({ patient, onBack }) => {
@@ -81,7 +82,7 @@ const EnhancedPatientDetails = ({ patient, onBack }) => {
     { id: 'vitals', label: 'Vital Signs', icon: Activity },
     { id: 'carePlans', label: 'Care Plans', icon: ClipboardList },
     { id: 'history', label: 'Medical History', icon: FileText },
-    { id: 'medications', label: 'Medications', icon: Pill }
+    { id: 'medications', label: 'Prescriptions', icon: Pill }
   ];
 
   const getVitalStatus = (vital) => {
@@ -406,12 +407,7 @@ const EnhancedPatientDetails = ({ patient, onBack }) => {
       case 'history':
         return <MedicalHistory patient={patientData} />;
       case 'medications':
-        return (
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-6">Medications</h3>
-            <p className="text-gray-600">Current medications will be displayed here.</p>
-          </div>
-        );
+        return <Prescriptions patient={patientData} />;
       default:
         return renderOverview();
     }

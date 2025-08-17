@@ -13,14 +13,20 @@ import {
   Clipboard,
   TestTube,
   User,
-  MapPin
+  MapPin,
+  Plus,
+  X
 } from 'lucide-react';
+import SOAPForm from './QuickActions/SOAPForm';
+import LabOrderForm from './QuickActions/LabOrderForm';
 
 const MedicalHistory = ({ patient }) => {
-  // State for filters
+  // State for filters and modal
   const [filterType, setFilterType] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [dateRange, setDateRange] = useState('all');
+  const [showSOAPForm, setShowSOAPForm] = useState(false);
+  const [showLabOrderForm, setShowLabOrderForm] = useState(false);
 
   const filterOptions = [
     { id: 'all', label: 'All Records', icon: FileText, color: 'teal' },
@@ -555,6 +561,76 @@ const MedicalHistory = ({ patient }) => {
           />
         </div>
       </div>
+
+      {/* Action Button Section */}
+      <div className="flex justify-end mt-4">
+        {filterType === 'soap' && (
+          <button 
+            onClick={() => setShowSOAPForm(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors shadow-sm hover:shadow-md"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New SOAP Note</span>
+          </button>
+        )}
+        {filterType === 'lab' && (
+          <button 
+            onClick={() => setShowLabOrderForm(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors shadow-sm hover:shadow-md"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Lab Order</span>
+          </button>
+        )}
+      </div>
+
+      {/* SOAP Form Modal */}
+      {showSOAPForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">New SOAP Note</h2>
+              <button 
+                onClick={() => setShowSOAPForm(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+            <SOAPForm 
+              selectedPatient={patient}
+              onSubmit={(data) => {
+                console.log('SOAP Note submitted:', data);
+                setShowSOAPForm(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Lab Order Form Modal */}
+      {showLabOrderForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-gray-800">New Lab Order</h2>
+              <button 
+                onClick={() => setShowLabOrderForm(false)}
+                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+            <LabOrderForm 
+              selectedPatient={patient}
+              onSubmit={(data) => {
+                console.log('Lab Order submitted:', data);
+                setShowLabOrderForm(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Records List */}
       <div className="space-y-4">
