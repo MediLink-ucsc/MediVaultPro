@@ -22,8 +22,38 @@ const PatientList = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [modalState, setModalState] = useState({ isOpen: false, type: null, patient: null });
-  const [showActionSelector, setShowActionSelector] = useState({ isOpen: false, patient: null });
+  const [modalState, setModalState] = useState({
+    isOpen: false,
+    type: null, // 'lab', 'prescription', 'exam', 'soap'
+    patient: null,
+  });
+  const [showActionSelector, setShowActionSelector] = useState({
+    isOpen: false,
+    patient: null,
+  });
+  const [editConditionModal, setEditConditionModal] = useState({
+    isOpen: false,
+    patient: null,
+    condition: "",
+  });
+
+  const [editLastVisitModal, setEditLastVisitModal] = useState({
+    isOpen: false,
+    patient: null,
+    lastVisit: "",
+  });
+
+  const conditionOptions = [
+    "Stable",
+    "Critical",
+    "Serious",
+    "Fair",
+    "Good",
+    "Recovering",
+    "Under Observation",
+    "Intensive Care",
+    "Emergency",
+  ];
   const [patients, setPatients] = useState([]);
 
   // Fetch patients from API
@@ -33,7 +63,9 @@ const PatientList = () => {
 
   const fetchPatients = async () => {
     try {
-      const res = await axios.get("http://localhost:3000/api/v1/auth/medvaultpro/doctor/patients");
+      const res = await axios.get(
+        "http://localhost:3000/api/v1/auth/medvaultpro/doctor/patients"
+      );
       // Map API response to the structure used in the table
       const mappedPatients = res.data.map((p) => ({
         id: p.patientId,
@@ -57,19 +89,100 @@ const PatientList = () => {
     setShowActionSelector({ isOpen: false, patient: null });
   };
 
-  const openActionSelector = (patient) => setShowActionSelector({ isOpen: true, patient });
-  const closeActionSelector = () => setShowActionSelector({ isOpen: false, patient: null });
-  const closeModal = () => setModalState({ isOpen: false, type: null, patient: null });
+  const openActionSelector = (patient) =>
+    setShowActionSelector({ isOpen: true, patient });
+  const closeActionSelector = () =>
+    setShowActionSelector({ isOpen: false, patient: null });
+  const closeModal = () =>
+    setModalState({ isOpen: false, type: null, patient: null });
 
   const handleQuickActionSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const data = Object.fromEntries(formData.entries());
 
-    console.log(`${modalState.type} form submitted for patient:`, modalState.patient?.name, data);
+    console.log(
+      `${modalState.type} form submitted for patient:`,
+      modalState.patient?.name,
+      data
+    );
 
     closeModal();
-    alert(`${modalState.type} successfully created for ${modalState.patient?.name}`);
+
+    // Show success message (you could implement a toast notification here)
+    alert(
+      `${modalState.type} successfully created for ${modalState.patient?.name}`
+    );
+  };
+
+  const openEditCondition = (e, patient) => {
+    e.stopPropagation();
+    setEditConditionModal({
+      isOpen: true,
+      patient,
+      condition: patient.condition,
+    });
+  };
+
+  const openEditLastVisit = (e, patient) => {
+    e.stopPropagation();
+    setEditLastVisitModal({
+      isOpen: true,
+      patient,
+      lastVisit: patient.lastVisit,
+    });
+  };
+
+  const handleLastVisitSubmit = (e) => {
+    e.preventDefault();
+    const { patient, lastVisit } = editLastVisitModal;
+
+    // Update the patient's last visit in the dataStore
+    dataStore.updatePatient(patient.id, { lastVisit });
+
+    // Update the local state
+    setPatients((prevPatients) =>
+      prevPatients.map((p) => (p.id === patient.id ? { ...p, lastVisit } : p))
+    );
+
+    setEditLastVisitModal({
+      isOpen: false,
+      patient: null,
+      lastVisit: "",
+    });
+  };
+
+  const handleConditionSubmit = (e) => {
+    e.preventDefault();
+    const { patient, condition } = editConditionModal;
+
+    // Update the patient's condition in the dataStore
+    dataStore.updatePatient(patient.id, { condition });
+
+    // Update the local state
+    setPatients((prevPatients) =>
+      prevPatients.map((p) => (p.id === patient.id ? { ...p, condition } : p))
+    );
+
+    setEditConditionModal({
+      isOpen: false,
+      patient: null,
+      condition: "",
+    });
+  };
+
+  const handleDelete = (patientId) => {
+    const patient = patients.find((p) => p.id === patientId);
+    if (
+      window.confirm(
+        `Are you sure you want to delete ${patient?.name}? This action cannot be undone.`
+      )
+    ) {
+      console.log("Delete patient:", patientId);
+      // Remove the patient from the state
+      setPatients(patients.filter((patient) => patient.id !== patientId));
+      alert(`${patient?.name} has been deleted successfully.`);
+    }
   };
 
   const handleViewRecords = (patientId) => {
@@ -109,7 +222,12 @@ const PatientList = () => {
   });
 
   if (selectedPatient) {
-    return <EnhancedPatientDetails patient={selectedPatient} onBack={handleBackToList} />;
+    return (
+      <EnhancedPatientDetails
+        patient={selectedPatient}
+        onBack={handleBackToList}
+      />
+    );
   }
 
   return (
@@ -145,40 +263,140 @@ const PatientList = () => {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Patient</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Age</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Visit</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Condition</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Patient
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Age
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Phone
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Last Visit
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Condition
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredPatients.map((patient) => (
-                <tr key={patient.id} className="hover:bg-teal-50 cursor-pointer transition-colors" onClick={() => openActionSelector(patient)}>
+                <tr
+                  key={patient.id}
+                  className="hover:bg-teal-50 cursor-pointer transition-colors"
+                  onClick={() => openActionSelector(patient)}
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-medium text-gray-900">{patient.firstName} {patient.lastName}</div>
-                    <div className="text-sm text-gray-500">ID: {patient.id}</div>
+                    <div className="font-medium text-gray-900">
+                      {patient.firstName} {patient.lastName}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      ID: {patient.id}
+                    </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">{patient.age}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">{patient.phone}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">{patient.lastVisit}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                    {patient.age}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                    {patient.phone}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 text-xs font-medium bg-teal-100 text-teal-800 rounded-full">{patient.condition}</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-gray-500">{patient.lastVisit}</span>
+                      <button
+                        onClick={(e) => openEditLastVisit(e, patient)}
+                        className="text-gray-400 hover:text-teal-600 p-1 rounded hover:bg-teal-50"
+                        title="Edit Last Visit Date"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center space-x-2">
+                      <span
+                        className={`px-2 py-1 text-xs font-medium rounded-full ${
+                          patient.condition === "Critical"
+                            ? "bg-orange-200 text-orange-900"
+                            : patient.condition === "Serious"
+                            ? "bg-orange-100 text-orange-800"
+                            : patient.condition === "Fair"
+                            ? "bg-teal-50 text-teal-700"
+                            : patient.condition === "Good"
+                            ? "bg-teal-100 text-teal-800"
+                            : patient.condition === "Stable"
+                            ? "bg-teal-200 text-teal-900"
+                            : patient.condition === "Recovering"
+                            ? "bg-teal-100 text-teal-800"
+                            : patient.condition === "Under Observation"
+                            ? "bg-orange-50 text-orange-700"
+                            : patient.condition === "Intensive Care"
+                            ? "bg-orange-200 text-orange-900"
+                            : patient.condition === "Emergency"
+                            ? "bg-orange-300 text-orange-900"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {patient.condition}
+                      </span>
+                      <button
+                        onClick={(e) => openEditCondition(e, patient)}
+                        className="text-gray-400 hover:text-teal-600 p-1 rounded hover:bg-teal-50"
+                        title="Edit Condition"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                          />
+                        </svg>
+                      </button>
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center space-x-2">
                       <button
                         className="text-teal-600 hover:text-teal-800 p-1 rounded hover:bg-teal-50"
                         title="View Records"
-                        onClick={(e) => { e.stopPropagation(); handleViewRecords(patient.id); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleViewRecords(patient.id);
+                        }}
                       >
                         <Eye className="w-5 h-5" />
                       </button>
                       <button
                         className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50"
                         title="Schedule Appointment"
-                        onClick={(e) => { e.stopPropagation(); handleScheduleCalendarEvent(patient.id); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleScheduleCalendarEvent(patient.id);
+                        }}
                       >
                         <Calendar className="w-5 h-5" />
                       </button>
@@ -192,44 +410,244 @@ const PatientList = () => {
       </div>
 
       {/* Action Selector Modal */}
-      <Modal isOpen={showActionSelector.isOpen} onClose={closeActionSelector} title={`Select Action for ${showActionSelector.patient ? `${showActionSelector.patient.firstName} ${showActionSelector.patient.lastName}` : ""}`} size="md">
+      <Modal
+        isOpen={showActionSelector.isOpen}
+        onClose={closeActionSelector}
+        title={`Select Action for ${
+          showActionSelector.patient
+            ? `${showActionSelector.patient.firstName} ${showActionSelector.patient.lastName}`
+            : ""
+        }`}
+        size="md"
+      >
         <div className="space-y-4">
-          <p className="text-gray-600 mb-6">What would you like to do with this patient?</p>
+          <p className="text-gray-600 mb-6">
+            What would you like to do with this patient?
+          </p>
           <div className="grid grid-cols-2 gap-4">
-            <button onClick={() => openQuickActionModal("soap", showActionSelector.patient)} className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-teal-500 hover:bg-teal-50 transition-all duration-200 group">
+            <button
+              onClick={() =>
+                openQuickActionModal("soap", showActionSelector.patient)
+              }
+              className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-teal-500 hover:bg-teal-50 transition-all duration-200 group"
+            >
               <ClipboardList className="w-8 h-8 text-teal-600 mb-3 group-hover:text-teal-700" />
-              <span className="text-sm font-medium text-gray-700 group-hover:text-teal-700">SOAP Note</span>
-              <span className="text-xs text-gray-500 mt-1 text-center">Document patient examination</span>
+              <span className="text-sm font-medium text-gray-700 group-hover:text-teal-700">
+                SOAP Note
+              </span>
+              <span className="text-xs text-gray-500 mt-1 text-center">
+                Document patient examination
+              </span>
             </button>
-            <button onClick={() => openQuickActionModal("lab", showActionSelector.patient)} className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-teal-500 hover:bg-teal-50 transition-all duration-200 group">
+            <button
+              onClick={() =>
+                openQuickActionModal("lab", showActionSelector.patient)
+              }
+              className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-teal-500 hover:bg-teal-50 transition-all duration-200 group"
+            >
               <FileText className="w-8 h-8 text-teal-600 mb-3 group-hover:text-teal-700" />
-              <span className="text-sm font-medium text-gray-700 group-hover:text-teal-700">Lab Orders</span>
-              <span className="text-xs text-gray-500 mt-1 text-center">Order laboratory tests</span>
+              <span className="text-sm font-medium text-gray-700 group-hover:text-teal-700">
+                Lab Orders
+              </span>
+              <span className="text-xs text-gray-500 mt-1 text-center">
+                Order laboratory tests
+              </span>
             </button>
-            <button onClick={() => openQuickActionModal("exam", showActionSelector.patient)} className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all duration-200 group">
+            <button
+              onClick={() =>
+                openQuickActionModal("exam", showActionSelector.patient)
+              }
+              className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all duration-200 group"
+            >
               <Stethoscope className="w-8 h-8 text-orange-600 mb-3 group-hover:text-orange-700" />
-              <span className="text-sm font-medium text-gray-700 group-hover:text-orange-700">Quick Exam</span>
-              <span className="text-xs text-gray-500 mt-1 text-center">Record quick examination</span>
+              <span className="text-sm font-medium text-gray-700 group-hover:text-orange-700">
+                Quick Exam
+              </span>
+              <span className="text-xs text-gray-500 mt-1 text-center">
+                Record quick examination
+              </span>
             </button>
-            <button onClick={() => openQuickActionModal("prescription", showActionSelector.patient)} className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all duration-200 group">
+            <button
+              onClick={() =>
+                openQuickActionModal("prescription", showActionSelector.patient)
+              }
+              className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all duration-200 group"
+            >
               <Pill className="w-8 h-8 text-orange-600 mb-3 group-hover:text-orange-700" />
-              <span className="text-sm font-medium text-gray-700 group-hover:text-orange-700">Prescription</span>
-              <span className="text-xs text-gray-500 mt-1 text-center">Prescribe medications</span>
+              <span className="text-sm font-medium text-gray-700 group-hover:text-orange-700">
+                Prescription
+              </span>
+              <span className="text-xs text-gray-500 mt-1 text-center">
+                Prescribe medications
+              </span>
             </button>
           </div>
         </div>
       </Modal>
 
       {/* Quick Action Modal */}
-      <Modal isOpen={modalState.isOpen} onClose={closeModal} title={`${modalState.type === "lab" ? "Lab Orders" : modalState.type === "prescription" ? "Prescription" : modalState.type === "soap" ? "SOAP Note" : "Quick Exam"} - ${modalState.patient ? `${modalState.patient.firstName} ${modalState.patient.lastName}` : ""}`} size="lg">
-        {modalState.type === "soap" && <SOAPForm onSubmit={handleQuickActionSubmit} selectedPatient={modalState.patient} />}
-        {modalState.type === "lab" && <LabOrderForm onSubmit={handleQuickActionSubmit} selectedPatient={modalState.patient} />}
-        {modalState.type === "prescription" && <PrescriptionForm onSubmit={handleQuickActionSubmit} selectedPatient={modalState.patient} />}
-        {modalState.type === "exam" && <QuickExamForm onSubmit={handleQuickActionSubmit} selectedPatient={modalState.patient} />}
+      <Modal
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        title={`${
+          modalState.type === "lab"
+            ? "Lab Orders"
+            : modalState.type === "prescription"
+            ? "Prescription"
+            : modalState.type === "soap"
+            ? "SOAP Note"
+            : "Quick Exam"
+        } - ${
+          modalState.patient
+            ? `${modalState.patient.firstName} ${modalState.patient.lastName}`
+            : ""
+        }`}
+        size="lg"
+      >
+        {modalState.type === "soap" && (
+          <SOAPForm
+            onSubmit={handleQuickActionSubmit}
+            selectedPatient={modalState.patient}
+          />
+        )}
+        {modalState.type === "lab" && (
+          <LabOrderForm
+            onSubmit={handleQuickActionSubmit}
+            selectedPatient={modalState.patient}
+          />
+        )}
+        {modalState.type === "prescription" && (
+          <PrescriptionForm
+            onSubmit={handleQuickActionSubmit}
+            selectedPatient={modalState.patient}
+          />
+        )}
+        {modalState.type === "exam" && (
+          <QuickExamForm
+            onSubmit={handleQuickActionSubmit}
+            selectedPatient={modalState.patient}
+          />
+        )}
+      </Modal>
+
+      {/* Edit Condition Modal */}
+      <Modal
+        isOpen={editConditionModal.isOpen}
+        onClose={() =>
+          setEditConditionModal({ isOpen: false, patient: null, condition: "" })
+        }
+        title={`Edit Patient Condition - ${editConditionModal.patient?.firstName} ${editConditionModal.patient?.lastName}`}
+        size="sm"
+      >
+        <form onSubmit={handleConditionSubmit} className="space-y-4">
+          <div>
+            <label
+              htmlFor="condition"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Patient Condition
+            </label>
+            <select
+              id="condition"
+              value={editConditionModal.condition}
+              onChange={(e) =>
+                setEditConditionModal((prev) => ({
+                  ...prev,
+                  condition: e.target.value,
+                }))
+              }
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 bg-white"
+              required
+            >
+              <option value="">Select condition</option>
+              {conditionOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={() =>
+                setEditConditionModal({
+                  isOpen: false,
+                  patient: null,
+                  condition: "",
+                })
+              }
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Last Visit Modal */}
+      <Modal
+        isOpen={editLastVisitModal.isOpen}
+        onClose={() =>
+          setEditLastVisitModal({ isOpen: false, patient: null, lastVisit: "" })
+        }
+        title={`Update Last Visit - ${editLastVisitModal.patient?.firstName} ${editLastVisitModal.patient?.lastName}`}
+        size="sm"
+      >
+        <form onSubmit={handleLastVisitSubmit} className="space-y-4">
+          <div>
+            <label
+              htmlFor="lastVisit"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Last Visit Date
+            </label>
+            <input
+              type="date"
+              id="lastVisit"
+              value={editLastVisitModal.lastVisit}
+              onChange={(e) =>
+                setEditLastVisitModal((prev) => ({
+                  ...prev,
+                  lastVisit: e.target.value,
+                }))
+              }
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500"
+              max={new Date().toISOString().split("T")[0]} // Prevent future dates
+              required
+            />
+          </div>
+          <div className="flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={() =>
+                setEditLastVisitModal({
+                  isOpen: false,
+                  patient: null,
+                  lastVisit: "",
+                })
+              }
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
       </Modal>
     </div>
   );
 };
 
 export default PatientList;
-
