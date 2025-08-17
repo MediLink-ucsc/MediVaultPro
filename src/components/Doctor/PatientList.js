@@ -34,6 +34,29 @@ const PatientList = () => {
     isOpen: false,
     patient: null,
   });
+  const [editConditionModal, setEditConditionModal] = useState({
+    isOpen: false,
+    patient: null,
+    condition: ""
+  });
+
+  const [editLastVisitModal, setEditLastVisitModal] = useState({
+    isOpen: false,
+    patient: null,
+    lastVisit: ""
+  });
+
+  const conditionOptions = [
+    "Stable",
+    "Critical",
+    "Serious",
+    "Fair",
+    "Good",
+    "Recovering",
+    "Under Observation",
+    "Intensive Care",
+    "Emergency"
+  ];
   const [patients, setPatients] = useState([]);
 
   // Load patients from data store on component mount
@@ -98,6 +121,66 @@ const PatientList = () => {
     alert(
       `${modalState.type} successfully created for ${modalState.patient?.name}`
     );
+  };
+
+  const openEditCondition = (e, patient) => {
+    e.stopPropagation();
+    setEditConditionModal({
+      isOpen: true,
+      patient,
+      condition: patient.condition
+    });
+  };
+
+  const openEditLastVisit = (e, patient) => {
+    e.stopPropagation();
+    setEditLastVisitModal({
+      isOpen: true,
+      patient,
+      lastVisit: patient.lastVisit
+    });
+  };
+
+  const handleLastVisitSubmit = (e) => {
+    e.preventDefault();
+    const { patient, lastVisit } = editLastVisitModal;
+    
+    // Update the patient's last visit in the dataStore
+    dataStore.updatePatient(patient.id, { lastVisit });
+    
+    // Update the local state
+    setPatients(prevPatients => 
+      prevPatients.map(p => 
+        p.id === patient.id ? { ...p, lastVisit } : p
+      )
+    );
+    
+    setEditLastVisitModal({
+      isOpen: false,
+      patient: null,
+      lastVisit: ""
+    });
+  };
+
+  const handleConditionSubmit = (e) => {
+    e.preventDefault();
+    const { patient, condition } = editConditionModal;
+    
+    // Update the patient's condition in the dataStore
+    dataStore.updatePatient(patient.id, { condition });
+    
+    // Update the local state
+    setPatients(prevPatients => 
+      prevPatients.map(p => 
+        p.id === patient.id ? { ...p, condition } : p
+      )
+    );
+    
+    setEditConditionModal({
+      isOpen: false,
+      patient: null,
+      condition: ""
+    });
   };
 
   const handleDelete = (patientId) => {
@@ -247,13 +330,46 @@ const PatientList = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-gray-500">
                     {patient.phone}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                    {patient.lastVisit}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-gray-500">{patient.lastVisit}</span>
+                      <button
+                        onClick={(e) => openEditLastVisit(e, patient)}
+                        className="text-gray-400 hover:text-teal-600 p-1 rounded hover:bg-teal-50"
+                        title="Edit Last Visit Date"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                      </button>
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 py-1 text-xs font-medium bg-teal-100 text-teal-800 rounded-full">
-                      {patient.condition}
-                    </span>
+                    <div className="flex items-center space-x-2">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        patient.condition === "Critical" ? "bg-orange-200 text-orange-900" :
+                        patient.condition === "Serious" ? "bg-orange-100 text-orange-800" :
+                        patient.condition === "Fair" ? "bg-teal-50 text-teal-700" :
+                        patient.condition === "Good" ? "bg-teal-100 text-teal-800" :
+                        patient.condition === "Stable" ? "bg-teal-200 text-teal-900" :
+                        patient.condition === "Recovering" ? "bg-teal-100 text-teal-800" :
+                        patient.condition === "Under Observation" ? "bg-orange-50 text-orange-700" :
+                        patient.condition === "Intensive Care" ? "bg-orange-200 text-orange-900" :
+                        patient.condition === "Emergency" ? "bg-orange-300 text-orange-900" :
+                        "bg-gray-100 text-gray-800"
+                      }`}>
+                        {patient.condition}
+                      </span>
+                      <button
+                        onClick={(e) => openEditCondition(e, patient)}
+                        className="text-gray-400 hover:text-teal-600 p-1 rounded hover:bg-teal-50"
+                        title="Edit Condition"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                      </button>
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center space-x-2">
@@ -409,6 +525,91 @@ const PatientList = () => {
             selectedPatient={modalState.patient}
           />
         )}
+      </Modal>
+
+      {/* Edit Condition Modal */}
+      <Modal
+        isOpen={editConditionModal.isOpen}
+        onClose={() => setEditConditionModal({ isOpen: false, patient: null, condition: "" })}
+        title={`Edit Patient Condition - ${editConditionModal.patient?.firstName} ${editConditionModal.patient?.lastName}`}
+        size="sm"
+      >
+        <form onSubmit={handleConditionSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="condition" className="block text-sm font-medium text-gray-700">
+              Patient Condition
+            </label>
+            <select
+              id="condition"
+              value={editConditionModal.condition}
+              onChange={(e) => setEditConditionModal(prev => ({ ...prev, condition: e.target.value }))}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 bg-white"
+              required
+            >
+              <option value="">Select condition</option>
+              {conditionOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={() => setEditConditionModal({ isOpen: false, patient: null, condition: "" })}
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Edit Last Visit Modal */}
+      <Modal
+        isOpen={editLastVisitModal.isOpen}
+        onClose={() => setEditLastVisitModal({ isOpen: false, patient: null, lastVisit: "" })}
+        title={`Update Last Visit - ${editLastVisitModal.patient?.firstName} ${editLastVisitModal.patient?.lastName}`}
+        size="sm"
+      >
+        <form onSubmit={handleLastVisitSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="lastVisit" className="block text-sm font-medium text-gray-700">
+              Last Visit Date
+            </label>
+            <input
+              type="date"
+              id="lastVisit"
+              value={editLastVisitModal.lastVisit}
+              onChange={(e) => setEditLastVisitModal(prev => ({ ...prev, lastVisit: e.target.value }))}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500"
+              max={new Date().toISOString().split('T')[0]} // Prevent future dates
+              required
+            />
+          </div>
+          <div className="flex justify-end space-x-3">
+            <button
+              type="button"
+              onClick={() => setEditLastVisitModal({ isOpen: false, patient: null, lastVisit: "" })}
+              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
       </Modal>
     </div>
   );
