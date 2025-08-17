@@ -13,9 +13,6 @@ import {
   AlertCircle,
   CheckCircle,
   Clock,
-  Clipboard,
-  TestTube,
-  User,
   MapPin,
   Plus,
   X,
@@ -32,6 +29,7 @@ const MedicalHistory = ({ patient }) => {
   const [showTestResults, setShowTestResults] = useState(false);
   const [selectedTest, setSelectedTest] = useState(null);
   const [medicalHistory, setMedicalHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchMedicalHistory = async () => {
@@ -248,14 +246,8 @@ const MedicalHistory = ({ patient }) => {
         return <Clock className="w-4 h-4 text-gray-600" />;
     }
   };
-  const [medicalHistory, setMedicalHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
+  
 
-  const filterOptions = [
-    { id: "all", label: "All Records", icon: FileText, color: "teal" },
-    { id: "soap", label: "SOAP Notes", icon: Clipboard, color: "orange" },
-    { id: "lab", label: "Lab Orders", icon: TestTube, color: "teal" },
-  ];
 
   // Hardcoded Lab Entries (for now)
   const hardcodedLabHistory = [
@@ -557,8 +549,7 @@ const MedicalHistory = ({ patient }) => {
                                   : "bg-teal-100 text-teal-800"
                               }`}
                             >
-                              {test.urgency.charAt(0).toUpperCase() +
-                                test.urgency.slice(1)}
+                              {(test.urgency?.charAt(0)?.toUpperCase() || "") + (test.urgency?.slice(1) || "")}
                             </span>
                             <span
                               className={`px-2 py-0.5 text-xs font-medium rounded-full ${
@@ -569,8 +560,7 @@ const MedicalHistory = ({ patient }) => {
                                   : "bg-gray-100 text-gray-800"
                               }`}
                             >
-                              {test.status.charAt(0).toUpperCase() +
-                                test.status.slice(1)}
+                              {(test.status?.charAt(0)?.toUpperCase() || "") + (test.status?.slice(1) || "")}
                             </span>
                           </div>
                         </div>
@@ -756,229 +746,7 @@ const MedicalHistory = ({ patient }) => {
             </div>
           )}
 
-          {/* SOAP Note Details */}
-          {isSOAP && (
-            <div className="mt-4 space-y-4">
-              {/* Subjective */}
-              <div className="bg-gray-50 rounded-lg p-3">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">
-                  Subjective
-                </h4>
-                <p className="text-sm text-gray-600">{entry.subjective}</p>
-              </div>
-
-              {/* Objective */}
-              {entry.objective && (
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">
-                    Objective
-                  </h4>
-
-                  {/* Vitals */}
-                  {entry.objective.vitals && (
-                    <div className="mb-3">
-                      <h5 className="text-xs font-medium text-gray-600 mb-2">
-                        Vital Signs
-                      </h5>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        <div className="text-xs">
-                          <span className="text-gray-500">BP:</span>
-                          <span className="ml-1 font-medium">
-                            {entry.objective.vitals.bloodPressure}
-                          </span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-gray-500">HR:</span>
-                          <span className="ml-1 font-medium">
-                            {entry.objective.vitals.heartRate} bpm
-                          </span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-gray-500">Temp:</span>
-                          <span className="ml-1 font-medium">
-                            {entry.objective.vitals.temperature}°F
-                          </span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-gray-500">RR:</span>
-                          <span className="ml-1 font-medium">
-                            {entry.objective.vitals.respiratoryRate}/min
-                          </span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-gray-500">SpO2:</span>
-                          <span className="ml-1 font-medium">
-                            {entry.objective.vitals.oxygenSaturation}
-                          </span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-gray-500">Weight:</span>
-                          <span className="ml-1 font-medium">
-                            {entry.objective.vitals.weight} kg
-                          </span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-gray-500">Height:</span>
-                          <span className="ml-1 font-medium">
-                            {entry.objective.vitals.height} cm
-                          </span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-gray-500">BMI:</span>
-                          <span className="ml-1 font-medium">
-                            {entry.objective.vitals.bmi}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Physical Exam */}
-                  {entry.objective.physicalExam && (
-                    <div>
-                      <h5 className="text-xs font-medium text-gray-600 mb-2">
-                        Physical Examination
-                      </h5>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        {Object.entries(entry.objective.physicalExam).map(
-                          ([key, value]) => (
-                            <div key={key} className="text-xs">
-                              <span className="text-gray-500 capitalize">
-                                {key}:
-                              </span>
-                              <span className="ml-1 text-gray-700">
-                                {value}
-                              </span>
-                            </div>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Assessment */}
-              {entry.assessment && (
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">
-                    Assessment
-                  </h4>
-                  <div className="space-y-2">
-                    {entry.assessment.primaryDiagnosis && (
-                      <div>
-                        <span className="text-sm font-medium text-gray-600">
-                          Primary Diagnosis:
-                        </span>
-                        <span className="ml-2 px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
-                          {entry.assessment.primaryDiagnosis}
-                        </span>
-                      </div>
-                    )}
-                    {entry.assessment.differentials && (
-                      <div>
-                        <span className="text-sm font-medium text-gray-600">
-                          Differential Diagnoses:
-                        </span>
-                        <div className="mt-1 flex flex-wrap gap-1">
-                          {entry.assessment.differentials.map((d, i) => (
-                            <span
-                              key={i}
-                              className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
-                            >
-                              {d}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Plan */}
-              {entry.plan && (
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">
-                    Plan
-                  </h4>
-
-                  {/* Medications */}
-                  {entry.plan.medications && (
-                    <div className="mb-3">
-                      <h5 className="text-xs font-medium text-gray-600 mb-2">
-                        Medications
-                      </h5>
-                      <div className="space-y-2">
-                        {entry.plan.medications.map((med, idx) => (
-                          <div
-                            key={idx}
-                            className="bg-white p-2 rounded text-sm"
-                          >
-                            <div className="font-medium text-gray-700">
-                              {med.name} {med.dosage}
-                            </div>
-                            <div className="text-gray-600 text-xs">
-                              {med.frequency} for {med.duration} -{" "}
-                              {med.instructions}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Lab Orders */}
-                  {entry.plan.labOrders && (
-                    <div className="mb-3">
-                      <h5 className="text-xs font-medium text-gray-600 mb-2">
-                        Ordered Tests
-                      </h5>
-                      <ul className="list-disc list-inside text-sm text-gray-600">
-                        {entry.plan.labOrders.map((test, idx) => (
-                          <li key={idx}>{test}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Lifestyle/Instructions */}
-                  {entry.plan.lifestyle && (
-                    <div className="mb-3">
-                      <h5 className="text-xs font-medium text-gray-600 mb-2">
-                        Lifestyle Modifications
-                      </h5>
-                      <ul className="list-disc list-inside text-sm text-gray-600">
-                        {entry.plan.lifestyle.map((item, idx) => (
-                          <li key={idx}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Follow-up */}
-                  {entry.plan.followUp && (
-                    <div className="text-sm text-gray-600">
-                      <span className="font-medium">Follow-up:</span>{" "}
-                      {entry.plan.followUp}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Patient Education */}
-              {entry.patientEducation && (
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">
-                    Patient Education
-                  </h4>
-                  <p className="text-sm text-gray-600">
-                    {entry.patientEducation}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
+         
         </div>
       </div>
     );
