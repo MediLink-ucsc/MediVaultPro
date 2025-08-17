@@ -27,6 +27,7 @@ import MedicalHistory from './MedicalHistory';
 import dataStore from '../../utils/dataStore';
 
 const EnhancedPatientDetails = ({ patient, onBack }) => {
+  console.log("Patient Details:", patient);
   const [activeTab, setActiveTab] = useState('overview');
   const [expandedSections, setExpandedSections] = useState({
     vitals: true,

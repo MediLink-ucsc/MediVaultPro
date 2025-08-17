@@ -1,26 +1,22 @@
 // src/components/Doctor/MedicalHistory.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { 
-  Calendar, 
   FileText, 
+  Clipboard, 
+  TestTube, 
+  User, 
   Stethoscope, 
-  Search,
-  Filter,
-  ChevronDown,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  Clipboard,
-  TestTube,
-  User,
-  MapPin
+  CheckCircle, 
+  Clock, 
+  AlertCircle 
 } from 'lucide-react';
 
 const MedicalHistory = ({ patient }) => {
-  // State for filters
   const [filterType, setFilterType] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [dateRange, setDateRange] = useState('all');
+  const [medicalHistory, setMedicalHistory] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const filterOptions = [
     { id: 'all', label: 'All Records', icon: FileText, color: 'teal' },
@@ -28,40 +24,8 @@ const MedicalHistory = ({ patient }) => {
     { id: 'lab', label: 'Lab Orders', icon: TestTube, color: 'teal' }
   ];
 
-  // Extended medical history data
-  const medicalHistory = [
-    {
-      id: 1,
-      date: '2024-06-25',
-      time: '10:30 AM',
-      type: 'consultation',
-      title: 'Follow-up: Diabetes Management',
-      doctor: 'Dr. Priyantha Fernando',
-      department: 'Internal Medicine - National Hospital Colombo',
-      status: 'completed',
-      subjective: 'Patient reports occasional dizzy spells and fatigue. Has been compliant with medication. Following recommended diet most days but admits to occasional sweet cravings. Exercise routine: 30min walk 3 times/week. No hypoglycemic episodes.',
-      objective: 'Vitals: BP 128/82, HR 76, Temp 98.4°F, RR 16, SpO2 98%, Weight 72kg, Height 168cm, BMI 25.5\n\nPhysical Exam:\n- General: Alert and oriented, no acute distress\n- HEENT: Normocephalic, atraumatic\n- CV: Regular rate and rhythm, no murmurs\n- Resp: Clear to auscultation bilaterally\n- Neuro: Cranial nerves intact, normal sensation\n- Extremities: No edema, good peripheral pulses\n\nLab Results: Glucose 142 mg/dL, HbA1c 7.2%',
-      assessment: 'Primary: Type 2 Diabetes Mellitus (E11.9) - Fair control\nNo acute complications\nRisk factors: Obesity, Family history\nDifferential diagnoses to consider:\n1. Metabolic syndrome\n2. Essential hypertension',
-      plan: {
-        medications: [
-          { name: 'Metformin', dosage: '1000mg', frequency: 'twice daily', duration: '3 months', instructions: 'Take with meals' },
-          { name: 'Glimepiride', dosage: '2mg', frequency: 'once daily', duration: '3 months', instructions: 'Take with breakfast' }
-        ],
-        labOrders: [
-          'HbA1c - Routine - Fasting not required',
-          'Comprehensive Metabolic Panel - Routine - 8-hour fasting required',
-          'Lipid Profile - Routine - 12-hour fasting required'
-        ],
-        lifestyle: [
-          'Increase exercise to 30min walk 5 times/week',
-          'Continue low-carb diet',
-          'Monitor blood glucose twice daily'
-        ],
-        followUp: 'Schedule visit in 3 months',
-        patientEducation: 'Discussed importance of regular exercise and consistent medication timing. Reviewed hypoglycemia symptoms and management.'
-      },
-      patientId: 'P001'
-    },
+  // Hardcoded Lab Entries (for now)
+  const hardcodedLabHistory = [
     {
       id: 2,
       date: '2024-06-20',
@@ -79,12 +43,7 @@ const MedicalHistory = ({ patient }) => {
         clinicalInfo: 'Monitoring diabetes and lipid management'
       },
       specimens: [
-        {
-          type: 'Blood',
-          container: 'Gold Top SST',
-          collectionTime: '2024-06-20 08:30 AM',
-          collectedBy: 'Lab Tech Perera'
-        }
+        { type: 'Blood', container: 'Gold Top SST', collectionTime: '2024-06-20 08:30 AM', collectedBy: 'Lab Tech Perera' }
       ],
       results: [
         {
@@ -112,100 +71,47 @@ const MedicalHistory = ({ patient }) => {
         'Recommend lifestyle modifications for lipid management',
         'Repeat lipid panel in 3 months after lifestyle changes'
       ]
-    },
-    {
-      id: 3,
-      date: '2024-06-15',
-      time: '11:15 AM',
-      type: 'consultation',
-      title: 'New Patient Visit - Chronic Fatigue Evaluation',
-      doctor: 'Dr. Kamani Wijeratne',
-      department: 'Internal Medicine - Lanka Hospital',
-      status: 'completed',
-      subjective: 'Patient presents with 3-month history of progressive fatigue, weight gain, and cold intolerance. Reports sleeping 10+ hours but still feeling tired. No fever, night sweats, or recent illness.',
-      objective: {
-        vitals: {
-          bloodPressure: '118/78',
-          heartRate: 62,
-          temperature: 98.2,
-          respiratoryRate: '14',
-          oxygenSaturation: '99%',
-          weight: '75',
-          height: '165',
-          bmi: '27.5'
-        },
-        physicalExam: {
-          general: 'Appears fatigued but in no acute distress',
-          thyroid: 'Slightly enlarged, no nodules',
-          skin: 'Dry, cool to touch',
-          cv: 'Regular rate and rhythm, bradycardic',
-          resp: 'Clear bilateral breath sounds',
-          neuro: 'DTRs somewhat diminished'
-        }
-      },
-      assessment: {
-        primaryDiagnosis: 'Suspected Hypothyroidism',
-        differentials: [
-          'Chronic Fatigue Syndrome',
-          'Depression',
-          'Vitamin D Deficiency',
-          'Sleep Apnea'
-        ]
-      },
-      plan: {
-        labOrders: [
-          'TSH',
-          'Free T4',
-          'Complete Blood Count',
-          'Vitamin D Level',
-          'Iron Studies'
-        ],
-        followUp: 'Return visit in 2 weeks with lab results',
-        referrals: ['Consider endocrinology referral based on thyroid results']
-      }
     }
   ];
 
-  const getTypeIcon = (type) => {
-    switch (type) {
-      case 'consultation':
-        return <Stethoscope className="w-4 h-4" />;
-      case 'lab':
-        return <TestTube className="w-4 h-4" />;
-      case 'prescription':
-        return <FileText className="w-4 h-4" />;
-      default:
-        return <FileText className="w-4 h-4" />;
-    }
-  };
+  // Fetch SOAP notes for this patient
+  useEffect(() => {
+    if (!patient?.id) return;
 
-  const getTypeColor = (type) => {
-    switch (type) {
-      case 'consultation':
-        return 'bg-orange-100 text-orange-800';
-      case 'lab':
-        return 'bg-teal-100 text-teal-800';
-      case 'prescription':
-        return 'bg-teal-100 text-teal-800';
-      default:
-        return 'bg-teal-100 text-teal-800';
-    }
-  };
+    const fetchSoapNotes = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(`http://localhost:3000/api/v1/patientRecords/soapnote/${patient.id}`);
+        
+        const mappedSoapNotes = res.data.map(entry => ({
+          id: entry.id,
+          date: new Date(entry.dateTime).toLocaleDateString(),
+          time: new Date(entry.dateTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          type: 'consultation',
+          title: `SOAP Note - ${entry.doctor.user.firstName} ${entry.doctor.user.lastName}`,
+          doctor: `${entry.doctor.user.firstName} ${entry.doctor.user.lastName}`,
+          department: entry.doctor.hospitalName + ' - ' + entry.doctor.specialty,
+          status: 'completed',
+          subjective: entry.subjective,
+          objective: entry.objective,
+          assessment: entry.assessment,
+          plan: entry.plan,
+          patientId: entry.patientId
+        }));
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle className="w-4 h-4 text-teal-600" />;
-      case 'pending':
-        return <Clock className="w-4 h-4 text-orange-600" />;
-      case 'cancelled':
-        return <AlertCircle className="w-4 h-4 text-red-600" />;
-      default:
-        return <Clock className="w-4 h-4 text-gray-600" />;
-    }
-  };
+        setMedicalHistory([...mappedSoapNotes, ...hardcodedLabHistory]);
+        setLoading(false);
+      } catch (error) {
+        console.error('Failed to fetch SOAP notes:', error);
+        setMedicalHistory([...hardcodedLabHistory]);
+        setLoading(false);
+      }
+    };
 
-  // Filter history entries based on selected criteria
+    fetchSoapNotes();
+  }, [patient]);
+
+  // Filter history entries
   const filteredHistory = medicalHistory.filter(entry => {
     const matchesType = filterType === 'all' || 
       (filterType === 'soap' && entry.type === 'consultation') ||
@@ -219,41 +125,28 @@ const MedicalHistory = ({ patient }) => {
     return matchesType && matchesSearch;
   });
 
+  // Render a single record card
   const renderRecordCard = (entry) => {
-    const isSOAP = entry.type.toLowerCase() === 'consultation';
-    const isLab = entry.type.toLowerCase() === 'lab';
-    
+    const isSOAP = entry.type === 'consultation';
+    const isLab = entry.type === 'lab';
+
     return (
       <div key={entry.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4 hover:shadow-md transition-shadow">
-        {/* Card Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-3">
-            <div className={`p-2 rounded-lg ${
-              isSOAP ? 'bg-orange-100' : 
-              isLab ? 'bg-teal-100' : 
-              'bg-teal-100'
-            }`}>
-              {isSOAP ? <Clipboard className="w-5 h-5 text-orange-600" /> : 
-               isLab ? <TestTube className="w-5 h-5 text-teal-600" /> : 
-               <FileText className="w-5 h-5 text-teal-600" />}
+            <div className={`p-2 rounded-lg ${isSOAP ? 'bg-orange-100' : isLab ? 'bg-teal-100' : 'bg-teal-100'}`}>
+              {isSOAP ? <Clipboard className="w-5 h-5 text-orange-600" /> : isLab ? <TestTube className="w-5 h-5 text-teal-600" /> : <FileText className="w-5 h-5 text-teal-600" />}
             </div>
             <div>
               <h3 className="font-medium text-gray-900">{entry.title}</h3>
-              <p className="text-sm text-gray-500">
-                {entry.date} • {entry.time}
-              </p>
+              <p className="text-sm text-gray-500">{entry.date} • {entry.time}</p>
             </div>
           </div>
-          <div className={`px-3 py-1 rounded-full text-sm font-medium ${
-            isSOAP ? 'bg-orange-50 text-orange-700' :
-            isLab ? 'bg-teal-50 text-teal-700' :
-            'bg-teal-50 text-teal-700'
-          }`}>
+          <div className={`px-3 py-1 rounded-full text-sm font-medium ${isSOAP ? 'bg-orange-50 text-orange-700' : isLab ? 'bg-teal-50 text-teal-700' : 'bg-teal-50 text-teal-700'}`}>
             {isSOAP ? 'SOAP Note' : isLab ? 'Lab Order' : entry.type}
           </div>
         </div>
 
-        {/* Card Content */}
         <div className="space-y-3">
           <div className="flex items-center space-x-2">
             <User className="w-4 h-4 text-gray-400" />
@@ -261,43 +154,40 @@ const MedicalHistory = ({ patient }) => {
             <span className="text-sm text-gray-400">•</span>
             <span className="text-sm text-gray-600">{entry.department}</span>
           </div>
-          
-          <p className="text-gray-700 text-sm">{entry.summary}</p>
 
-          {/* Lab Results Section */}
-          {isLab && entry.results && (
+          {/* SOAP Note */}
+          {isSOAP && (
             <div className="mt-4 space-y-4">
-              {/* Order Details */}
-              {entry.orderDetails && (
+              {entry.subjective && (
                 <div className="bg-gray-50 rounded-lg p-3">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Order Details</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <span className="text-sm text-gray-600">Priority:</span>
-                      <span className={`ml-2 px-2 py-1 text-xs font-medium rounded-full ${
-                        entry.orderDetails.priority === 'Urgent' ? 'bg-red-100 text-red-800' :
-                        entry.orderDetails.priority === 'STAT' ? 'bg-orange-100 text-orange-800' :
-                        'bg-green-100 text-green-800'
-                      }`}>
-                        {entry.orderDetails.priority}
-                      </span>
-                    </div>
-                    {entry.orderDetails.fastingRequired && (
-                      <div className="text-sm text-amber-600">
-                        Fasting Required
-                      </div>
-                    )}
-                  </div>
-                  {entry.orderDetails.specialInstructions && (
-                    <div className="mt-2 text-sm text-gray-600">
-                      <span className="font-medium">Special Instructions:</span>
-                      <p className="mt-1">{entry.orderDetails.specialInstructions}</p>
-                    </div>
-                  )}
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Subjective</h4>
+                  <p className="text-sm text-gray-600">{entry.subjective}</p>
                 </div>
               )}
+              {entry.objective && (
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Objective</h4>
+                  <p className="text-sm text-gray-600">{entry.objective}</p>
+                </div>
+              )}
+              {entry.assessment && (
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Assessment</h4>
+                  <p className="text-sm text-gray-600">{entry.assessment}</p>
+                </div>
+              )}
+              {entry.plan && (
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Plan</h4>
+                  <p className="text-sm text-gray-600">{entry.plan}</p>
+                </div>
+              )}
+            </div>
+          )}
 
-              {/* Test Results */}
+          {/* Lab Note */}
+          {isLab && entry.results && (
+            <div className="mt-4 space-y-4">
               <div className="bg-gray-50 rounded-lg p-3">
                 <h4 className="text-sm font-medium text-gray-700 mb-3">Test Results</h4>
                 {entry.results.map((category, idx) => (
@@ -317,9 +207,7 @@ const MedicalHistory = ({ patient }) => {
                               test.flag === 'Low' ? 'bg-yellow-100 text-yellow-800' :
                               test.flag === 'Borderline' ? 'bg-orange-100 text-orange-800' :
                               'bg-green-100 text-green-800'
-                            }`}>
-                              {test.flag}
-                            </span>
+                            }`}>{test.flag}</span>
                           </div>
                         </div>
                       ))}
@@ -327,202 +215,14 @@ const MedicalHistory = ({ patient }) => {
                   </div>
                 ))}
               </div>
-
-              {/* Interpretation and Recommendations */}
-              {(entry.interpretation || entry.recommendations) && (
-                <div className="bg-gray-50 rounded-lg p-3">
-                  {entry.interpretation && (
-                    <div className="mb-3">
-                      <h4 className="text-sm font-medium text-gray-700 mb-1">Interpretation</h4>
-                      <p className="text-sm text-gray-600">{entry.interpretation}</p>
-                    </div>
-                  )}
-                  {entry.recommendations && (
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-700 mb-1">Recommendations</h4>
-                      <ul className="list-disc list-inside text-sm text-gray-600">
-                        {entry.recommendations.map((rec, idx) => (
-                          <li key={idx}>{rec}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* SOAP Note Details */}
-          {isSOAP && (
-            <div className="mt-4 space-y-4">
-              {/* Subjective */}
-              <div className="bg-gray-50 rounded-lg p-3">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">Subjective</h4>
-                <p className="text-sm text-gray-600">{entry.subjective}</p>
-              </div>
-
-              {/* Objective */}
-              {entry.objective && (
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Objective</h4>
-                  
-                  {/* Vitals */}
-                  {entry.objective.vitals && (
-                    <div className="mb-3">
-                      <h5 className="text-xs font-medium text-gray-600 mb-2">Vital Signs</h5>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        <div className="text-xs">
-                          <span className="text-gray-500">BP:</span>
-                          <span className="ml-1 font-medium">{entry.objective.vitals.bloodPressure}</span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-gray-500">HR:</span>
-                          <span className="ml-1 font-medium">{entry.objective.vitals.heartRate} bpm</span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-gray-500">Temp:</span>
-                          <span className="ml-1 font-medium">{entry.objective.vitals.temperature}°F</span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-gray-500">RR:</span>
-                          <span className="ml-1 font-medium">{entry.objective.vitals.respiratoryRate}/min</span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-gray-500">SpO2:</span>
-                          <span className="ml-1 font-medium">{entry.objective.vitals.oxygenSaturation}</span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-gray-500">Weight:</span>
-                          <span className="ml-1 font-medium">{entry.objective.vitals.weight} kg</span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-gray-500">Height:</span>
-                          <span className="ml-1 font-medium">{entry.objective.vitals.height} cm</span>
-                        </div>
-                        <div className="text-xs">
-                          <span className="text-gray-500">BMI:</span>
-                          <span className="ml-1 font-medium">{entry.objective.vitals.bmi}</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Physical Exam */}
-                  {entry.objective.physicalExam && (
-                    <div>
-                      <h5 className="text-xs font-medium text-gray-600 mb-2">Physical Examination</h5>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                        {Object.entries(entry.objective.physicalExam).map(([key, value]) => (
-                          <div key={key} className="text-xs">
-                            <span className="text-gray-500 capitalize">{key}:</span>
-                            <span className="ml-1 text-gray-700">{value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Assessment */}
-              {entry.assessment && (
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Assessment</h4>
-                  <div className="space-y-2">
-                    {entry.assessment.primaryDiagnosis && (
-                      <div>
-                        <span className="text-sm font-medium text-gray-600">Primary Diagnosis:</span>
-                        <span className="ml-2 px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">
-                          {entry.assessment.primaryDiagnosis}
-                        </span>
-                      </div>
-                    )}
-                    {entry.assessment.differentials && (
-                      <div>
-                        <span className="text-sm font-medium text-gray-600">Differential Diagnoses:</span>
-                        <div className="mt-1 flex flex-wrap gap-1">
-                          {entry.assessment.differentials.map((d, i) => (
-                            <span key={i} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                              {d}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Plan */}
-              {entry.plan && (
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Plan</h4>
-                  
-                  {/* Medications */}
-                  {entry.plan.medications && (
-                    <div className="mb-3">
-                      <h5 className="text-xs font-medium text-gray-600 mb-2">Medications</h5>
-                      <div className="space-y-2">
-                        {entry.plan.medications.map((med, idx) => (
-                          <div key={idx} className="bg-white p-2 rounded text-sm">
-                            <div className="font-medium text-gray-700">
-                              {med.name} {med.dosage}
-                            </div>
-                            <div className="text-gray-600 text-xs">
-                              {med.frequency} for {med.duration} - {med.instructions}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Lab Orders */}
-                  {entry.plan.labOrders && (
-                    <div className="mb-3">
-                      <h5 className="text-xs font-medium text-gray-600 mb-2">Ordered Tests</h5>
-                      <ul className="list-disc list-inside text-sm text-gray-600">
-                        {entry.plan.labOrders.map((test, idx) => (
-                          <li key={idx}>{test}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Lifestyle/Instructions */}
-                  {entry.plan.lifestyle && (
-                    <div className="mb-3">
-                      <h5 className="text-xs font-medium text-gray-600 mb-2">Lifestyle Modifications</h5>
-                      <ul className="list-disc list-inside text-sm text-gray-600">
-                        {entry.plan.lifestyle.map((item, idx) => (
-                          <li key={idx}>{item}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Follow-up */}
-                  {entry.plan.followUp && (
-                    <div className="text-sm text-gray-600">
-                      <span className="font-medium">Follow-up:</span> {entry.plan.followUp}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Patient Education */}
-              {entry.patientEducation && (
-                <div className="bg-gray-50 rounded-lg p-3">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Patient Education</h4>
-                  <p className="text-sm text-gray-600">{entry.patientEducation}</p>
-                </div>
-              )}
             </div>
           )}
         </div>
       </div>
     );
   };
+
+  if (loading) return <div className="text-center py-8 text-gray-500">Loading medical history...</div>;
 
   return (
     <div className="space-y-6">
@@ -571,3 +271,4 @@ const MedicalHistory = ({ patient }) => {
 };
 
 export default MedicalHistory;
+
