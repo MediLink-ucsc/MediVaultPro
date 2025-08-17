@@ -23,6 +23,7 @@ import {
   CheckCircle,
   Circle
 } from 'lucide-react';
+import VitalSignsTab from './VitalSignsTab';
 import MedicalHistory from './MedicalHistory';
 import Prescriptions from './Prescriptions';
 import dataStore from '../../utils/dataStore';
@@ -278,61 +279,39 @@ const EnhancedPatientDetails = ({ patient, onBack }) => {
     </div>
   );
 
-  const renderVitalSigns = () => (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h3 className="text-lg font-semibold text-gray-800 mb-6">Vital Signs History</h3>
-      <div className="space-y-4">
-        {patientData.allVitals.map((vital, index) => {
-          const status = getVitalStatus(vital);
-          return (
-            <div key={index} className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center space-x-2">
-                  <Clock className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm font-medium text-gray-700">
-                    {formatDateTime(vital.date, vital.time)}
-                  </span>
-                </div>
-                <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                  status.status === 'normal' ? 'bg-green-100 text-green-800' :
-                  status.status === 'elevated' ? 'bg-orange-100 text-orange-800' :
-                  'bg-red-100 text-red-800'
-                }`}>
-                  {status.status.charAt(0).toUpperCase() + status.status.slice(1)}
-                </span>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center">
-                  <p className="text-xs text-gray-600">Temperature</p>
-                  <p className={`text-lg font-semibold ${status.color}`}>{vital.temperature}</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-xs text-gray-600">Heart Rate</p>
-                  <p className={`text-lg font-semibold ${status.color}`}>{vital.heartRate}</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-xs text-gray-600">Blood Pressure</p>
-                  <p className={`text-lg font-semibold ${status.color}`}>{vital.bloodPressure}</p>
-                </div>
-                <div className="text-center">
-                  <p className="text-xs text-gray-600">O2 Saturation</p>
-                  <p className={`text-lg font-semibold ${status.color}`}>{vital.oxygenSaturation}</p>
-                </div>
-              </div>
-              {vital.notes && (
-                <div className="mt-3 text-sm text-gray-600">
-                  <strong>Notes:</strong> {vital.notes}
-                </div>
-              )}
-              <div className="mt-2 text-xs text-gray-500">
-                Recorded by: {vital.recordedBy}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+  const renderVitalSigns = () => {
+    const handleNewVitalsAdded = (examData) => {
+      // Format the data from the quick exam form
+      const formattedExamData = {
+        temperature: examData.temperature,
+        heartRate: examData.heartRate,
+        bloodPressure: examData.bloodPressure,
+        oxygenSaturation: examData.oxygenSaturation,
+        weight: examData.weight,
+        height: examData.height,
+        generalAppearance: examData.generalAppearance,
+        cardiovascular: examData.cardiovascular,
+        respiratory: examData.respiratory,
+        abdominal: examData.abdominal,
+        neurological: examData.neurological,
+        notes: examData.additionalNotes,
+        date: new Date().toISOString(),
+        time: new Date().toLocaleTimeString(),
+        recordedBy: "Dr. " + localStorage.getItem('userName') || 'Current Doctor'
+      };
+
+      // Update the patient data with new vitals
+      setPatientData(prevData => ({
+        ...prevData,
+        allVitals: [
+          ...prevData.allVitals,
+          formattedExamData
+        ]
+      }));
+    };
+
+    return <VitalSignsTab patientData={patientData} onNewVitalsAdded={handleNewVitalsAdded} />;
+  };
 
   const renderCarePlans = () => (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
