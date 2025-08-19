@@ -17,6 +17,7 @@ import PrescriptionForm from "./QuickActions/PrescriptionForm";
 import QuickExamForm from "./QuickActions/QuickExamForm";
 import SOAPForm from "./QuickActions/SOAPForm";
 import EnhancedPatientDetails from "./EnhancedPatientDetails";
+import dataStore from "../../utils/dataStore";
 
 const PatientList = () => {
   const navigate = useNavigate();

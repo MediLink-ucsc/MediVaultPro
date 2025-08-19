@@ -381,7 +381,7 @@ const EnhancedPatientDetails = ({ patient, onBack }) => {
       case 'overview':
         return renderOverview();
       case 'vitals':
-        return renderVitalSigns();
+        return <VitalSignsTab patientData={patientData}  />;
       case 'carePlans':
         return renderCarePlans();
       case 'history':
