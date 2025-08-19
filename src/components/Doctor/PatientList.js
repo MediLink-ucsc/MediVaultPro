@@ -134,43 +134,72 @@ const PatientList = () => {
     });
   };
 
-  const handleLastVisitSubmit = (e) => {
-    e.preventDefault();
-    const { patient, lastVisit } = editLastVisitModal;
+  const handleLastVisitSubmit = async (e) => {
+      e.preventDefault();
+      const { patient, lastVisit } = editLastVisitModal;
 
-    // Update the patient's last visit in the dataStore
-    dataStore.updatePatient(patient.id, { lastVisit });
+      try {
+        const token = localStorage.getItem("token"); // or wherever you store it
+        console.log("Token:", token);
 
-    // Update the local state
-    setPatients((prevPatients) =>
-      prevPatients.map((p) => (p.id === patient.id ? { ...p, lastVisit } : p))
-    );
+        await axios.patch(
+          `http://localhost:3000/api/v1/auth/medvaultpro/patient/${patient.id}/last-visited`,
+          { lastVisited: lastVisit },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-    setEditLastVisitModal({
-      isOpen: false,
-      patient: null,
-      lastVisit: "",
-    });
-  };
+        setPatients((prevPatients) =>
+          prevPatients.map((p) =>
+            p.id === patient.id ? { ...p, lastVisit } : p
+          )
+        );
 
-  const handleConditionSubmit = (e) => {
+        setEditLastVisitModal({ isOpen: false, patient: null, lastVisit: "" });
+        // alert("Last visited date updated successfully.");
+      } catch (error) {
+        console.error(error);
+        alert("Failed to update last visited date. Please try again.");
+      }
+    };
+
+
+  const handleConditionSubmit = async (e) => {
     e.preventDefault();
     const { patient, condition } = editConditionModal;
+    console.log("Updating condition for patient:", patient.id, condition);
 
-    // Update the patient's condition in the dataStore
-    dataStore.updatePatient(patient.id, { condition });
+    try {
+      const token = localStorage.getItem("token"); // or wherever you store it
+      console.log("Token:", token);
 
-    // Update the local state
-    setPatients((prevPatients) =>
-      prevPatients.map((p) => (p.id === patient.id ? { ...p, condition } : p))
-    );
+      await axios.patch(
+        `http://localhost:3000/api/v1/auth/medvaultpro/patient/${patient.id}/condition`,
+        { condition },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    setEditConditionModal({
-      isOpen: false,
-      patient: null,
-      condition: "",
-    });
+      setPatients((prevPatients) =>
+        prevPatients.map((p) =>
+          p.id === patient.id ? { ...p, condition } : p
+        )
+      );
+
+      setEditConditionModal({ isOpen: false, patient: null, condition: "" });
+      // alert("Patient condition updated successfully.");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update condition. Please try again.");
+    }
   };
+
 
   const handleDelete = (patientId) => {
     const patient = patients.find((p) => p.id === patientId);
