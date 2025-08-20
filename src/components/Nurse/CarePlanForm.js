@@ -4,6 +4,7 @@ import { Save, X, Plus, Trash2, ClipboardList } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Button from '../Common/Button';
 import dataStore from '../../utils/dataStore';
+import axios from 'axios';
 
 const CarePlanForm = ({ patient, onSubmit, onCancel, existingPlan = null }) => {
   const [formData, setFormData] = useState({
@@ -129,36 +130,54 @@ const CarePlanForm = ({ patient, onSubmit, onCancel, existingPlan = null }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
+
+    if (!validateForm()) return;
 
     const carePlanData = {
-      ...formData,
-      patientId: patient.id,
-      createdBy: 'Current Nurse', // In real app, get from user context
+      patientId: String(patient.id),
+      planType: formData.planType,
+      priority: formData.priority,
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      description: formData.description,
+      goals: formData.goals,
       tasks: formData.tasks.map(task => ({
-        ...task,
-        completed: task.completed || false,
-        id: task.id || Date.now()
-      }))
+        taskDescription: task.task,
+        dueDate: task.dueDate,
+        priority: task.priority,
+      })),
     };
 
-    // Save to data store
-    let savedCarePlan;
-    if (existingPlan) {
-      savedCarePlan = dataStore.updateCarePlan(existingPlan.id, carePlanData);
-    } else {
-      savedCarePlan = dataStore.addCarePlan(carePlanData);
-    }
-    
-    if (onSubmit) {
-      onSubmit(savedCarePlan);
+    console.log('Submitting care plan:', carePlanData);
+
+    try {
+
+      const token = localStorage.getItem('token');
+      const { data } = await axios.post(
+        'http://localhost:3000/api/v1/patientRecords/careplans/insert',
+        carePlanData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+
+      if (onSubmit) {
+        onSubmit(data);
+      }
+
+      alert('Care plan saved successfully!');
+    } catch (error) {
+      console.error('Error saving care plan:', error);
+      alert('Failed to save care plan. Please try again.');
     }
   };
+
 
   const getPriorityColor = (priority) => {
     switch (priority) {

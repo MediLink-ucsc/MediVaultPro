@@ -79,7 +79,7 @@ const DashboardOverview = ({user}) => {
         ))}
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 min-h-[300px]">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {quickActions.map((action, index) => {
@@ -95,18 +95,20 @@ const DashboardOverview = ({user}) => {
                 className="flex-col h-auto py-4 text-center"
                 fullWidth
               >
-                <div className="mt-2">
-                  <div className="font-medium text-sm">{action.title}</div>
-                  <div className="text-xs opacity-80 mt-1">{action.description}</div>
-                </div>
+              <div className="mt-2 py-6">
+                <div className="font-medium text-sm">{action.title}</div>
+                <div className="text-xs opacity-80 mt-1">{action.description}</div>
+              </div>
+
               </Button>
             );
           })}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+
+      {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"> */}
+        {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Patients</h3>
           <div className="space-y-4">
             {[1, 2, 3, 4].map((i) => (
@@ -121,9 +123,9 @@ const DashboardOverview = ({user}) => {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">Medication Schedule</h3>
           <div className="space-y-4">
             {[1, 2, 3, 4].map((i) => (
@@ -138,8 +140,8 @@ const DashboardOverview = ({user}) => {
               </div>
             ))}
           </div>
-        </div>
-      </div>
+        </div> */}
+      {/* </div> */}
 
       <Modal
         isOpen={activeModal !== null}

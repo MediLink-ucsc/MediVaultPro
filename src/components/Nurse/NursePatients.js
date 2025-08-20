@@ -7,41 +7,72 @@ import NewPatientForm from './NewPatientForm';
 import VitalSignsForm from './VitalSignsForm';
 import CarePlanForm from './CarePlanForm';
 import dataStore from '../../utils/dataStore';
+import axios from 'axios';
 
-const NursePatients = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showNewPatientModal, setShowNewPatientModal] = useState(false);
-  const [showVitalSignsModal, setShowVitalSignsModal] = useState(false);
-  const [showCarePlanModal, setShowCarePlanModal] = useState(false);
-  const [showMedicalHistoryModal, setShowMedicalHistoryModal] = useState(false);
-  const [showPatientDetailsModal, setShowPatientDetailsModal] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState(null);
-  const [selectedCarePlan, setSelectedCarePlan] = useState(null);
-  const [patients, setPatients] = useState([]);
-  const [patientVitalSigns, setPatientVitalSigns] = useState([]);
-  const [patientCarePlans, setPatientCarePlans] = useState([]);
+  const NursePatients = () => {
+    const [patients, setPatients] = useState([]);
+    const [patientVitalSigns, setPatientVitalSigns] = useState([]);
+    const [patientCarePlans, setPatientCarePlans] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [showNewPatientModal, setShowNewPatientModal] = useState(false);
+    const [showVitalSignsModal, setShowVitalSignsModal] = useState(false);
+    const [showCarePlanModal, setShowCarePlanModal] = useState(false);
+    const [showMedicalHistoryModal, setShowMedicalHistoryModal] = useState(false);
+    const [showPatientDetailsModal, setShowPatientDetailsModal] = useState(false);
+    const [selectedPatient, setSelectedPatient] = useState(null);
+    const [selectedCarePlan, setSelectedCarePlan] = useState(null);
 
-  // Load patients from data store on component mount
-  useEffect(() => {
-    loadPatients();
-  }, []);
+    useEffect(() => {
+      fetchPatients();
+    }, []);
 
-  const loadPatients = () => {
-    const allPatients = dataStore.getPatients();
-    const allVitalSigns = dataStore.getVitalSigns();
-    const allCarePlans = dataStore.getCarePlans();
-    
-    setPatients(allPatients);
-    setPatientVitalSigns(allVitalSigns);
-    setPatientCarePlans(allCarePlans);
-  };
+    const fetchPatients = async () => {
+  setLoading(true);
+  try {
+    const token = localStorage.getItem('token');
+    const { data } = await axios.get(
+      'http://localhost:3000/api/v1/auth/medvaultpro/doctor/patients',
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    // Transform the API response to match the expected patient structure
+    const transformedPatients = data.map(patient => ({
+      id: patient.patientId,
+      firstName: patient.user.firstName,
+      lastName: patient.user.lastName,
+      age: patient.age,
+      gender: patient.gender,
+      condition: patient.condition,
+      lastVisit: patient.lastVisited,
+      phone: patient.user.username, // Assuming username is phone number based on your data
+      email: patient.user.email || '', // Add if available in API
+      address: patient.user.address || '', // Add if available in API
+      emergencyContact: patient.user.emergencyContact || '', // Add if available in API
+      dateOfBirth: patient.user.dateOfBirth || '' // Add if available in API
+    }));
+
+    setPatients(transformedPatients);
+
+    // If your API returns vitals/carePlans separately, set them too
+    // setPatientVitalSigns(data.vitals || []);
+    // setPatientCarePlans(data.carePlans || []);
+  } catch (error) {
+    console.error('Error fetching patients:', error);
+    alert('Failed to fetch patients. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
 
     const filteredPatients = patients.filter(patient => {
-    const searchLower = searchTerm.toLowerCase();
-    return patient.firstName.toLowerCase().includes(searchLower) ||
-           patient.lastName.toLowerCase().includes(searchLower) ||
-           patient.condition.toLowerCase().includes(searchLower);
-  });
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        patient.firstName?.toLowerCase().includes(searchLower) ||
+        patient.lastName?.toLowerCase().includes(searchLower) ||
+        patient.condition?.toLowerCase().includes(searchLower)
+      );
+    });
 
   const getConditionColor = (condition) => {
     switch (condition.toLowerCase()) {
@@ -59,13 +90,12 @@ const NursePatients = () => {
   };
 
   const handleNewPatientSubmit = (newPatient) => {
-    console.log('New patient created:', newPatient);
-    setShowNewPatientModal(false);
-    // Reload patients to include the new one
-    loadPatients();
-    // Show success message
-    alert(`Patient ${newPatient.firstName} ${newPatient.lastName} has been registered successfully!`);
-  };
+  console.log('New patient created:', newPatient);
+  setShowNewPatientModal(false);
+  // Reload patients from API
+  fetchPatients();
+  alert(`Patient ${newPatient.firstName} ${newPatient.lastName} has been registered successfully!`);
+};
 
   const handleRecordVitals = (patient) => {
     setSelectedPatient(patient);
@@ -92,13 +122,14 @@ const NursePatients = () => {
   };
 
   const handleCarePlanSubmit = (carePlan) => {
-    console.log('Care plan saved:', carePlan);
-    setShowCarePlanModal(false);
-    setSelectedPatient(null);
-    setSelectedCarePlan(null);
-    loadPatients();
-    alert(`Care plan ${selectedCarePlan ? 'updated' : 'created'} successfully!`);
-  };
+  console.log('Care plan saved:', carePlan);
+  setShowCarePlanModal(false);
+  setSelectedPatient(null);
+  setSelectedCarePlan(null);
+  // Reload patients (or care plans) from API
+  fetchPatients();
+  alert(`Care plan ${selectedCarePlan ? 'updated' : 'created'} successfully!`);
+};
 
   const handleCancelCarePlan = () => {
     setShowCarePlanModal(false);
