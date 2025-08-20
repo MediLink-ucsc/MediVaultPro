@@ -546,27 +546,29 @@ import axios from 'axios';
                 </h4>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Date of Birth:</span>
-                    <span className="font-medium">{selectedPatient.dateOfBirth || 'Not provided'}</span>
+                    <span className="text-gray-600">First Nameeee:</span>
+                    <span className="font-medium">{selectedPatient.firstName}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Phone:</span>
-                    <span className="font-medium">{selectedPatient.phone}</span>
+                    <span className="text-gray-600">Last Name:</span>
+                    <span className="font-medium">{selectedPatient.lastName}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Email:</span>
-                    <span className="font-medium">{selectedPatient.email || 'Not provided'}</span>
+                    <span className="text-gray-600">Username:</span>
+                    <span className="font-medium">{selectedPatient.username}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Address:</span>
-                    <span className="font-medium">{selectedPatient.address || 'Not provided'}</span>
+                    <span className="text-gray-600">Age:</span>
+                    <span className="font-medium">{selectedPatient.age}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Emergency Contact:</span>
-                    <span className="font-medium">{selectedPatient.emergencyContact || 'Not provided'}</span>
+                    <span className="text-gray-600">Gender:</span>
+                    <span className="font-medium">{selectedPatient.gender}</span>
                   </div>
                 </div>
-              </div>
+              
+            </div>
+
 
               {/* Current Vital Signs */}
               <div className="border border-gray-200 rounded-lg p-4">
