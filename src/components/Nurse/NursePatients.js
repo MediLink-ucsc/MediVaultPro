@@ -22,6 +22,7 @@ import axios from 'axios';
     const [showPatientDetailsModal, setShowPatientDetailsModal] = useState(false);
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [selectedCarePlan, setSelectedCarePlan] = useState(null);
+    const [latestVitalSigns, setLatestVitalSigns] = useState(null);
 
     useEffect(() => {
       fetchPatients();
@@ -165,10 +166,32 @@ import axios from 'axios';
     return patientCarePlans.filter(plan => plan.patientId === patientId);
   };
 
-  const getLatestVitalSigns = (patientId) => {
-    const vitals = getPatientVitalSigns(patientId);
-    return vitals.length > 0 ? vitals[vitals.length - 1] : null;
-  };
+
+ const getLatestVitalSigns = async (patientId) => {
+  try {
+    const token = localStorage.getItem('token'); // JWT token
+    const response = await axios.get(
+      `http://localhost:3000/api/v1/patientRecords/quickexam/${patientId}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+
+    setLatestVitalSigns(response.data);
+    console.log('Latest vital signs:', response.data);
+    console.log("Latest vital signs:", latestVitalSigns);
+
+
+    // Return the first item since API returns descending order (latest first)
+    return latestVitalSigns;
+  } catch (error) {
+    console.error('Error fetching latest vital signs:', error);
+    return null;
+  }
+};
+
 
   const getActiveCarePlans = (patientId) => {
     const plans = getPatientCarePlans(patientId);
@@ -577,7 +600,7 @@ import axios from 'axios';
                   <span>Current Vital Signs</span>
                 </h4>
                 {(() => {
-                  const latestVitals = getLatestVitalSigns(selectedPatient.id);
+                  const latestVitals = getLatestVitalSigns(selectedPatient.id); // should fetch last quick exam
                   if (latestVitals) {
                     return (
                       <div className="space-y-3">
@@ -591,19 +614,43 @@ import axios from 'axios';
                             <div className="text-xs text-gray-600">Heart Rate</div>
                           </div>
                         </div>
+
                         <div className="grid grid-cols-2 gap-3">
                           <div className="text-center p-3 bg-teal-50 rounded-lg">
-                            <div className="text-lg font-bold text-teal-600">{latestVitals.temperature}°{latestVitals.temperatureUnit}</div>
+                            <div className="text-lg font-bold text-teal-600">{latestVitals.temperature}°C</div>
                             <div className="text-xs text-gray-600">Temperature</div>
                           </div>
                           <div className="text-center p-3 bg-orange-50 rounded-lg">
-                            <div className="text-lg font-bold text-orange-600">{latestVitals.oxygenSaturation || 'N/A'}%</div>
+                            <div className="text-lg font-bold text-orange-600">{latestVitals.spo2 ?? 'N/A'}%</div>
                             <div className="text-xs text-gray-600">Oxygen Saturation</div>
                           </div>
                         </div>
-                        <div className="text-center text-sm text-gray-600 mt-2">
-                          Last recorded: {new Date(latestVitals.recordedAt).toLocaleString()}
+
+                        <div className="grid grid-cols-2 gap-3 mt-3">
+                          <div className="text-center p-3 bg-teal-50 rounded-lg">
+                            <div className="text-lg font-bold text-teal-600">{latestVitals.weight} kg</div>
+                            <div className="text-xs text-gray-600">Weight</div>
+                          </div>
+                          <div className="text-center p-3 bg-orange-50 rounded-lg">
+                            <div className="text-lg font-bold text-orange-600">{latestVitals.height} cm</div>
+                            <div className="text-xs text-gray-600">Height</div>
+                          </div>
                         </div>
+
+                        <div className="text-center text-sm text-gray-600 mt-2">
+                          Last recorded: {new Date(latestVitals.createdAt).toLocaleString()}
+                        </div>
+
+                        {/* Optional: Display Doctor Info */}
+                        {latestVitals.doctor && (
+                          <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <h5 className="text-sm font-medium text-gray-700 mb-1">Recorded by:</h5>
+                            <p className="text-xs text-gray-600">
+                              Dr. {latestVitals.doctor.user.firstName} {latestVitals.doctor.user.lastName} ({latestVitals.doctor.specialty})
+                            </p>
+                            <p className="text-xs text-gray-600">Hospital: {latestVitals.doctor.hospitalName}</p>
+                          </div>
+                        )}
                       </div>
                     );
                   } else {
@@ -626,6 +673,7 @@ import axios from 'axios';
                 })()}
               </div>
             </div>
+
 
             {/* Current Medications */}
             <div className="border border-gray-200 rounded-lg p-4">
