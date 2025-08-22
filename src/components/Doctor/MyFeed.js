@@ -3,7 +3,7 @@ import { Plus, Heart, MessageCircle, ChevronDown, ChevronUp } from 'lucide-react
 import Modal from '../Common/Modal';
 import Button from '../Common/Button';
 
-const DoctorNewsFeed = () => {
+const DoctorNewsFeed = ({user}) => {
   const [activeModal, setActiveModal] = useState(false);
   const [expandedPost, setExpandedPost] = useState(null);
   const [posts, setPosts] = useState([
@@ -12,7 +12,7 @@ const DoctorNewsFeed = () => {
       doctorName: 'Dr. Sarah Fernando',
       hospital: 'Colombo General Hospital',
       description: 'Discussing new advancements in cardiology treatment this week.',
-      photo: 'https://investin.org/cdn/shop/articles/jafar-ahmed-E285pJbC4uE-unsplash.jpg?v=1634293259',
+      photo: 'https://ufhealthjax.org/assets/images/specialties/_2432x1621_crop_center-center_line/interventional-cardiology-3.jpg.webp',
       likes: 32,
       comments: [
         { id: 1, name: 'Dr. Amal Silva', text: 'Great insights, Sarah!' },
@@ -20,27 +20,30 @@ const DoctorNewsFeed = () => {
       ]
     },
     {
-      id: 2,
-      doctorName: 'Dr. Nimal Perera',
-      hospital: 'Kandy Teaching Hospital',
-      description: 'Successful knee replacement surgery using minimally invasive methods.',
-      photo: 'https://images.unsplash.com/photo-1580281657423-1f8d8e53d6e8?crop=entropy&cs=tinysrgb&fit=max&h=400&w=800',
-      likes: 45,
-      comments: [
-        { id: 1, name: 'Dr. Priyantha Jayasuriya', text: 'Amazing work, Nimal!' },
-        { id: 2, name: 'Dr. Chamari Fernando', text: 'Congratulations to the team!' }
-      ]
+
+        id: 2,
+        doctorName: 'Dr. Anoja Wijesinghe',
+        hospital: 'National Hospital Colombo',
+        description: 'Sharing insights on modern pediatric care techniques, focusing on comprehensive child health and development. This article explores advancements in pediatric medicine, including innovative approaches to preventive care, early diagnosis, and treatment of common and rare childhood illnesses. Emphasis is placed on evidence-based practices for vaccinations, nutrition planning, and growth monitoring to support optimal physical and cognitive development. The discussion also highlights recent breakthroughs in pediatric surgery, minimally invasive procedures, and management of chronic conditions such as asthma, diabetes, and congenital heart defects. Additionally, the article covers mental health considerations, strategies for early intervention in developmental disorders, and the integration of technology in pediatric care to improve patient outcomes and communication with parents. By adopting these modern techniques, pediatricians can ensure holistic, patient-centered care that promotes the overall well-being of children and empowers families with the knowledge and resources needed for long-term health.',
+        photo: 'https://images.squarespace-cdn.com/content/v1/6487334be849e87dffd73f5c/5821acf7-223c-4a58-aa6d-f2ba6bacc045/Urgent+Care+for+Kids+Benefits+and+Services+of+Pediatric+Care.jpg?format=2500w',
+        likes: 28,
+        comments: [
+            { id: 1, name: 'Dr. Samanthi Perera', text: 'Very useful, thanks!' }
+        ]
+      
     },
     {
-      id: 3,
-      doctorName: 'Dr. Anoja Wijesinghe',
-      hospital: 'National Hospital Colombo',
-      description: 'Sharing insights on modern pediatric care techniques.',
-      photo: 'https://images.unsplash.com/photo-1580281657515-6f3c5f0f8e3e?crop=entropy&cs=tinysrgb&fit=max&h=400&w=800',
-      likes: 28,
-      comments: [
-        { id: 1, name: 'Dr. Samanthi Perera', text: 'Very useful, thanks!' }
-      ]
+        id: 3,
+        doctorName: 'Dr. Nimal Perera',
+        hospital: 'Kandy Teaching Hospital',
+        description: 'Successful knee replacement surgery using minimally invasive methods.',
+        photo: 'https://orthopedicnj.com/attachments/News/183/gallery/doctor-explaining-robotic-knee-replacement-surgery_thumb-detail.png',
+        likes: 45,
+        comments: [
+            { id: 1, name: 'Dr. Priyantha Jayasuriya', text: 'Amazing work, Nimal!' },
+            { id: 2, name: 'Dr. Chamari Fernando', text: 'Congratulations to the team!' }
+        ]
+      
     }
   ]);
 
@@ -158,69 +161,60 @@ const DoctorNewsFeed = () => {
         isOpen={activeModal}
         onClose={() => setActiveModal(false)}
         title="Add New Post"
-      >
+        >
         <form onSubmit={handleAddPost} className="space-y-4">
-          <div>
+            <div>
             <label className="block text-gray-700 mb-1">Doctor Name</label>
             <input
-              type="text"
-              value={newPost.doctorName}
-              onChange={(e) => setNewPost({ ...newPost, doctorName: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              required
+                type="text"
+                value={`${user.firstName} ${user.lastName}`}
+                readOnly
+                className="w-full border border-gray-300 rounded-lg p-2 bg-gray-100 cursor-not-allowed"
             />
-          </div>
-          <div>
+            </div>
+            <div>
             <label className="block text-gray-700 mb-1">Hospital</label>
             <input
-              type="text"
-              value={newPost.hospital}
-              onChange={(e) => setNewPost({ ...newPost, hospital: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              required
+                type="text"
+                value={user.hospital || ''}
+                readOnly
+                className="w-full border border-gray-300 rounded-lg p-2 bg-gray-100 cursor-not-allowed"
             />
-          </div>
-          <div>
+            </div>
+            <div>
             <label className="block text-gray-700 mb-1">Description</label>
             <textarea
-              value={newPost.description}
-              onChange={(e) => setNewPost({ ...newPost, description: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg p-2"
-              rows="3"
-              required
+                value={newPost.description}
+                onChange={(e) =>
+                setNewPost({ ...newPost, description: e.target.value })
+                }
+                className="w-full border border-gray-300 rounded-lg p-2"
+                rows="3"
+                required
             ></textarea>
-          </div>
-
-          {/* Styled File Upload */}
-          <div>
+            </div>
+            <div>
             <label className="block text-gray-700 mb-1">Upload Photo</label>
             <input
-              type="file"
-              accept="image/*"
-              id="file-upload"
-              onChange={handleFileChange}
-              className="hidden"
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleFileChange(e)}
+                className="w-full"
             />
-            <label
-              htmlFor="file-upload"
-              className="inline-flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg shadow cursor-pointer hover:bg-teal-700"
-            >
-              Choose File
-            </label>
             {newPost.photo && (
-              <img
+                <img
                 src={newPost.photo}
                 alt="Preview"
                 className="mt-2 w-full max-h-60 object-cover rounded-lg"
-              />
+                />
             )}
-          </div>
-
-          <Button type="submit" variant="primary" fullWidth>
+            </div>
+            <Button type="submit" variant="primary" fullWidth>
             Post
-          </Button>
+            </Button>
         </form>
-      </Modal>
+        </Modal>
+
     </div>
   );
 };

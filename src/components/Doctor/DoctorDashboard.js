@@ -13,7 +13,7 @@ const DoctorDashboard = ({user}) => {
       <Route path="/" element={<DashboardOverview user={user}/>} />
       <Route path="/patients" element={<PatientList />} />
       <Route path="/calendar" element={<Calendar />} />
-      <Route path="/myfeed" element={<MyFeed/>} />
+      <Route path="/myfeed" element={<MyFeed user={user}/>} />
       <Route path="/settings" element={<Settings />} />
     </Routes>
   );
