@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Save } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Button from '../Common/Button';
-import axios from 'axios';
+// Backend integration removed
 
 const NewPatientForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -42,27 +42,12 @@ const NewPatientForm = ({ onSubmit }) => {
 
   console.log("Form Data:", formData);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-
-    try {
-      // Convert age to integer
-      const payload = {
-        ...formData,
-        age: parseInt(formData.age, 10)
-      };
-
-      const response = await axios.post(
-        'http://localhost:3000/api/v1/auth/patient/register',
-        payload
-      );
-      setMessage('Patient registered successfully!');
-      if (onSubmit) onSubmit(response.data);
-    } catch (error) {
-      console.error(error.response?.data || error.message);
-      setMessage('Error registering patient. Please try again.');
-    }
+    // Backend integration removed, just call onSubmit with formData
+    setMessage('Patient registered successfully!');
+    if (onSubmit) onSubmit(formData);
   };
 
 

@@ -4,7 +4,7 @@ import { Save, X, User, Activity, Heart, Thermometer } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Button from '../Common/Button';
 import dataStore from '../../utils/dataStore';
-import axios from 'axios';
+// Backend integration removed
 
 const VitalSignsForm = ({ patient, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -85,59 +85,14 @@ const VitalSignsForm = ({ patient, onSubmit, onCancel }) => {
 
 
 
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-  console.log("handleSubmit called");
-
-  if (!validateForm()) {
-    console.log("Form Data (invalid):", formData);
-    return;
-  }
-  const doctorId = JSON.parse(localStorage.getItem('user'))?.id;
-  console.log("Doctor ID:", doctorId);
-  // Prepare payload based on API structure
-  const payload = {
-  patientId: patient.id.toString(),
-  doctorUserId: doctorId !== undefined ? doctorId : null,// current logged-in doctor ID
-  bloodPressure: formData.bloodPressure,
-  heartRate: formData.heartRate ? Number(formData.heartRate) : undefined,
-  temperature: formData.temperature ? Number(formData.temperature) : undefined,
-  spo2: formData.spo2 ? Number(formData.spo2) : undefined,
-  weight: formData.weight ? Number(formData.weight) : undefined,
-  height: formData.height ? parseInt(formData.height, 10) : undefined,
-  generalAppearance: formData.generalAppearance || "",
-  cardiovascular: formData.cardiovascular || "",
-  respiratory: formData.respiratory || "",
-  abdominal: formData.abdominal || "",
-  neurological: formData.neurological || "",
-  additionalNotes: formData.additionalNotes || formData.notes || ""
-};
-
-  console.log('Submitting vital signs:', payload);
-  try {
-    const token = localStorage.getItem('token');
-    const response = await axios.post(
-      'http://localhost:3000/api/v1/patientRecords/quickexams/insert',
-      payload,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // token should be a variable holding the JWT
-        }
-      }
-    );
-
-    // Handle success
-    if (response.status === 200 || response.status === 201) {
-      if (onSubmit) {
-        onSubmit(response.data);
-      }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    // Backend integration removed, just call onSubmit with formData
+    if (onSubmit) {
+      onSubmit(formData);
     }
-  } catch (error) {
-    console.error('Error saving vital signs:', error);
-    alert('Failed to save vital signs. Please try again.');
-  }
-};
+  };
 
  return (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
