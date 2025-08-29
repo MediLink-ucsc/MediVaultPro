@@ -355,7 +355,7 @@ const LandingPage = ({ onLogin, onSignup }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight"
+              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight" style={{ lineHeight: 1.30 }}
             >
               Complete Healthcare
               <span className="block bg-gradient-to-r from-teal-600 to-orange-600 bg-clip-text text-transparent">
