@@ -151,6 +151,38 @@ class ApiService {
     return response.json();
   }
 
+  static async getLabResults() {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.LAB_REPORT.GET_LAB_RESULTS
+    );
+    return response.json();
+  }
+
+  static async getLabResult(id) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.LAB_REPORT.GET_LAB_RESULT(id)
+    );
+    return response.json();
+  }
+
+  static async editLabResult(id, resultData) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.LAB_REPORT.EDIT_LAB_RESULT(id),
+      {
+        method: "PUT",
+        body: JSON.stringify(resultData),
+      }
+    );
+    return response.json();
+  }
+
+  static async getLabResultsForSample(sampleId) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.LAB_REPORT.GET_LAB_RESULTS_FOR_SAMPLE(sampleId)
+    );
+    return response.json();
+  }
+
   static async processLabReport(sampleId, reportData) {
     const token = localStorage.getItem("token");
 
