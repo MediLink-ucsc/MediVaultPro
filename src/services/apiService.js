@@ -90,6 +90,17 @@ class ApiService {
   }
 
   // Lab workflow methods
+  static async createTestType(testTypeData) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.LAB_REPORT.CREATE_TEST_TYPE,
+      {
+        method: "POST",
+        body: JSON.stringify(testTypeData),
+      }
+    );
+    return response.json();
+  }
+
   static async getTestTypes() {
     const response = await this.makeRequest(
       API_ENDPOINTS.LAB_REPORT.GET_TEST_TYPES
@@ -100,6 +111,17 @@ class ApiService {
   static async getTestTypeById(id) {
     const response = await this.makeRequest(
       API_ENDPOINTS.LAB_REPORT.GET_TEST_TYPE_BY_ID(id)
+    );
+    return response.json();
+  }
+
+  static async updateTestType(id, testTypeData) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.LAB_REPORT.UPDATE_TEST_TYPE(id),
+      {
+        method: "PUT",
+        body: JSON.stringify(testTypeData),
+      }
     );
     return response.json();
   }

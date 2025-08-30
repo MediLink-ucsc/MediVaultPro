@@ -1,158 +1,204 @@
 // src/components/Lab/CreateTemplateForm.js
-import React, { useState } from 'react';
-import { Plus, Minus } from 'lucide-react';
+import React, { useState } from "react";
+import { Plus, Minus } from "lucide-react";
 
 const CreateTemplateForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
-    templateName: '',
-    testType: '',
-    category: '',
-    description: '',
-    fields: [
-      { name: '', type: 'text', required: true, options: [] }
+    value: "",
+    label: "",
+    category: "",
+    reportFields: [
+      { name: "", type: "decimal", required: true, unit: "", normalRange: "" },
     ],
-    referenceRanges: [
-      { parameter: '', normalRange: '', unit: '' }
-    ],
-    instructions: '',
   });
 
   const testCategories = [
-    'Blood Tests',
-    'Urine Tests',
-    'Imaging',
-    'Cultures',
-    'Cardiac Tests',
-    'Hormone Tests',
-    'Metabolic Tests',
-    'Immunology',
+    "Biochemistry",
+    "Hematology",
+    "Microbiology",
+    "Immunology",
+    "Pathology",
+    "Radiology",
+    "Cardiology",
+    "Endocrinology",
   ];
 
   const fieldTypes = [
-    { value: 'text', label: 'Text' },
-    { value: 'number', label: 'Number' },
-    { value: 'dropdown', label: 'Dropdown' },
-    { value: 'checkbox', label: 'Checkbox' },
-    { value: 'date', label: 'Date' },
-    { value: 'textarea', label: 'Text Area' },
+    { value: "decimal", label: "Decimal Number" },
+    { value: "number", label: "Number" },
+    { value: "text", label: "Text" },
+    { value: "boolean", label: "Yes/No" },
   ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const addField = () => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      fields: [...prev.fields, { name: '', type: 'text', required: true, options: [] }]
+      reportFields: [
+        ...prev.reportFields,
+        {
+          name: "",
+          type: "decimal",
+          required: true,
+          unit: "",
+          normalRange: "",
+        },
+      ],
     }));
   };
 
   const removeField = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      fields: prev.fields.filter((_, i) => i !== index)
-    }));
+    if (formData.reportFields.length > 1) {
+      setFormData((prev) => ({
+        ...prev,
+        reportFields: prev.reportFields.filter((_, i) => i !== index),
+      }));
+    }
   };
 
   const updateField = (index, field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      fields: prev.fields.map((f, i) => 
-        i === index ? { ...f, [field]: value } : f
-      )
+      reportFields: prev.reportFields.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item
+      ),
     }));
   };
 
-  const addReferenceRange = () => {
-    setFormData(prev => ({
+  // Generate value from label
+  const generateValue = (label) => {
+    return label
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, "")
+      .replace(/\s+/g, "_");
+  };
+
+  const handleLabelChange = (e) => {
+    const label = e.target.value;
+    setFormData((prev) => ({
       ...prev,
-      referenceRanges: [...prev.referenceRanges, { parameter: '', normalRange: '', unit: '' }]
+      label: label,
+      value: generateValue(label),
     }));
   };
 
-  const removeReferenceRange = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      referenceRanges: prev.referenceRanges.filter((_, i) => i !== index)
-    }));
-  };
+  // Create reference ranges from report fields
+  const createReferenceRanges = (reportFields) => {
+    const referenceRanges = {};
 
-  const updateReferenceRange = (index, field, value) => {
-    setFormData(prev => ({
-      ...prev,
-      referenceRanges: prev.referenceRanges.map((r, i) => 
-        i === index ? { ...r, [field]: value } : r
-      )
-    }));
+    reportFields.forEach((field) => {
+      if (field.normalRange && field.unit) {
+        const range = { unit: field.unit, normalRange: field.normalRange };
+
+        // Try to parse min/max from normalRange
+        if (field.normalRange.includes("-")) {
+          const [min, max] = field.normalRange
+            .split("-")
+            .map((v) => parseFloat(v.trim()));
+          if (!isNaN(min)) range.min = min;
+          if (!isNaN(max)) range.max = max;
+        } else if (field.normalRange.startsWith(">")) {
+          const min = parseFloat(field.normalRange.substring(1));
+          if (!isNaN(min)) range.min = min;
+        } else if (field.normalRange.startsWith("<")) {
+          const max = parseFloat(field.normalRange.substring(1));
+          if (!isNaN(max)) range.max = max;
+        }
+
+        referenceRanges[field.name] = range;
+      }
+    });
+
+    return referenceRanges;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Basic validation
-    if (!formData.templateName || !formData.testType || !formData.category) {
-      alert('Please fill in all required fields');
+
+    if (
+      !formData.label.trim() ||
+      !formData.category ||
+      formData.reportFields.length === 0
+    ) {
+      alert("Please fill in all required fields");
       return;
     }
 
-    // Create template object with additional metadata
-    const templateData = {
-      ...formData,
-      name: formData.templateName,
-      estimatedTime: calculateEstimatedTime(formData.fields.length),
+    // Validate that all report fields have required data
+    const invalidFields = formData.reportFields.filter(
+      (field) =>
+        !field.name.trim() || !field.unit.trim() || !field.normalRange.trim()
+    );
+
+    if (invalidFields.length > 0) {
+      alert("Please fill in all field details (name, unit, and normal range)");
+      return;
+    }
+
+    // Create the API payload
+    const apiPayload = {
+      value: formData.value || generateValue(formData.label),
+      label: formData.label,
+      category: formData.category,
+      parserClass: "LabReportParser",
+      parserModule: "parser_lab_report",
+      reportFields: formData.reportFields,
+      referenceRanges: createReferenceRanges(formData.reportFields),
     };
 
-    onSubmit(templateData);
-  };
-
-  const calculateEstimatedTime = (fieldCount) => {
-    // Simple estimation: 1 minute per field + 5 minutes base time
-    const minutes = Math.max(5, fieldCount + 5);
-    return `${minutes} min`;
+    onSubmit(apiPayload);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-h-96 overflow-y-auto">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 max-h-96 overflow-y-auto"
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Template Name
+            Template Name *
           </label>
           <input
             type="text"
-            name="templateName"
-            value={formData.templateName}
-            onChange={handleInputChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-            placeholder="Enter template name"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Test Type
-          </label>
-          <input
-            type="text"
-            name="testType"
-            value={formData.testType}
-            onChange={handleInputChange}
+            name="label"
+            value={formData.label}
+            onChange={handleLabelChange}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
             placeholder="e.g., Complete Blood Count"
             required
           />
         </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            System Value
+          </label>
+          <input
+            type="text"
+            name="value"
+            value={formData.value}
+            onChange={handleInputChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500 bg-gray-50"
+            placeholder="Auto-generated from name"
+            readOnly
+          />
+          <p className="text-xs text-gray-500 mt-1">
+            Auto-generated from template name
+          </p>
+        </div>
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Category
+          Category *
         </label>
         <select
           name="category"
@@ -163,28 +209,18 @@ const CreateTemplateForm = ({ onSubmit }) => {
         >
           <option value="">Select category</option>
           {testCategories.map((category, index) => (
-            <option key={index} value={category}>{category}</option>
+            <option key={index} value={category}>
+              {category}
+            </option>
           ))}
         </select>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Description
-        </label>
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleInputChange}
-          rows={2}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-          placeholder="Brief description of the test..."
-        />
-      </div>
-
-      <div>
         <div className="flex items-center justify-between mb-3">
-          <label className="text-sm font-medium text-gray-700">Report Fields</label>
+          <label className="text-sm font-medium text-gray-700">
+            Report Fields *
+          </label>
           <button
             type="button"
             onClick={addField}
@@ -195,114 +231,99 @@ const CreateTemplateForm = ({ onSubmit }) => {
           </button>
         </div>
         <div className="space-y-3">
-          {formData.fields.map((field, index) => (
-            <div key={index} className="p-3 border border-gray-200 rounded-md">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                <input
-                  type="text"
-                  placeholder="Field name"
-                  value={field.name}
-                  onChange={(e) => updateField(index, 'name', e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
-                />
-                <select
-                  value={field.type}
-                  onChange={(e) => updateField(index, 'type', e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
-                >
-                  {fieldTypes.map((type) => (
-                    <option key={type.value} value={type.value}>{type.label}</option>
-                  ))}
-                </select>
-                <div className="flex items-center space-x-2">
-                  <label className="flex items-center text-sm">
-                    <input
-                      type="checkbox"
-                      checked={field.required}
-                      onChange={(e) => updateField(index, 'required', e.target.checked)}
-                      className="mr-1"
-                    />
-                    Required
+          {formData.reportFields.map((field, index) => (
+            <div
+              key={index}
+              className="p-4 border border-gray-200 rounded-lg bg-gray-50"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    Field Name
                   </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., Hemoglobin"
+                    value={field.name}
+                    onChange={(e) => updateField(index, "name", e.target.value)}
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    Field Type
+                  </label>
+                  <select
+                    value={field.type}
+                    onChange={(e) => updateField(index, "type", e.target.value)}
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  >
+                    {fieldTypes.map((type) => (
+                      <option key={type.value} value={type.value}>
+                        {type.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    Unit
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., g/dL"
+                    value={field.unit}
+                    onChange={(e) => updateField(index, "unit", e.target.value)}
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">
+                    Normal Range
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g., 13.5-17.5 or >40"
+                    value={field.normalRange}
+                    onChange={(e) =>
+                      updateField(index, "normalRange", e.target.value)
+                    }
+                    className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <label className="flex items-center text-sm text-gray-600">
+                  <input
+                    type="checkbox"
+                    checked={field.required}
+                    onChange={(e) =>
+                      updateField(index, "required", e.target.checked)
+                    }
+                    className="mr-2 text-teal-600 focus:ring-teal-500"
+                  />
+                  Required field
+                </label>
+                {formData.reportFields.length > 1 && (
                   <button
                     type="button"
                     onClick={() => removeField(index)}
-                    className="p-1 text-orange-500 hover:text-orange-700 hover:bg-orange-50 rounded transition-all duration-200"
+                    className="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-all duration-200"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
-                </div>
+                )}
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <label className="text-sm font-medium text-gray-700">Reference Ranges</label>
-          <button
-            type="button"
-            onClick={addReferenceRange}
-            className="flex items-center space-x-1 px-3 py-1.5 text-teal-600 hover:text-teal-700 hover:bg-teal-50 rounded-lg transition-all duration-200"
-          >
-            <Plus className="w-4 h-4" />
-            <span className="text-sm">Add Range</span>
-          </button>
-        </div>
-        <div className="space-y-3">
-          {formData.referenceRanges.map((range, index) => (
-            <div key={index} className="p-3 border border-gray-200 rounded-md">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-                <input
-                  type="text"
-                  placeholder="Parameter name"
-                  value={range.parameter}
-                  onChange={(e) => updateReferenceRange(index, 'parameter', e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Normal range"
-                  value={range.normalRange}
-                  onChange={(e) => updateReferenceRange(index, 'normalRange', e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
-                />
-                <input
-                  type="text"
-                  placeholder="Unit"
-                  value={range.unit}
-                  onChange={(e) => updateReferenceRange(index, 'unit', e.target.value)}
-                  className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-teal-500"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeReferenceRange(index)}
-                  className="p-1 text-orange-500 hover:text-orange-700 hover:bg-orange-50 rounded transition-all duration-200 justify-self-center"
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Instructions for Lab Technicians
-        </label>
-        <textarea
-          name="instructions"
-          value={formData.instructions}
-          onChange={handleInputChange}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-teal-500"
-          placeholder="Special instructions for conducting this test..."
-        />
-      </div>
-
-      <div className="flex justify-end space-x-3">
+      <div className="flex justify-end space-x-3 pt-4 border-t">
         <button
           type="button"
           onClick={() => onSubmit(null)}

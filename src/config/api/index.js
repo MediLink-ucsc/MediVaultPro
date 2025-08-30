@@ -18,9 +18,12 @@ export const API_ENDPOINTS = {
     DELETE: (id) => `${API_BASE_URL}/api/${VERSION}/patients/${id}`,
   },
   LAB_REPORT: {
+    CREATE_TEST_TYPE: `${API_BASE_URL}/api/${VERSION}/labReport/report/addTestType`,
     GET_TEST_TYPES: `${API_BASE_URL}/api/${VERSION}/labReport/report/testTypes`,
     GET_TEST_TYPE_BY_ID: (id) =>
       `${API_BASE_URL}/api/${VERSION}/labReport/report/testType/${id}`,
+    UPDATE_TEST_TYPE: (id) =>
+      `${API_BASE_URL}/api/${VERSION}/labReport/template/test-types/${id}`,
     GET_SAMPLES: `${API_BASE_URL}/api/${VERSION}/labReport/workflow/samples`,
     GET_SAMPLES_BY_ID: (id) =>
       `${API_BASE_URL}/api/${VERSION}/labReport/workflow/samples/${id}`,
