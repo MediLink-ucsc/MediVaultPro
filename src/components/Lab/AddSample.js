@@ -13,6 +13,7 @@ import {
   X,
 } from "lucide-react";
 import ApiService from "../../services/apiService";
+import Button from "../Common/Button";
 
 const AddSample = ({ onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -38,6 +39,8 @@ const AddSample = ({ onSubmit, onCancel }) => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [testTypes, setTestTypes] = useState([]);
+  const [username, setUsername] = useState("");
+  const [fetchedPatient, setFetchedPatient] = useState(null);
 
   const sampleTypes = [
     {
@@ -104,11 +107,11 @@ const AddSample = ({ onSubmit, onCancel }) => {
     const newErrors = {};
 
     if (!formData.patientId.trim()) {
-      newErrors.patientId = "Patient ID is required";
+      newErrors.patientId = "Please fetch a patient first";
     }
 
     if (!formData.patientName.trim()) {
-      newErrors.patientName = "Patient name is required";
+      newErrors.patientName = "Please fetch a patient first";
     }
 
     if (!formData.testTypeId.trim()) {
@@ -171,6 +174,45 @@ const AddSample = ({ onSubmit, onCancel }) => {
     return <FlaskConical className="w-5 h-5 text-gray-500" />;
   };
 
+  const fetchPatientByUsername = async () => {
+    if (!username) return alert("Enter username/contact number");
+
+    try {
+      setLoading(true);
+      const response = await ApiService.getPatientByUsername(username);
+      console.log("Patient response:", response);
+
+      if (response && response.patientId) {
+        setFetchedPatient(response);
+        setFormData((prev) => ({
+          ...prev,
+          patientId: response.patientId.toString(),
+          patientName: `${response.user.firstName} ${response.user.lastName}`,
+        }));
+      } else {
+        console.error("Invalid patient response format");
+        alert("Patient not found");
+        setFetchedPatient(null);
+        setFormData((prev) => ({
+          ...prev,
+          patientId: "",
+          patientName: "",
+        }));
+      }
+    } catch (error) {
+      console.error("Failed to fetch patient:", error);
+      alert(error.message || "Failed to fetch patient");
+      setFetchedPatient(null);
+      setFormData((prev) => ({
+        ...prev,
+        patientId: "",
+        patientName: "",
+      }));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const fetchTestTypes = async () => {
       try {
@@ -202,6 +244,31 @@ const AddSample = ({ onSubmit, onCancel }) => {
           <User className="w-5 h-5 mr-2 text-teal-600" />
           Patient Information
         </h3>
+
+        {/* Username & Fetch */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Patient Username / Contact *
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Enter username or contact"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <Button
+              type="button"
+              onClick={fetchPatientByUsername}
+              size="sm"
+              disabled={loading}
+            >
+              {loading ? "Loading..." : "Get Patient"}
+            </Button>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -211,11 +278,9 @@ const AddSample = ({ onSubmit, onCancel }) => {
               type="text"
               name="patientId"
               value={formData.patientId}
-              onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 ${
-                errors.patientId ? "border-red-300" : "border-gray-300"
-              }`}
-              placeholder="e.g., P001"
+              readOnly
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-100"
+              placeholder="Fetch patient first"
             />
             {errors.patientId && (
               <p className="text-red-500 text-sm mt-1 flex items-center">
@@ -233,11 +298,9 @@ const AddSample = ({ onSubmit, onCancel }) => {
               type="text"
               name="patientName"
               value={formData.patientName}
-              onChange={handleInputChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 ${
-                errors.patientName ? "border-red-300" : "border-gray-300"
-              }`}
-              placeholder="Enter patient name"
+              readOnly
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-100"
+              placeholder="Fetch patient first"
             />
             {errors.patientName && (
               <p className="text-red-500 text-sm mt-1 flex items-center">
@@ -247,6 +310,18 @@ const AddSample = ({ onSubmit, onCancel }) => {
             )}
           </div>
         </div>
+
+        {fetchedPatient && (
+          <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-green-800 text-sm">
+              ✓ Patient found:{" "}
+              <span className="font-medium">
+                {fetchedPatient.user.firstName} {fetchedPatient.user.lastName}
+              </span>{" "}
+              ({fetchedPatient.user.username})
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Test and Sample Information */}

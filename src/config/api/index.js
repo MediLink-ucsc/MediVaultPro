@@ -13,6 +13,8 @@ export const API_ENDPOINTS = {
   PATIENTS: {
     GET_ALL: `${API_BASE_URL}/api/${VERSION}/patients`,
     GET_BY_ID: (id) => `${API_BASE_URL}/api/${VERSION}/patients/${id}`,
+    GET_BY_USERNAME: (username) =>
+      `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/doctor/patient/${username}`,
     CREATE: `${API_BASE_URL}/api/${VERSION}/patients`,
     UPDATE: (id) => `${API_BASE_URL}/api/${VERSION}/patients/${id}`,
     DELETE: (id) => `${API_BASE_URL}/api/${VERSION}/patients/${id}`,

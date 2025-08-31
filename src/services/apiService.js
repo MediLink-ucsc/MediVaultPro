@@ -67,6 +67,13 @@ class ApiService {
     return response.json();
   }
 
+  static async getPatientByUsername(username) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.PATIENTS.GET_BY_USERNAME(username)
+    );
+    return response.json();
+  }
+
   static async createPatient(patientData) {
     const response = await this.makeRequest(API_ENDPOINTS.PATIENTS.CREATE, {
       method: "POST",
