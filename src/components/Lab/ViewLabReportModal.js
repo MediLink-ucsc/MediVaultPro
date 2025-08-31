@@ -17,8 +17,11 @@ import {
   XCircle,
 } from "lucide-react";
 import ApiService from "../../services/apiService";
+import { useToast } from "../Common/Toast";
 
 const ViewLabReportModal = ({ isOpen, onClose, reportId }) => {
+  const { showToast, ToastComponent } = useToast();
+
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -26,6 +29,7 @@ const ViewLabReportModal = ({ isOpen, onClose, reportId }) => {
   const [editedData, setEditedData] = useState({});
   const [editNotes, setEditNotes] = useState("");
   const [saving, setSaving] = useState(false);
+  const [removedFields, setRemovedFields] = useState([]);
 
   // Fetch lab report details
   const fetchLabReportDetails = async () => {
@@ -61,6 +65,7 @@ const ViewLabReportModal = ({ isOpen, onClose, reportId }) => {
       setIsEditing(false);
       setEditedData({});
       setEditNotes("");
+      setRemovedFields([]);
     }
   }, [isOpen]);
 
@@ -100,6 +105,7 @@ const ViewLabReportModal = ({ isOpen, onClose, reportId }) => {
     setIsEditing(false);
     setEditedData({});
     setEditNotes("");
+    setRemovedFields([]);
   };
 
   const handleSaveEdit = async () => {
@@ -121,12 +127,13 @@ const ViewLabReportModal = ({ isOpen, onClose, reportId }) => {
       setIsEditing(false);
       setEditedData({});
       setEditNotes("");
+      setRemovedFields([]);
 
-      // Show success message (you might want to use a toast notification instead)
-      alert("Lab result updated successfully!");
+      // Show success message
+      showToast("Lab result updated successfully!", "success");
     } catch (err) {
       console.error("Error updating lab result:", err);
-      alert("Failed to update lab result. Please try again.");
+      showToast("Failed to update lab result. Please try again.", "error");
     } finally {
       setSaving(false);
     }
@@ -140,6 +147,11 @@ const ViewLabReportModal = ({ isOpen, onClose, reportId }) => {
         [field]: value,
       },
     }));
+  };
+
+  const handleRemoveField = (fieldName) => {
+    setRemovedFields((prev) => [...prev, fieldName]);
+    showToast(`Field "${fieldName}" removed`, "info");
   };
 
   const getStatusColor = (status) => {
@@ -198,7 +210,17 @@ const ViewLabReportModal = ({ isOpen, onClose, reportId }) => {
       return (
         <div className="flex items-center justify-between py-4 px-4 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="flex-1 mr-4">
-            <div className="font-medium text-gray-900 mb-2">{key}</div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="font-medium text-gray-900">{key}</div>
+              <button
+                onClick={() => handleRemoveField(key)}
+                className="flex items-center text-red-600 hover:text-red-700 text-xs px-2 py-1 rounded hover:bg-red-50 transition-colors duration-200"
+                title="Remove this field"
+              >
+                <X className="w-3 h-3 mr-1" />
+                Remove
+              </button>
+            </div>
             <div className="text-sm text-gray-500 mb-3">
               Normal: {normalRange || "N/A"}
             </div>
@@ -578,8 +600,9 @@ const ViewLabReportModal = ({ isOpen, onClose, reportId }) => {
                       {Object.entries(reportData.extractedData)
                         .filter(
                           ([key]) =>
-                            !["Patient", "Date", "Doctor"].includes(key)
-                        ) // Filter out non-test fields
+                            !["Patient", "Date", "Doctor"].includes(key) &&
+                            !removedFields.includes(key)
+                        ) // Filter out non-test fields and removed fields
                         .map(([key, value]) => {
                           // Try to get normal range from test type
                           const testType = reportData.labSample?.testType;
@@ -721,6 +744,7 @@ const ViewLabReportModal = ({ isOpen, onClose, reportId }) => {
           </div>
         </div>
       </div>
+      <ToastComponent />
     </div>
   );
 };
