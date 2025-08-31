@@ -1,14 +1,19 @@
-import { useState } from 'react';
-import { Save, Plus, Trash2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Button from '../../Common/Button';
-import axios from 'axios';
+import { useState } from "react";
+import { Save, Plus, Trash2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import Button from "../../Common/Button";
+import { useToast } from "../../Common/Toast";
+import axios from "axios";
 
 const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
-  const [medications, setMedications] = useState([{ name: '', dosage: '', frequency: '', duration: '' }]);
-  const [additionalInstructions, setAdditionalInstructions] = useState('');
-  const [patientId, setPatientId] = useState(selectedPatient?.patientId || '');
-  const [username, setUsername] = useState('');
+  const { showToast, ToastComponent } = useToast();
+
+  const [medications, setMedications] = useState([
+    { name: "", dosage: "", frequency: "", duration: "" },
+  ]);
+  const [additionalInstructions, setAdditionalInstructions] = useState("");
+  const [patientId, setPatientId] = useState(selectedPatient?.patientId || "");
+  const [username, setUsername] = useState("");
   const [fetchedPatient, setFetchedPatient] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +24,10 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
   };
 
   const addMedication = () => {
-    setMedications([...medications, { name: '', dosage: '', frequency: '', duration: '' }]);
+    setMedications([
+      ...medications,
+      { name: "", dosage: "", frequency: "", duration: "" },
+    ]);
   };
 
   const removeMedication = (index) => {
@@ -27,11 +35,14 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
   };
 
   const fetchPatientByUsername = async () => {
-    if (!username) return alert('Enter username/contact number');
+    if (!username) {
+      showToast("Please enter username/contact number", "warning");
+      return;
+    }
 
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
 
       const { data } = await axios.get(
         `http://localhost:3000/api/v1/auth/medvaultpro/doctor/patient/${username}`,
@@ -42,9 +53,12 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
       setPatientId(data.patientId.toString());
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.message || 'Failed to fetch patient');
+      showToast(
+        error.response?.data?.message || "Failed to fetch patient",
+        "error"
+      );
       setFetchedPatient(null);
-      setPatientId('');
+      setPatientId("");
     } finally {
       setLoading(false);
     }
@@ -52,11 +66,14 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!patientId) return alert('Fetch a valid patient first');
+    if (!patientId) {
+      showToast("Please fetch a valid patient first", "warning");
+      return;
+    }
 
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
 
       const payload = {
         patientId: patientId.toString(),
@@ -70,27 +87,40 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
       };
 
       const { data } = await axios.post(
-        'http://localhost:3000/api/v1/patientRecords/prescriptions/insert',
+        "http://localhost:3000/api/v1/patientRecords/prescriptions/insert",
         payload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      alert('Prescription sent successfully! ID: ' + data.prescriptionId);
+      showToast(
+        `Prescription sent successfully! ID: ${data.prescriptionId}`,
+        "success"
+      );
 
       if (onSubmit) onSubmit(e);
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.message || 'Failed to send prescription');
+      showToast(
+        error.response?.data?.message || "Failed to send prescription",
+        "error"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <motion.form onSubmit={handleSubmit} className="space-y-6" initial="hidden" animate="visible">
+    <motion.form
+      onSubmit={handleSubmit}
+      className="space-y-6"
+      initial="hidden"
+      animate="visible"
+    >
       {/* Username & Fetch */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Patient Username / Contact *</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Patient Username / Contact *
+        </label>
         <div className="flex gap-2">
           <input
             type="text"
@@ -100,15 +130,22 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
             onChange={(e) => setUsername(e.target.value)}
             disabled={!!selectedPatient}
           />
-          <Button type="button" onClick={fetchPatientByUsername} size="sm" disabled={loading}>
-            {loading ? 'Loading...' : 'Get ID'}
+          <Button
+            type="button"
+            onClick={fetchPatientByUsername}
+            size="sm"
+            disabled={loading}
+          >
+            {loading ? "Loading..." : "Get ID"}
           </Button>
         </div>
       </div>
 
       {/* Patient ID Field */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Patient ID *</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Patient ID *
+        </label>
         <input
           type="text"
           className="w-full p-3.5 border border-gray-200 rounded-xl"
@@ -119,7 +156,8 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
         />
         {fetchedPatient && (
           <p className="mt-2 text-green-600">
-            Patient: {fetchedPatient.user.firstName} {fetchedPatient.user.lastName} ({fetchedPatient.user.username})
+            Patient: {fetchedPatient.user.firstName}{" "}
+            {fetchedPatient.user.lastName} ({fetchedPatient.user.username})
           </p>
         )}
       </div>
@@ -128,12 +166,17 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
       <div>
         <div className="flex justify-between mb-4">
           <label className="text-sm font-medium">Medications *</label>
-          <Button type="button" onClick={addMedication} icon={Plus} size="sm">Add Medication</Button>
+          <Button type="button" onClick={addMedication} icon={Plus} size="sm">
+            Add Medication
+          </Button>
         </div>
 
         <AnimatePresence>
           {medications.map((med, index) => (
-            <motion.div key={index} className="border p-4 mb-4 rounded-lg shadow-sm bg-white">
+            <motion.div
+              key={index}
+              className="border p-4 mb-4 rounded-lg shadow-sm bg-white"
+            >
               <div className="flex justify-between">
                 <h4 className="font-medium">Medication {index + 1}</h4>
                 {medications.length > 1 && (
@@ -154,7 +197,9 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
                   placeholder="Medicine Name"
                   className="p-3 border rounded-lg"
                   value={med.name}
-                  onChange={(e) => handleInputChange(index, 'name', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange(index, "name", e.target.value)
+                  }
                 />
                 <input
                   type="text"
@@ -162,13 +207,17 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
                   placeholder="Dosage"
                   className="p-3 border rounded-lg"
                   value={med.dosage}
-                  onChange={(e) => handleInputChange(index, 'dosage', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange(index, "dosage", e.target.value)
+                  }
                 />
                 <select
                   required
                   className="p-3 border rounded-lg"
                   value={med.frequency}
-                  onChange={(e) => handleInputChange(index, 'frequency', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange(index, "frequency", e.target.value)
+                  }
                 >
                   <option value="">Select frequency</option>
                   <option value="once">Once daily</option>
@@ -183,7 +232,9 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
                   placeholder="Duration"
                   className="p-3 border rounded-lg"
                   value={med.duration}
-                  onChange={(e) => handleInputChange(index, 'duration', e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange(index, "duration", e.target.value)
+                  }
                 />
               </div>
             </motion.div>
@@ -193,7 +244,9 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
 
       {/* Additional Instructions */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Additional Instructions</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Additional Instructions
+        </label>
         <textarea
           rows="4"
           className="w-full p-3.5 border border-gray-200 rounded-xl"
@@ -213,13 +266,13 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
           fullWidth
           disabled={loading}
         >
-          {loading ? 'Saving...' : 'Generate Prescription'}
+          {loading ? "Saving..." : "Generate Prescription"}
         </Button>
       </div>
+
+      <ToastComponent />
     </motion.form>
   );
 };
 
 export default PrescriptionForm;
-
-

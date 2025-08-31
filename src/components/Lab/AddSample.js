@@ -14,14 +14,43 @@ import {
 } from "lucide-react";
 import ApiService from "../../services/apiService";
 import Button from "../Common/Button";
+import { useToast } from "../Common/Toast";
+
+// Utility function to decode JWT token and extract labId
+const getLabIdFromToken = () => {
+  try {
+    const token = localStorage.getItem("token");
+    console.log("Decoded token:", token);
+    if (!token) return null;
+
+    // Decode JWT token (split and parse the payload)
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+        .join("")
+    );
+
+    const decoded = JSON.parse(jsonPayload);
+    console.log("Decoded token payload:", decoded);
+    return decoded.labId || decoded.lab_id || decoded.hospitalId || null;
+  } catch (error) {
+    console.error("Failed to decode token:", error);
+    return null;
+  }
+};
 
 const AddSample = ({ onSubmit, onCancel }) => {
+  const { showToast, ToastComponent } = useToast();
+
   const [formData, setFormData] = useState({
     patientId: "",
     patientName: "",
     testTypeId: "",
     sampleType: "blood",
-    priority: "normal",
+    priority: "routine",
     receivedDate: new Date().toISOString().split("T")[0],
     receivedTime: new Date().toLocaleTimeString("en-US", {
       hour12: false,
@@ -38,6 +67,8 @@ const AddSample = ({ onSubmit, onCancel }) => {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [patientLoading, setPatientLoading] = useState(false);
+  const [testTypesLoading, setTestTypesLoading] = useState(false);
   const [testTypes, setTestTypes] = useState([]);
   const [username, setUsername] = useState("");
   const [fetchedPatient, setFetchedPatient] = useState(null);
@@ -141,7 +172,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const newErrors = validateForm();
@@ -150,19 +181,52 @@ const AddSample = ({ onSubmit, onCancel }) => {
       return;
     }
 
-    // Generate sample ID (in real app, this would be from backend)
-    const sampleId = `S${String(Date.now()).slice(-3).padStart(3, "0")}`;
-    const barcode = `BC${String(Date.now()).slice(-9)}`;
+    // Get labId from token
+    const labId = getLabIdFromToken();
+    if (!labId) {
+      showToast("Lab ID not found in token. Please login again.", "error");
+      return;
+    }
 
-    const sampleData = {
-      ...formData,
-      id: sampleId,
-      barcode,
-      status: "pending",
-    };
+    try {
+      setLoading(true);
 
-    console.log("Sample Data to Submit:", sampleData);
-    onSubmit(sampleData);
+      // Create the expected payload format
+      const expectedDateTime = new Date(
+        `${formData.expectedDate}T${formData.expectedTime}:00.000Z`
+      );
+
+      const samplePayload = {
+        labId: labId.toString(),
+        barcode: `REN-${String(Date.now()).slice(-5).padStart(5, "0")}`, // Generate barcode similar to example
+        testTypeId: parseInt(formData.testTypeId),
+        sampleType: formData.sampleType,
+        volume: formData.volume,
+        container: formData.container,
+        patientId: formData.patientId.toString(),
+        expectedTime: expectedDateTime.toISOString(),
+        priority: formData.priority.toUpperCase(), // Convert to uppercase as per API format
+        notes: formData.notes || "",
+      };
+
+      console.log("Sample Payload to Submit:", samplePayload);
+
+      const response = await ApiService.createLabSample(samplePayload);
+
+      if (response) {
+        showToast("Sample created successfully!", "success");
+
+        // Call the onSubmit callback with the response data if provided
+        if (onSubmit) {
+          onSubmit(response);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to create sample:", error);
+      showToast(error.message || "Failed to create sample", "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getSampleTypeIcon = (type) => {
@@ -175,10 +239,13 @@ const AddSample = ({ onSubmit, onCancel }) => {
   };
 
   const fetchPatientByUsername = async () => {
-    if (!username) return alert("Enter username/contact number");
+    if (!username) {
+      showToast("Please enter username/contact number", "warning");
+      return;
+    }
 
     try {
-      setLoading(true);
+      setPatientLoading(true);
       const response = await ApiService.getPatientByUsername(username);
       console.log("Patient response:", response);
 
@@ -191,7 +258,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
         }));
       } else {
         console.error("Invalid patient response format");
-        alert("Patient not found");
+        showToast("Patient not found", "error");
         setFetchedPatient(null);
         setFormData((prev) => ({
           ...prev,
@@ -201,7 +268,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
       }
     } catch (error) {
       console.error("Failed to fetch patient:", error);
-      alert(error.message || "Failed to fetch patient");
+      showToast(error.message || "Failed to fetch patient", "error");
       setFetchedPatient(null);
       setFormData((prev) => ({
         ...prev,
@@ -209,14 +276,14 @@ const AddSample = ({ onSubmit, onCancel }) => {
         patientName: "",
       }));
     } finally {
-      setLoading(false);
+      setPatientLoading(false);
     }
   };
 
   useEffect(() => {
     const fetchTestTypes = async () => {
       try {
-        setLoading(true);
+        setTestTypesLoading(true);
         const response = await ApiService.getTestTypes();
         console.log("Test types response:", response);
 
@@ -230,7 +297,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
         console.error("Failed to fetch test types:", error);
         setTestTypes([]);
       } finally {
-        setLoading(false);
+        setTestTypesLoading(false);
       }
     };
     fetchTestTypes();
@@ -262,9 +329,9 @@ const AddSample = ({ onSubmit, onCancel }) => {
               type="button"
               onClick={fetchPatientByUsername}
               size="sm"
-              disabled={loading}
+              disabled={patientLoading}
             >
-              {loading ? "Loading..." : "Get Patient"}
+              {patientLoading ? "Loading..." : "Get Patient"}
             </Button>
           </div>
         </div>
@@ -339,13 +406,15 @@ const AddSample = ({ onSubmit, onCancel }) => {
               name="testTypeId" // Changed from testType to testTypeId
               value={formData.testTypeId}
               onChange={handleInputChange}
-              disabled={loading}
+              disabled={testTypesLoading}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200 ${
                 errors.testTypeId ? "border-red-300" : "border-gray-300"
-              } ${loading ? "bg-gray-100 cursor-not-allowed" : ""}`}
+              } ${testTypesLoading ? "bg-gray-100 cursor-not-allowed" : ""}`}
             >
               <option value="">
-                {loading ? "Loading test types..." : "Select test type"}
+                {testTypesLoading
+                  ? "Loading test types..."
+                  : "Select test type"}
               </option>
               {testTypes.map((test) => (
                 <option key={test.id} value={test.id}>
@@ -443,7 +512,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
               onChange={handleInputChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all duration-200"
             >
-              <option value="normal">Normal</option>
+              <option value="routine">Routine</option>
               <option value="urgent">Urgent</option>
               <option value="stat">STAT</option>
             </select>
@@ -584,12 +653,19 @@ const AddSample = ({ onSubmit, onCancel }) => {
         </button>
         <button
           type="submit"
-          className="flex items-center space-x-2 px-4 py-2 text-white bg-gradient-to-r from-teal-500 to-teal-600 rounded-lg hover:from-teal-600 hover:to-teal-700 transition-all duration-200"
+          disabled={loading}
+          className={`flex items-center space-x-2 px-4 py-2 text-white rounded-lg transition-all duration-200 ${
+            loading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700"
+          }`}
         >
           <Save className="w-4 h-4" />
-          <span>Add Sample</span>
+          <span>{loading ? "Creating Sample..." : "Add Sample"}</span>
         </button>
       </div>
+
+      <ToastComponent />
     </form>
   );
 };

@@ -366,7 +366,7 @@ const Samples = () => {
       const mappedSamples = apiSamples.map((item) => ({
         id: item.id?.toString() ?? "",
         patientId: item.patientId ?? "",
-        patientName: item.labResults?.[0]?.extractedData?.Patient ?? "Unknown",
+        patientName: item.labResults?.[0]?.extractedData?.Patient ?? "Patient",
         testType: item.testType?.label ?? item.testType?.value ?? "",
         sampleType: item.sampleType ?? "",
         status: item.status ?? "pending",

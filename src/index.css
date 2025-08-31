@@ -2,12 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
 
 body {
   margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -18,40 +18,50 @@ body {
   box-sizing: border-box;
 }
 
+/* Toast animation */
+@keyframes toast-progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
 /* Responsive utilities */
 @layer utilities {
   .text-responsive-xs {
     @apply text-sm sm:text-base;
   }
-  
+
   .text-responsive-sm {
     @apply text-base sm:text-lg;
   }
-  
+
   .text-responsive-md {
     @apply text-lg sm:text-xl;
   }
-  
+
   .text-responsive-lg {
     @apply text-xl sm:text-2xl lg:text-3xl;
   }
-  
+
   .text-responsive-xl {
     @apply text-2xl sm:text-3xl lg:text-4xl;
   }
-  
+
   .text-responsive-2xl {
     @apply text-3xl sm:text-4xl lg:text-5xl xl:text-6xl;
   }
-  
+
   .padding-responsive {
     @apply px-4 sm:px-6 lg:px-8;
   }
-  
+
   .margin-responsive {
     @apply mx-4 sm:mx-6 lg:mx-8;
   }
-  
+
   .space-responsive {
     @apply space-y-4 sm:space-y-6 lg:space-y-8;
   }
@@ -63,7 +73,7 @@ body {
   .btn-primary {
     @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-95;
   }
-  
+
   /* Unified button styles - teal for standard, orange for urgent */
   .btn-primary-doctor,
   .btn-primary-nurse,
@@ -71,139 +81,156 @@ body {
   .btn-primary-clinicadmin {
     @apply btn-primary bg-gradient-to-r from-teal-500 to-teal-600 text-white hover:from-teal-600 hover:to-teal-700 focus:ring-teal-500 shadow-lg hover:shadow-teal-200;
   }
-  
+
   .btn-primary-urgent {
     @apply btn-primary bg-gradient-to-r from-orange-500 to-orange-600 text-white hover:from-orange-600 hover:to-orange-700 focus:ring-orange-500 shadow-lg hover:shadow-orange-200;
   }
-  
+
   .btn-secondary {
     @apply btn-primary;
   }
-  
+
   .btn-secondary-doctor,
   .btn-secondary-nurse,
   .btn-secondary-lab,
   .btn-secondary-clinicadmin {
     @apply btn-secondary bg-teal-50 text-teal-700 border-2 border-teal-200 hover:bg-teal-100 hover:border-teal-300 focus:ring-teal-500;
   }
-  
+
   .btn-secondary-urgent {
     @apply btn-secondary bg-orange-50 text-orange-700 border-2 border-orange-200 hover:bg-orange-100 hover:border-orange-300 focus:ring-orange-500;
   }
-  
+
   .btn-outline {
     @apply btn-primary bg-transparent;
   }
-  
+
   .btn-outline-doctor,
   .btn-outline-nurse,
   .btn-outline-lab,
   .btn-outline-clinicadmin {
     @apply btn-outline border-2 border-teal-500 text-teal-500 hover:bg-teal-500 hover:text-white focus:ring-teal-500;
   }
-  
+
   .btn-outline-urgent {
     @apply btn-outline border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white focus:ring-orange-500;
   }
-  
+
   .btn-ghost {
     @apply btn-primary bg-transparent shadow-none;
   }
-  
+
   .btn-ghost-doctor,
   .btn-ghost-nurse,
   .btn-ghost-lab,
   .btn-ghost-clinicadmin {
     @apply btn-ghost text-teal-600 hover:bg-teal-50 focus:ring-teal-500;
   }
-  
+
   .btn-ghost-urgent {
     @apply btn-ghost text-orange-600 hover:bg-orange-50 focus:ring-orange-500;
   }
-  
+
   .btn-danger {
     @apply btn-primary bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 focus:ring-red-500 shadow-lg hover:shadow-red-200;
   }
-  
+
   /* Button sizes */
-  .btn-xs { @apply px-2 py-1 text-xs; }
-  .btn-sm { @apply px-3 py-1.5 text-sm; }
-  .btn-md { @apply px-4 py-2 text-sm; }
-  .btn-lg { @apply px-6 py-3 text-base font-semibold; }
-  .btn-xl { @apply px-8 py-4 text-lg font-semibold; }
-  
+  .btn-xs {
+    @apply px-2 py-1 text-xs;
+  }
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+  .btn-md {
+    @apply px-4 py-2 text-sm;
+  }
+  .btn-lg {
+    @apply px-6 py-3 text-base font-semibold;
+  }
+  .btn-xl {
+    @apply px-8 py-4 text-lg font-semibold;
+  }
+
   .card {
     @apply bg-white rounded-xl shadow-sm border border-gray-200;
   }
-  
+
   .input-field {
     @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent;
   }
-  
+
   /* Sidebar enhancements */
   .sidebar-nav-item {
     @apply relative overflow-hidden transition-all duration-300 ease-in-out;
   }
-  
+
   .sidebar-nav-item::before {
-    content: '';
+    content: "";
     @apply absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-teal-400 to-teal-600 transform scale-y-0 transition-transform duration-300 ease-out;
     transform-origin: top;
   }
-  
+
   .sidebar-nav-item.active::before {
     @apply scale-y-100;
   }
-  
+
   .sidebar-nav-item:hover::before {
     @apply scale-y-100 bg-gradient-to-b from-teal-300 to-teal-500;
   }
-  
+
   /* Unified active states for all roles using teal */
   .sidebar-nav-item.active::before {
     background: linear-gradient(to bottom, #0d9488, #0d9488);
   }
-  
+
   .sidebar-nav-item:hover::before {
     background: linear-gradient(to bottom, #14b8a6, #0d9488);
   }
-  
+
   /* Smooth gradient animations */
   .gradient-shift {
     background-size: 200% 200%;
     animation: gradient-shift 3s ease infinite;
   }
-  
+
   @keyframes gradient-shift {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
   }
-  
+
   /* Enhanced hover effects */
   .hover-lift {
     @apply transition-all duration-200 ease-in-out;
   }
-  
+
   .hover-lift:hover {
     @apply transform -translate-y-1 shadow-xl;
   }
-  
+
   /* Glass morphism effect */
   .glass-effect {
     @apply backdrop-blur-sm bg-white/80 border border-white/20;
   }
-  
+
   /* Pulse effect for active items */
   .pulse-glow {
     animation: pulse-glow 2s infinite;
   }
-  
+
   @keyframes pulse-glow {
-    0%, 100% { 
+    0%,
+    100% {
       box-shadow: 0 0 20px rgba(13, 148, 136, 0.3);
     }
-    50% { 
+    50% {
       box-shadow: 0 0 30px rgba(13, 148, 136, 0.5);
     }
   }
@@ -211,36 +238,38 @@ body {
   .pulse-glow {
     animation: pulse-glow 2s infinite;
   }
-  
+
   @keyframes pulse-glow {
-    0%, 100% { 
+    0%,
+    100% {
       box-shadow: 0 0 20px rgba(13, 148, 136, 0.3);
     }
-    50% { 
+    50% {
       box-shadow: 0 0 30px rgba(13, 148, 136, 0.5);
     }
   }
-  
+
   /* Orange pulse for urgent items */
   .pulse-glow-urgent {
     animation: pulse-glow-urgent 2s infinite;
   }
-  
+
   @keyframes pulse-glow-urgent {
-    0%, 100% { 
+    0%,
+    100% {
       box-shadow: 0 0 20px rgba(234, 88, 12, 0.3);
     }
-    50% { 
+    50% {
       box-shadow: 0 0 30px rgba(234, 88, 12, 0.5);
     }
   }
-  
+
   /* Responsive sidebar */
   @media (max-width: 768px) {
     .sidebar-collapsed {
       width: 80px;
     }
-    
+
     .sidebar-expanded {
       width: 100%;
       position: fixed;
@@ -255,13 +284,17 @@ body {
   .text-shadow-sm {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
-  
+
   .backdrop-blur-xs {
     backdrop-filter: blur(2px);
   }
-  
+
   .bg-mesh-pattern {
-    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.8) 1px, transparent 0);
+    background-image: radial-gradient(
+      circle at 1px 1px,
+      rgba(255, 255, 255, 0.8) 1px,
+      transparent 0
+    );
     background-size: 20px 20px;
   }
 }
@@ -295,25 +328,37 @@ html {
 
 /* Enhanced Hero Background Animations */
 @keyframes pulse-slow {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1) translate(var(--tw-translate-x), var(--tw-translate-y));
   }
   50% {
     opacity: 0.3;
-    transform: scale(1.1) translate(var(--tw-translate-x), var(--tw-translate-y));
+    transform: scale(1.1)
+      translate(var(--tw-translate-x), var(--tw-translate-y));
   }
 }
 
 @keyframes float-gentle {
-  0%, 100% {
-    transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(0deg);
+  0%,
+  100% {
+    transform: translate(var(--tw-translate-x), var(--tw-translate-y))
+      rotate(0deg);
   }
   33% {
-    transform: translate(calc(var(--tw-translate-x) + 20px), calc(var(--tw-translate-y) - 10px)) rotate(1deg);
+    transform: translate(
+        calc(var(--tw-translate-x) + 20px),
+        calc(var(--tw-translate-y) - 10px)
+      )
+      rotate(1deg);
   }
   66% {
-    transform: translate(calc(var(--tw-translate-x) - 15px), calc(var(--tw-translate-y) + 15px)) rotate(-1deg);
+    transform: translate(
+        calc(var(--tw-translate-x) - 15px),
+        calc(var(--tw-translate-y) + 15px)
+      )
+      rotate(-1deg);
   }
 }
 
