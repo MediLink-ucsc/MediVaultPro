@@ -49,7 +49,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
     patientId: "",
     patientName: "",
     testTypeId: "",
-    sampleType: "blood",
+    sampleType: "Whole Blood",
     priority: "routine",
     receivedDate: new Date().toISOString().split("T")[0],
     receivedTime: new Date().toLocaleTimeString("en-US", {
@@ -75,18 +75,46 @@ const AddSample = ({ onSubmit, onCancel }) => {
 
   const sampleTypes = [
     {
-      value: "blood",
-      label: "Blood",
+      value: "Whole Blood",
+      label: "Whole Blood",
+      icon: TestTube2,
+      color: "text-red-600",
+    },
+    {
+      value: "Serum",
+      label: "Serum",
       icon: TestTube2,
       color: "text-orange-600",
     },
-    { value: "urine", label: "Urine", icon: Beaker, color: "text-orange-400" },
-    { value: "swab", label: "Swab", icon: Microscope, color: "text-teal-600" },
     {
-      value: "other",
+      value: "Plasma",
+      label: "Plasma",
+      icon: TestTube2,
+      color: "text-orange-500",
+    },
+    {
+      value: "Urine",
+      label: "Urine",
+      icon: Beaker,
+      color: "text-yellow-600",
+    },
+    {
+      value: "Throat Swab",
+      label: "Throat Swab",
+      icon: Microscope,
+      color: "text-teal-600",
+    },
+    {
+      value: "Nasal Swab",
+      label: "Nasal Swab",
+      icon: Microscope,
+      color: "text-teal-600",
+    },
+    {
+      value: "Other",
       label: "Other",
       icon: FlaskConical,
-      color: "text-teal-500",
+      color: "text-gray-500",
     },
   ];
 
@@ -106,16 +134,18 @@ const AddSample = ({ onSubmit, onCancel }) => {
   // ];
 
   const containers = {
-    blood: [
+    "Whole Blood": [
       "EDTA Tube",
-      "SST Tube",
       "Heparinized Tube",
       "Fluoride Tube",
       "Culture Bottle",
     ],
-    urine: ["Sterile Cup", "Non-sterile Cup", "24-hour Container"],
-    swab: ["Transport Media", "Dry Swab", "Viral Transport Media"],
-    other: ["Plain Tube", "Special Container"],
+    Serum: ["SST Tube", "Red-top tube", "Gold-top tube"],
+    Plasma: ["EDTA Tube", "Heparinized Tube", "Citrate Tube"],
+    Urine: ["Sterile Cup", "Non-sterile Cup", "24-hour Container"],
+    "Throat Swab": ["Transport Media", "Dry Swab", "Viral Transport Media"],
+    "Nasal Swab": ["Transport Media", "Dry Swab", "Viral Transport Media"],
+    Other: ["Plain Tube", "Special Container"],
   };
 
   const handleInputChange = (e) => {
@@ -146,7 +176,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
     }
 
     if (!formData.testTypeId.trim()) {
-      newErrors.testType = "Test type is required";
+      newErrors.testTypeId = "Test type is required";
     }
 
     if (!formData.collectedBy.trim()) {
@@ -209,17 +239,74 @@ const AddSample = ({ onSubmit, onCancel }) => {
         notes: formData.notes || "",
       };
 
+      // Validate payload before sending
+      const requiredFields = [
+        "labId",
+        "barcode",
+        "testTypeId",
+        "sampleType",
+        "patientId",
+        "expectedTime",
+      ];
+      const missingFields = requiredFields.filter(
+        (field) => !samplePayload[field]
+      );
+
+      if (missingFields.length > 0) {
+        throw new Error(`Missing required fields: ${missingFields.join(", ")}`);
+      }
+
+      // Additional validation
+      if (isNaN(samplePayload.testTypeId)) {
+        throw new Error("Test Type ID must be a valid number");
+      }
+
+      if (!samplePayload.labId || samplePayload.labId === "null") {
+        throw new Error("Lab ID is invalid. Please login again.");
+      }
+
       console.log("Sample Payload to Submit:", samplePayload);
+      console.log(
+        "Payload validation - all required fields present:",
+        requiredFields.every((field) => samplePayload[field])
+      );
 
       const response = await ApiService.createLabSample(samplePayload);
+      console.log("Create sample response:", response);
 
-      if (response) {
+      if (response && response.success) {
         showToast("Sample created successfully!", "success");
+
+        // Reset form after successful submission
+        setFormData({
+          patientId: "",
+          patientName: "",
+          testTypeId: "",
+          sampleType: "Whole Blood",
+          priority: "routine",
+          receivedDate: new Date().toISOString().split("T")[0],
+          receivedTime: new Date().toLocaleTimeString("en-US", {
+            hour12: false,
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+          expectedDate: new Date().toISOString().split("T")[0],
+          expectedTime: "",
+          collectedBy: "",
+          notes: "",
+          volume: "",
+          container: "",
+        });
+        setUsername("");
+        setFetchedPatient(null);
+        setErrors({});
 
         // Call the onSubmit callback with the response data if provided
         if (onSubmit) {
           onSubmit(response);
         }
+      } else {
+        throw new Error(response?.message || "Failed to create sample");
       }
     } catch (error) {
       console.error("Failed to create sample:", error);

@@ -185,12 +185,18 @@ const Samples = () => {
   };
 
   const getSampleTypeIcon = (sampleType) => {
-    switch (sampleType.toLowerCase()) {
+    const type = sampleType.toLowerCase();
+    switch (type) {
       case "blood":
+      case "whole blood":
+      case "serum":
+      case "plasma":
         return <TestTube2 className="w-5 h-5 text-orange-600" />;
       case "urine":
         return <Beaker className="w-5 h-5 text-orange-400" />;
       case "swab":
+      case "throat swab":
+      case "nasal swab":
         return <Microscope className="w-5 h-5 text-teal-600" />;
       default:
         return <FlaskConical className="w-5 h-5 text-teal-500" />;
@@ -233,73 +239,20 @@ const Samples = () => {
   };
 
   const handleAddSampleSubmit = async (newSampleData) => {
-    console.log("New sample data:", newSampleData);
+    console.log("New sample submitted:", newSampleData);
 
-    try {
-      // Convert expectedTime to proper ISO format
-      const expectedTimeISO = new Date(
-        `${newSampleData.receivedDate}T${newSampleData.expectedTime}:00`
-      ).toISOString();
+    // The AddSample component handles the API call and shows success/error messages
+    // When it calls onSubmit, it means the sample was created successfully
+    if (newSampleData && newSampleData.success) {
+      console.log("Sample creation confirmed, reloading samples...");
 
-      // Prepare data for API call with all required fields
-      const apiSampleData = {
-        labId: "LAB001", // Add the required labId - you might need to get this from user context or config
-        barcode: newSampleData.barcode,
-        testTypeId: parseInt(newSampleData.testTypeId), // Ensure it's a number
-        sampleType: newSampleData.sampleType,
-        patientId: newSampleData.patientId,
-        expectedTime: expectedTimeISO, // Convert to ISO format
-        volume: newSampleData.volume,
-        container: newSampleData.container,
-        priority: newSampleData.priority,
-        notes: newSampleData.notes,
-      };
-
-      console.log("API Sample Data:", apiSampleData);
-
-      const response = await ApiService.createLabSample(apiSampleData);
-
-      if (!response || !response.success) {
-        console.error("Failed to add new sample:", response);
-        return;
-      }
-
-      console.log("New sample added:", response);
-
-      // Map the API response to UI format
-      const mappedSample = {
-        id: response.data.id?.toString() ?? "",
-        patientId: response.data.patientId ?? "",
-        patientName:
-          response.data.labResults?.[0]?.extractedData?.Patient ??
-          newSampleData.patientName,
-        testType: response.data.testType?.label ?? "",
-        sampleType: response.data.sampleType ?? "",
-        status: response.data.status ?? "pending",
-        priority: response.data.priority ?? "normal",
-        receivedDate: response.data.createdAt
-          ? new Date(response.data.createdAt).toLocaleDateString()
-          : "",
-        receivedTime: response.data.createdAt
-          ? new Date(response.data.createdAt).toLocaleTimeString()
-          : "",
-        expectedTime: response.data.expectedTime
-          ? new Date(response.data.expectedTime).toLocaleTimeString()
-          : "",
-        collectedBy: newSampleData.collectedBy,
-        notes: response.data.notes ?? "",
-        barcode: response.data.barcode ?? "",
-        volume: response.data.volume ?? "",
-        container: response.data.container ?? "",
-      };
-
-      setSamples((prev) => [mappedSample, ...prev]);
+      // Close the modal
       setAddSampleModalOpen(false);
-      console.log("Sample successfully added to UI");
-    } catch (error) {
-      console.error("Error creating sample:", error);
-      // Show user-friendly error message
-      alert("Failed to create sample. Please try again.");
+
+      // Reload the samples list to show the new sample
+      await fetchSamples();
+
+      console.log("Samples reloaded successfully");
     }
   };
 
@@ -355,7 +308,11 @@ const Samples = () => {
   ];
 
   useEffect(() => {
-    const fetchSamples = async () => {
+    fetchSamples();
+  }, []);
+
+  const fetchSamples = async () => {
+    try {
       const response = await ApiService.getLabSamples();
       console.log("Fetched lab samples:", response);
 
@@ -389,9 +346,10 @@ const Samples = () => {
 
       setSamples(mappedSamples);
       console.log("Samples loaded:", mappedSamples);
-    };
-    fetchSamples();
-  }, []);
+    } catch (error) {
+      console.error("Error fetching samples:", error);
+    }
+  };
 
   return (
     <div className="space-y-6">
