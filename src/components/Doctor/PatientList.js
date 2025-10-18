@@ -44,6 +44,8 @@ const PatientList = () => {
     lastVisit: "",
   });
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   const conditionOptions = [
     "Stable",
     "Critical",
@@ -64,9 +66,17 @@ const PatientList = () => {
 
   const fetchPatients = async () => {
     try {
+
+      const token = localStorage.getItem("token"); // or sessionStorage
+
       const res = await axios.get(
-        "http://localhost:3000/api/v1/auth/medvaultpro/doctor/patients"
-      );
+      "http://localhost:3000/api/v1/patientRecords/visitedpatients",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
       // Map API response to the structure used in the table
       const mappedPatients = res.data.map((p) => ({
         id: p.patientId,
@@ -81,7 +91,7 @@ const PatientList = () => {
       setPatients(mappedPatients);
     } catch (error) {
       console.error("Error fetching patients:", error);
-      alert("Failed to load patients. Please try again.");
+      setErrorMessage("Failed to load patients. Please try again later.");
     }
   };
 
@@ -314,126 +324,137 @@ const PatientList = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredPatients.map((patient) => (
-                <tr
-                  key={patient.id}
-                  className="hover:bg-teal-50 cursor-pointer transition-colors"
-                  onClick={() => openActionSelector(patient)}
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-medium text-gray-900">
-                      {patient.firstName} {patient.lastName}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      ID: {patient.id}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                    {patient.age}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                    {patient.phone}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center space-x-2">
-                      <span className="text-gray-500">{patient.lastVisit}</span>
-                      <button
-                        onClick={(e) => openEditLastVisit(e, patient)}
-                        className="text-gray-400 hover:text-teal-600 p-1 rounded hover:bg-teal-50"
-                        title="Edit Last Visit Date"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center space-x-2">
-                      <span
-                        className={`px-2 py-1 text-xs font-medium rounded-full ${
-                          patient.condition === "Critical"
-                            ? "bg-orange-200 text-orange-900"
-                            : patient.condition === "Serious"
-                            ? "bg-orange-100 text-orange-800"
-                            : patient.condition === "Fair"
-                            ? "bg-teal-50 text-teal-700"
-                            : patient.condition === "Good"
-                            ? "bg-teal-100 text-teal-800"
-                            : patient.condition === "Stable"
-                            ? "bg-teal-200 text-teal-900"
-                            : patient.condition === "Recovering"
-                            ? "bg-teal-100 text-teal-800"
-                            : patient.condition === "Under Observation"
-                            ? "bg-orange-50 text-orange-700"
-                            : patient.condition === "Intensive Care"
-                            ? "bg-orange-200 text-orange-900"
-                            : patient.condition === "Emergency"
-                            ? "bg-orange-300 text-orange-900"
-                            : "bg-gray-100 text-gray-800"
-                        }`}
-                      >
-                        {patient.condition}
-                      </span>
-                      <button
-                        onClick={(e) => openEditCondition(e, patient)}
-                        className="text-gray-400 hover:text-teal-600 p-1 rounded hover:bg-teal-50"
-                        title="Edit Condition"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center space-x-2">
-                      <button
-                        className="text-teal-600 hover:text-teal-800 p-1 rounded hover:bg-teal-50"
-                        title="View Records"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleViewRecords(patient.id);
-                        }}
-                      >
-                        <Eye className="w-5 h-5" />
-                      </button>
-                      <button
-                        className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50"
-                        title="Schedule Appointment"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleScheduleCalendarEvent(patient.id);
-                        }}
-                      >
-                        <Calendar className="w-5 h-5" />
-                      </button>
-                    </div>
+              {patients.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="text-center py-8 text-gray-500 text-sm italic"
+                  >
+                    No patients found.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filteredPatients.map((patient) => (
+                  <tr
+                    key={patient.id}
+                    className="hover:bg-teal-50 cursor-pointer transition-colors"
+                    onClick={() => openActionSelector(patient)}
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="font-medium text-gray-900">
+                        {patient.firstName} {patient.lastName}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        ID: {patient.id}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                      {patient.age}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                      {patient.phone}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-500">{patient.lastVisit}</span>
+                        <button
+                          onClick={(e) => openEditLastVisit(e, patient)}
+                          className="text-gray-400 hover:text-teal-600 p-1 rounded hover:bg-teal-50"
+                          title="Edit Last Visit Date"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center space-x-2">
+                        <span
+                          className={`px-2 py-1 text-xs font-medium rounded-full ${
+                            patient.condition === "Critical"
+                              ? "bg-orange-200 text-orange-900"
+                              : patient.condition === "Serious"
+                              ? "bg-orange-100 text-orange-800"
+                              : patient.condition === "Fair"
+                              ? "bg-teal-50 text-teal-700"
+                              : patient.condition === "Good"
+                              ? "bg-teal-100 text-teal-800"
+                              : patient.condition === "Stable"
+                              ? "bg-teal-200 text-teal-900"
+                              : patient.condition === "Recovering"
+                              ? "bg-teal-100 text-teal-800"
+                              : patient.condition === "Under Observation"
+                              ? "bg-orange-50 text-orange-700"
+                              : patient.condition === "Intensive Care"
+                              ? "bg-orange-200 text-orange-900"
+                              : patient.condition === "Emergency"
+                              ? "bg-orange-300 text-orange-900"
+                              : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {patient.condition}
+                        </span>
+                        <button
+                          onClick={(e) => openEditCondition(e, patient)}
+                          className="text-gray-400 hover:text-teal-600 p-1 rounded hover:bg-teal-50"
+                          title="Edit Condition"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center space-x-2">
+                        <button
+                          className="text-teal-600 hover:text-teal-800 p-1 rounded hover:bg-teal-50"
+                          title="View Records"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleViewRecords(patient.id);
+                          }}
+                        >
+                          <Eye className="w-5 h-5" />
+                        </button>
+                        <button
+                          className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50"
+                          title="Schedule Appointment"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleScheduleCalendarEvent(patient.id);
+                          }}
+                        >
+                          <Calendar className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
