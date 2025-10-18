@@ -1,34 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   Search,
   Filter,
   Eye,
-  FileText,
-  Pill,
-  Stethoscope,
-  ClipboardList,
 } from "lucide-react";
 import Modal from "../Common/Modal";
-import LabOrderForm from "./QuickActions/LabOrderForm";
-import PrescriptionForm from "./QuickActions/PrescriptionForm";
-import QuickExamForm from "./QuickActions/QuickExamForm";
-import SOAPForm from "./QuickActions/SOAPForm";
 import EnhancedPatientDetails from "./EnhancedPatientDetails";
 
 const PatientList = () => {
-  // navigate removed (calendar removed)
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [modalState, setModalState] = useState({
-    isOpen: false,
-    type: null, // 'lab', 'prescription', 'exam', 'soap'
-    patient: null,
-  });
-  const [showActionSelector, setShowActionSelector] = useState({
-    isOpen: false,
-    patient: null,
-  });
   const [editConditionModal, setEditConditionModal] = useState({
     isOpen: false,
     patient: null,
@@ -82,36 +66,19 @@ const PatientList = () => {
     }
   };
 
-  const openQuickActionModal = (type, patient) => {
-    setModalState({ isOpen: true, type, patient });
-    setShowActionSelector({ isOpen: false, patient: null });
+  const handlePatientClick = (patient) => {
+    // Navigate to the new tabbed interface with patient data
+    navigate(`/doctor/patients/${patient.id}`, { 
+      state: { 
+        patient: {
+          ...patient,
+          name: `${patient.firstName} ${patient.lastName}`
+        }
+      }
+    });
   };
 
-  const openActionSelector = (patient) =>
-    setShowActionSelector({ isOpen: true, patient });
-  const closeActionSelector = () =>
-    setShowActionSelector({ isOpen: false, patient: null });
-  const closeModal = () =>
-    setModalState({ isOpen: false, type: null, patient: null });
 
-  const handleQuickActionSubmit = (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
-
-    console.log(
-      `${modalState.type} form submitted for patient:`,
-      modalState.patient?.name,
-      data
-    );
-
-    closeModal();
-
-    // Show success message (you could implement a toast notification here)
-    alert(
-      `${modalState.type} successfully created for ${modalState.patient?.name}`
-    );
-  };
 
   const openEditCondition = (e, patient) => {
     e.stopPropagation();
@@ -250,7 +217,7 @@ const PatientList = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold text-gray-800">Patients</h1>
         <div className="text-sm text-gray-500">
-          💡 Click on any patient to perform quick actions
+          💡 Click on any patient to access all actions in one place
         </div>
       </div>
 
@@ -303,7 +270,7 @@ const PatientList = () => {
                 <tr
                   key={patient.id}
                   className="hover:bg-teal-50 cursor-pointer transition-colors"
-                  onClick={() => openActionSelector(patient)}
+                  onClick={() => handlePatientClick(patient)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="font-medium text-gray-900">
@@ -415,126 +382,7 @@ const PatientList = () => {
         </div>
       </div>
 
-      {/* Action Selector Modal */}
-      <Modal
-        isOpen={showActionSelector.isOpen}
-        onClose={closeActionSelector}
-        title={`Select Action for ${
-          showActionSelector.patient
-            ? `${showActionSelector.patient.firstName} ${showActionSelector.patient.lastName}`
-            : ""
-        }`}
-        size="md"
-      >
-        <div className="space-y-4">
-          <p className="text-gray-600 mb-6">
-            What would you like to do with this patient?
-          </p>
-          <div className="grid grid-cols-2 gap-4">
-            <button
-              onClick={() =>
-                openQuickActionModal("soap", showActionSelector.patient)
-              }
-              className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-teal-500 hover:bg-teal-50 transition-all duration-200 group"
-            >
-              <ClipboardList className="w-8 h-8 text-teal-600 mb-3 group-hover:text-teal-700" />
-              <span className="text-sm font-medium text-gray-700 group-hover:text-teal-700">
-                SOAP Note
-              </span>
-              <span className="text-xs text-gray-500 mt-1 text-center">
-                Document patient examination
-              </span>
-            </button>
-            <button
-              onClick={() =>
-                openQuickActionModal("lab", showActionSelector.patient)
-              }
-              className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-teal-500 hover:bg-teal-50 transition-all duration-200 group"
-            >
-              <FileText className="w-8 h-8 text-teal-600 mb-3 group-hover:text-teal-700" />
-              <span className="text-sm font-medium text-gray-700 group-hover:text-teal-700">
-                Lab Orders
-              </span>
-              <span className="text-xs text-gray-500 mt-1 text-center">
-                Order laboratory tests
-              </span>
-            </button>
-            <button
-              onClick={() =>
-                openQuickActionModal("exam", showActionSelector.patient)
-              }
-              className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all duration-200 group"
-            >
-              <Stethoscope className="w-8 h-8 text-orange-600 mb-3 group-hover:text-orange-700" />
-              <span className="text-sm font-medium text-gray-700 group-hover:text-orange-700">
-                Quick Exam
-              </span>
-              <span className="text-xs text-gray-500 mt-1 text-center">
-                Record quick examination
-              </span>
-            </button>
-            <button
-              onClick={() =>
-                openQuickActionModal("prescription", showActionSelector.patient)
-              }
-              className="flex flex-col items-center p-6 border-2 border-gray-200 rounded-xl hover:border-orange-500 hover:bg-orange-50 transition-all duration-200 group"
-            >
-              <Pill className="w-8 h-8 text-orange-600 mb-3 group-hover:text-orange-700" />
-              <span className="text-sm font-medium text-gray-700 group-hover:text-orange-700">
-                Prescription
-              </span>
-              <span className="text-xs text-gray-500 mt-1 text-center">
-                Prescribe medications
-              </span>
-            </button>
-          </div>
-        </div>
-      </Modal>
 
-      {/* Quick Action Modal */}
-      <Modal
-        isOpen={modalState.isOpen}
-        onClose={closeModal}
-        title={`${
-          modalState.type === "lab"
-            ? "Lab Orders"
-            : modalState.type === "prescription"
-            ? "Prescription"
-            : modalState.type === "soap"
-            ? "SOAP Note"
-            : "Quick Exam"
-        } - ${
-          modalState.patient
-            ? `${modalState.patient.firstName} ${modalState.patient.lastName}`
-            : ""
-        }`}
-        size="lg"
-      >
-        {modalState.type === "soap" && (
-          <SOAPForm
-            onSubmit={handleQuickActionSubmit}
-            selectedPatient={modalState.patient}
-          />
-        )}
-        {modalState.type === "lab" && (
-          <LabOrderForm
-            onSubmit={handleQuickActionSubmit}
-            selectedPatient={modalState.patient}
-          />
-        )}
-        {modalState.type === "prescription" && (
-          <PrescriptionForm
-            onSubmit={handleQuickActionSubmit}
-            selectedPatient={modalState.patient}
-          />
-        )}
-        {modalState.type === "exam" && (
-          <QuickExamForm
-            onSubmit={handleQuickActionSubmit}
-            selectedPatient={modalState.patient}
-          />
-        )}
-      </Modal>
 
       {/* Edit Condition Modal */}
       <Modal
