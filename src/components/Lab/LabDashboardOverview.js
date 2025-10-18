@@ -319,15 +319,17 @@ const LabDashboardOverview = ({ user }) => {
             </span>
           </div>
           <div className="space-y-3">
-            {!dashboardStats || dashboardStats.urgentTests === 0 ? (
+            {!dashboardStats ||
+            !dashboardStats.urgentTestsDetails ||
+            dashboardStats.urgentTestsDetails.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <AlertCircle className="w-12 h-12 mx-auto mb-2 text-gray-400" />
                 <p>No urgent tests at the moment</p>
               </div>
             ) : (
-              [1, 2, 3, 4].slice(0, dashboardStats.urgentTests).map((i) => (
+              dashboardStats.urgentTestsDetails.map((test) => (
                 <div
-                  key={i}
+                  key={test.id}
                   className="flex items-center space-x-4 p-4 bg-red-50 rounded-xl border border-red-200 hover:bg-red-100 transition-colors duration-200"
                 >
                   <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
@@ -335,20 +337,33 @@ const LabDashboardOverview = ({ user }) => {
                   </div>
                   <div className="flex-1">
                     <div className="font-semibold text-gray-800">
-                      Blood Test - Patient {i}
+                      {test.testType} - Patient {test.patientId}
                     </div>
                     <div className="text-sm text-red-600 font-medium">
-                      Due: {2 + i} hours ago
+                      {test.dueStatus.isOverdue
+                        ? `Overdue: ${test.timeElapsed.displayText}`
+                        : test.dueStatus.displayText}
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
-                      Sample ID: BT-{1000 + i}
+                      <span>Sample ID: {test.barcode}</span>
+                      <span className="mx-2">•</span>
+                      <span>Sample Type: {test.sampleType}</span>
                     </div>
                   </div>
                   <div className="flex flex-col items-end space-y-1">
-                    <div className="text-xs bg-red-200 text-red-800 px-3 py-1 rounded-full font-medium">
-                      URGENT
+                    <div
+                      className={`text-xs px-3 py-1 rounded-full font-medium ${
+                        test.dueStatus.isOverdue
+                          ? "bg-red-600 text-white"
+                          : "bg-red-200 text-red-800"
+                      }`}
+                    >
+                      {test.dueStatus.isOverdue ? "OVERDUE" : "URGENT"}
                     </div>
-                    <button className="text-xs text-red-600 hover:text-red-800 font-medium">
+                    <button
+                      onClick={() => setActiveModal("Process Test")}
+                      className="text-xs text-red-600 hover:text-red-800 font-medium"
+                    >
                       Process →
                     </button>
                   </div>
