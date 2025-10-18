@@ -20,31 +20,43 @@ import ApiService from "../../services/apiService";
 const LabDashboardOverview = ({ user }) => {
   const [activeModal, setActiveModal] = useState(null);
   const [dashboardStats, setDashboardStats] = useState(null);
+  const [recentActivities, setRecentActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchDashboardStats();
+    fetchDashboardData();
   }, []);
 
-  const fetchDashboardStats = async () => {
+  const fetchDashboardData = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await ApiService.getLabDashboardStats();
 
-      if (response.success) {
-        setDashboardStats(response.data);
+      // Fetch both dashboard stats and recent activities in parallel
+      const [statsResponse, activitiesResponse] = await Promise.all([
+        ApiService.getLabDashboardStats(),
+        ApiService.getLabActivities(user.labId || "1"),
+      ]);
+
+      if (statsResponse.success) {
+        setDashboardStats(statsResponse.data);
       } else {
         setError("Failed to fetch dashboard statistics");
       }
+
+      if (activitiesResponse.success) {
+        setRecentActivities(activitiesResponse.data.activities || []);
+      }
     } catch (err) {
-      console.error("Error fetching dashboard stats:", err);
+      console.error("Error fetching dashboard data:", err);
       setError(err.message || "Failed to load dashboard data");
     } finally {
       setLoading(false);
     }
   };
+
+  const fetchDashboardStats = fetchDashboardData;
 
   const stats = dashboardStats
     ? [
@@ -162,6 +174,78 @@ const LabDashboardOverview = ({ user }) => {
         return <UploadReportForm onSubmit={handleSubmit} />;
       default:
         return null;
+    }
+  };
+
+  const getActivityIcon = (activityType) => {
+    switch (activityType) {
+      case "lab_sample_created":
+        return Upload;
+      case "lab_report_completed":
+      case "lab_test_completed":
+        return FileCheck;
+      case "lab_test_in_progress":
+        return TestTube;
+      default:
+        return FileText;
+    }
+  };
+
+  const getActivityColor = (activityType) => {
+    switch (activityType) {
+      case "lab_sample_created":
+        return "teal";
+      case "lab_report_completed":
+      case "lab_test_completed":
+        return "teal";
+      case "lab_test_in_progress":
+        return "orange";
+      default:
+        return "gray";
+    }
+  };
+
+  const getActivityStatus = (metadata) => {
+    const status = metadata?.status || "unknown";
+    return {
+      text: status,
+      className:
+        status === "completed"
+          ? "bg-teal-100 text-teal-700"
+          : status === "pending"
+          ? "bg-orange-100 text-orange-700"
+          : "bg-gray-100 text-gray-700",
+    };
+  };
+
+  const formatTimestamp = (timestamp) => {
+    const now = new Date();
+    const activityTime = new Date(timestamp);
+    const diffInMinutes = Math.floor((now - activityTime) / (1000 * 60));
+
+    if (diffInMinutes < 1) return "Just now";
+    if (diffInMinutes < 60) return `${diffInMinutes} min ago`;
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24)
+      return `${diffInHours} hour${diffInHours > 1 ? "s" : ""} ago`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `${diffInDays} day${diffInDays > 1 ? "s" : ""} ago`;
+  };
+
+  const getActivityTitle = (activity) => {
+    const { activityType, metadata } = activity;
+
+    switch (activityType) {
+      case "lab_sample_created":
+        return `Sample Created - ${metadata?.sampleType || "Sample"}`;
+      case "lab_report_completed":
+        return "Lab Report Completed";
+      case "lab_test_completed":
+        return "Test Completed";
+      case "lab_test_in_progress":
+        return "Test In Progress";
+      default:
+        return activity.description || "Lab Activity";
     }
   };
 
@@ -383,71 +467,53 @@ const LabDashboardOverview = ({ user }) => {
             </button>
           </div>
           <div className="space-y-3">
-            {[
-              {
-                type: "upload",
-                patient: "Patient A",
-                test: "CBC Report",
-                time: "2 min ago",
-                status: "completed",
-              },
-              {
-                type: "complete",
-                patient: "Patient B",
-                test: "Urinalysis",
-                time: "15 min ago",
-                status: "completed",
-              },
-              {
-                type: "process",
-                patient: "Patient C",
-                test: "Lipid Panel",
-                time: "32 min ago",
-                status: "in-progress",
-              },
-              {
-                type: "upload",
-                patient: "Patient D",
-                test: "X-Ray Results",
-                time: "1 hour ago",
-                status: "completed",
-              },
-            ].map((activity, i) => (
-              <div
-                key={i}
-                className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200"
-              >
-                <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    activity.type === "upload" ? "bg-teal-100" : "bg-orange-100"
-                  }`}
-                >
-                  {activity.type === "upload" ? (
-                    <Upload className={`w-6 h-6 text-teal-600`} />
-                  ) : (
-                    <FileCheck className={`w-6 h-6 text-orange-600`} />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <div className="font-semibold text-gray-800">
-                    {activity.test}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {activity.patient}
-                  </div>
-                  <div className="text-xs text-gray-500">{activity.time}</div>
-                </div>
-                <div
-                  className={`text-xs px-3 py-1 rounded-full font-medium ${
-                    activity.status === "completed"
-                      ? "bg-teal-100 text-teal-700"
-                      : "bg-orange-100 text-orange-700"
-                  }`}
-                >
-                  {activity.status}
-                </div>
+            {recentActivities.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <FileText className="w-12 h-12 mx-auto mb-2 text-gray-400" />
+                <p>No recent activities</p>
               </div>
-            ))}
+            ) : (
+              recentActivities.slice(0, 4).map((activity) => {
+                const ActivityIcon = getActivityIcon(activity.activityType);
+                const color = getActivityColor(activity.activityType);
+                const status = getActivityStatus(activity.metadata);
+
+                return (
+                  <div
+                    key={activity.id}
+                    className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200"
+                  >
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                        color === "teal" ? "bg-teal-100" : "bg-orange-100"
+                      }`}
+                    >
+                      <ActivityIcon
+                        className={`w-6 h-6 ${
+                          color === "teal" ? "text-teal-600" : "text-orange-600"
+                        }`}
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-semibold text-gray-800">
+                        {getActivityTitle(activity)}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Patient {activity.metadata?.patientId || "Unknown"}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {formatTimestamp(activity.timestamp)}
+                      </div>
+                    </div>
+                    <div
+                      className={`text-xs px-3 py-1 rounded-full font-medium ${status.className}`}
+                    >
+                      {status.text}
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       </div>

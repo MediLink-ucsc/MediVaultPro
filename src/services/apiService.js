@@ -231,6 +231,13 @@ class ApiService {
     const response = await this.makeRequest(API_ENDPOINTS.DASHBOARD.LAB_STATS);
     return response.json();
   }
+
+  static async getLabActivities(labId) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.DASHBOARD.LAB_ACTIVITIES(labId)
+    );
+    return response.json();
+  }
 }
 
 export default ApiService;
