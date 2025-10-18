@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   Search,
   Filter,
   Eye,
-  Calendar,
   FileText,
   Pill,
   Stethoscope,
@@ -17,10 +15,9 @@ import PrescriptionForm from "./QuickActions/PrescriptionForm";
 import QuickExamForm from "./QuickActions/QuickExamForm";
 import SOAPForm from "./QuickActions/SOAPForm";
 import EnhancedPatientDetails from "./EnhancedPatientDetails";
-import dataStore from "../../utils/dataStore";
 
 const PatientList = () => {
-  const navigate = useNavigate();
+  // navigate removed (calendar removed)
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [modalState, setModalState] = useState({
@@ -225,19 +222,7 @@ const PatientList = () => {
     }
   };
 
-  const handleScheduleCalendarEvent = (patientId) => {
-    const patient = patients.find((p) => p.id === patientId);
-    localStorage.setItem(
-      "selectedPatientForAppointment",
-      JSON.stringify({
-        id: patient?.id,
-        name: `${patient?.firstName} ${patient?.lastName}`,
-        phone: patient?.phone,
-        condition: patient?.condition,
-      })
-    );
-    navigate("/doctor/calendar");
-  };
+  // Calendar scheduling removed
 
   const handleBackToList = () => setSelectedPatient(null);
 
@@ -420,16 +405,7 @@ const PatientList = () => {
                       >
                         <Eye className="w-5 h-5" />
                       </button>
-                      <button
-                        className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50"
-                        title="Schedule Appointment"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleScheduleCalendarEvent(patient.id);
-                        }}
-                      >
-                        <Calendar className="w-5 h-5" />
-                      </button>
+                      {/* Schedule appointment functionality removed */}
                     </div>
                   </td>
                 </tr>
