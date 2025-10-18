@@ -42,6 +42,9 @@ export const API_ENDPOINTS = {
     EDIT_LAB_RESULT: (id) =>
       `${API_BASE_URL}/api/${VERSION}/labReport/workflow/results/${id}/edit`,
   },
+  DASHBOARD: {
+    LAB_STATS: `${API_BASE_URL}/api/${VERSION}/labReport/workflow/lab/dashboard/stats`,
+  },
 };
 
 export default API_ENDPOINTS;

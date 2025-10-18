@@ -225,6 +225,12 @@ class ApiService {
       throw error;
     }
   }
+
+  // Dashboard methods
+  static async getLabDashboardStats() {
+    const response = await this.makeRequest(API_ENDPOINTS.DASHBOARD.LAB_STATS);
+    return response.json();
+  }
 }
 
 export default ApiService;
