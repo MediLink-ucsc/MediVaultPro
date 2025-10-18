@@ -24,8 +24,10 @@ export const API_ENDPOINTS = {
     DELETE: (id) => `${API_BASE_URL}/api/${VERSION}/patients/${id}`,
   },
   CLINIC: {
-    GET_INFO: `${API_BASE_URL}/api/${VERSION}/institutions/clinic/info`,
-    UPDATE_INFO: `${API_BASE_URL}/api/${VERSION}/clinic/info/update`,
+    GET_INFO: (id) =>
+      `${API_BASE_URL}/api/${VERSION}/institutions/clinic/${id}/details`,
+    UPDATE_INFO: (id) =>
+      `${API_BASE_URL}/api/${VERSION}/institutions/clinic/${id}/details`,
     GET_STAFF: (id) =>
       `${API_BASE_URL}/api/${VERSION}/institutions/clinic/${id}/staff`,
   },

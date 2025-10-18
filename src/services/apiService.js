@@ -1,4 +1,5 @@
 import { API_ENDPOINTS } from "../config/api";
+import { getHospitalIdFromToken } from "../utils/jwtHelper";
 
 class ApiService {
   // Generic method for making API requests
@@ -110,15 +111,30 @@ class ApiService {
 
   // Clinic methods
   static async getClinicInfo() {
-    const response = await this.makeRequest(API_ENDPOINTS.CLINIC.GET_INFO);
+    const hospitalId = getHospitalIdFromToken();
+    if (!hospitalId) {
+      throw new Error("Hospital ID not found. Please log in again.");
+    }
+
+    const response = await this.makeRequest(
+      API_ENDPOINTS.CLINIC.GET_INFO(hospitalId)
+    );
     return response.json();
   }
 
   static async updateClinicInfo(clinicData) {
-    const response = await this.makeRequest(API_ENDPOINTS.CLINIC.UPDATE_INFO, {
-      method: "PUT",
-      body: JSON.stringify(clinicData),
-    });
+    const hospitalId = getHospitalIdFromToken();
+    if (!hospitalId) {
+      throw new Error("Hospital ID not found. Please log in again.");
+    }
+
+    const response = await this.makeRequest(
+      API_ENDPOINTS.CLINIC.UPDATE_INFO(hospitalId),
+      {
+        method: "PATCH",
+        body: JSON.stringify(clinicData),
+      }
+    );
     return response.json();
   }
 
