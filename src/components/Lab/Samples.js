@@ -399,7 +399,7 @@ const Samples = () => {
                 <p className="text-2xl font-bold text-gray-800 mt-1">
                   {stat.value}
                 </p>
-                <p
+                {/* <p
                   className={`text-sm mt-1 ${
                     stat.color === "teal"
                       ? "text-teal-600"
@@ -409,7 +409,7 @@ const Samples = () => {
                   }`}
                 >
                   {stat.change} from yesterday
-                </p>
+                </p> */}
               </div>
               <div
                 className={`w-12 h-12 rounded-lg flex items-center justify-center ${
