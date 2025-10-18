@@ -54,6 +54,47 @@ class ApiService {
     });
   }
 
+  // Password reset
+  static async requestPasswordReset(username) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.AUTH.PASSWORD_RESET_REQUEST,
+      {
+        method: "POST",
+        body: JSON.stringify({ username }),
+      }
+    );
+    return response.json();
+  }
+
+  static async resetPassword(resetData) {
+    const response = await this.makeRequest(API_ENDPOINTS.AUTH.PASSWORD_RESET, {
+      method: "POST",
+      body: JSON.stringify(resetData),
+    });
+    return response.json();
+  }
+
+  // Clinic methods
+  static async getClinicInfo() {
+    const response = await this.makeRequest(API_ENDPOINTS.CLINIC.GET_INFO);
+    return response.json();
+  }
+
+  static async updateClinicInfo(clinicData) {
+    const response = await this.makeRequest(API_ENDPOINTS.CLINIC.UPDATE_INFO, {
+      method: "PUT",
+      body: JSON.stringify(clinicData),
+    });
+    return response.json();
+  }
+
+  static async getClinicStaff(clinicId) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.CLINIC.GET_STAFF(clinicId)
+    );
+    return response.json();
+  }
+
   // Patient methods
   static async getPatients() {
     const response = await this.makeRequest(API_ENDPOINTS.PATIENTS.GET_ALL);

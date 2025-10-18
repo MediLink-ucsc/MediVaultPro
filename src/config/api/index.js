@@ -9,6 +9,8 @@ export const API_ENDPOINTS = {
     LOGIN: `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/login`,
     LOGOUT: `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/logout`,
     REGISTER: `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/register`,
+    PASSWORD_RESET_REQUEST: `${API_BASE_URL}/api/${VERSION}/auth/password-reset/request`,
+    PASSWORD_RESET: `${API_BASE_URL}/api/${VERSION}/auth/password-reset/reset`,
   },
   PATIENTS: {
     GET_ALL: `${API_BASE_URL}/api/${VERSION}/patients`,
@@ -18,6 +20,12 @@ export const API_ENDPOINTS = {
     CREATE: `${API_BASE_URL}/api/${VERSION}/patients`,
     UPDATE: (id) => `${API_BASE_URL}/api/${VERSION}/patients/${id}`,
     DELETE: (id) => `${API_BASE_URL}/api/${VERSION}/patients/${id}`,
+  },
+  CLINIC: {
+    GET_INFO: `${API_BASE_URL}/api/${VERSION}/institutions/clinic/info`,
+    UPDATE_INFO: `${API_BASE_URL}/api/${VERSION}/clinic/info/update`,
+    GET_STAFF: (id) =>
+      `${API_BASE_URL}/api/${VERSION}/institutions/clinic/${id}/staff`,
   },
   LAB_REPORT: {
     CREATE_TEST_TYPE: `${API_BASE_URL}/api/${VERSION}/labReport/report/addTestType`,

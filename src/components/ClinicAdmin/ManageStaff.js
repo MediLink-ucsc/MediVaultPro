@@ -1,115 +1,148 @@
 // src/components/ClinicAdmin/ManageStaff.js
-import React, { useState } from 'react';
-import { 
-  Users, 
-  Search, 
-  Filter, 
-  Edit3, 
-  Trash2, 
-  Eye, 
-  ChevronLeft, 
-  ChevronRight, 
+import React, { useState, useEffect } from "react";
+import {
+  Users,
+  Search,
+  Filter,
+  Edit3,
+  Trash2,
+  Eye,
+  ChevronLeft,
+  ChevronRight,
   UserPlus,
   MoreVertical,
   AlertCircle,
-  CheckCircle
-} from 'lucide-react';
-import Modal from '../Common/Modal';
-import StaffEditForm from './StaffEditForm';
-import AddStaffModal from './StaffForms/AddStaffModal';
-import Button from '../Common/Button';
+  CheckCircle,
+} from "lucide-react";
+import Modal from "../Common/Modal";
+import StaffEditForm from "./StaffEditForm";
+import AddStaffModal from "./StaffForms/AddStaffModal";
+import Button from "../Common/Button";
+import ApiService from "../../services/apiService";
+import { getHospitalIdFromToken } from "../../utils/jwtHelper";
 
 const ManageStaff = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterRole, setFilterRole] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterRole, setFilterRole] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedStaff, setSelectedStaff] = useState(null);
   const [modalType, setModalType] = useState(null); // 'view', 'edit', 'delete', 'add'
   const [actionMessage, setActionMessage] = useState(null);
+  const [staffData, setStaffData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [adminInstitute, setAdminInstitute] = useState("");
+  const [clinicId, setClinicId] = useState(null);
 
   const itemsPerPage = 10;
 
-  // In a real app, this would come from the logged-in admin's data
-  const adminInstitute = "City Medical Center";
+  // Fetch clinic staff data on component mount
+  useEffect(() => {
+    fetchClinicStaff();
+  }, []);
 
-  // Mock data - in real app, this would come from API
-  const [staffData, setStaffData] = useState([
-    {
-      id: 1,
-      name: 'Dr. Dulmini Chathubhashini',
-      email: 'dulmini.chathubhashini@citymedical.com',
-      role: 'doctor',
-      department: 'Cardiology',
-      institute: 'City Medical Center',
-      phone: '+94 xxx xxx xxx',
-      status: 'active',
-      joinDate: '2022-01-15',
-      licenseNumber: 'MD-12345'
-    },
-    {
-      id: 2,
-      name: 'Likitha',
-      email: 'likitha@citymedical.com',
-      role: 'nurse',
-      department: 'Emergency',
-      institute: 'City Medical Center',
-      phone: '+94 xxx xxx xxx',
-      status: 'active',
-      joinDate: '2022-03-20',
-      licenseNumber: 'RN-67890'
-    },
-    {
-      id: 3,
-      name: 'Hansaja',
-      email: 'hansaja@centrallab.com',
-      role: 'lab',
-      department: 'Pathology',
-      institute: 'Central Diagnostic Lab',
-      phone: '+94 xxx xxx xxx',
-      status: 'inactive',
-      joinDate: '2021-11-10',
-      licenseNumber: 'LT-54321'
-    },
-    {
-      id: 4,
-      name: 'Dr. Anji',
-      email: 'anji@stjohns.com',
-      role: 'doctor',
-      department: 'Pediatrics',
-      institute: 'St. John\'s Medical Center',
-      phone: '+94 xxx xxx xxx',
-      status: 'active',
-      joinDate: '2020-08-05',
-      licenseNumber: 'MD-98765'
-    },
-    {
-      id: 5,
-      name: 'Sathya',
-      email: 'sathya@quicklab.com',
-      role: 'lab',
-      department: 'Clinical Chemistry',
-      institute: 'Quick Diagnostics',
-      phone: '+94 xxx xxx xxx',
-      status: 'active',
-      joinDate: '2023-02-14',
-      licenseNumber: 'LT-11111'
+  const fetchClinicStaff = async () => {
+    try {
+      setLoading(true);
+
+      // Get hospital/clinic ID from JWT token
+      const hospitalId = getHospitalIdFromToken();
+
+      if (!hospitalId) {
+        throw new Error("Hospital ID not found in token. Please login again.");
+      }
+
+      console.log("Fetching staff for hospital ID:", hospitalId);
+
+      // Fetch staff data using the clinic ID from token
+      const response = await ApiService.getClinicStaff(hospitalId);
+
+      console.log("Staff data response:", response);
+
+      // Extract clinic info and set it
+      setClinicId(hospitalId);
+      setAdminInstitute(response.data?.clinic?.institutionName || "");
+
+      // Transform API response to match component's data structure
+      const transformedStaff = transformStaffData(response.data);
+      setStaffData(transformedStaff);
+    } catch (error) {
+      console.error("Error fetching clinic staff:", error);
+      setActionMessage({
+        type: "error",
+        text: error.message || "Failed to load staff data. Please try again.",
+      });
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
+
+  // Transform API response to component's expected format
+  const transformStaffData = (data) => {
+    const staff = [];
+
+    // Transform doctors
+    if (data.doctors && Array.isArray(data.doctors)) {
+      data.doctors.forEach((doctor) => {
+        staff.push({
+          id: `doctor-${doctor.doctorId}`,
+          rawId: doctor.doctorId,
+          name: `${doctor.user.firstName} ${doctor.user.lastName}`,
+          email: doctor.user.username,
+          role: "doctor",
+          department: doctor.specialty || "General Medicine",
+          institute: data.clinic?.institutionName || "",
+          phone: doctor.phone || "N/A",
+          status: "active",
+          joinDate: doctor.createdAt,
+          licenseNumber: doctor.licenseNumber || "N/A",
+          yearsOfExperience: doctor.yearsOfExperience,
+          gender: doctor.gender || "N/A",
+          dateOfBirth: doctor.dateOfBirth,
+        });
+      });
+    }
+
+    // Transform medical staff (nurses and other staff)
+    if (data.medicalStaff && Array.isArray(data.medicalStaff)) {
+      data.medicalStaff.forEach((medStaff) => {
+        staff.push({
+          id: `staff-${medStaff.staffId}`,
+          rawId: medStaff.staffId,
+          name: `${medStaff.user.firstName} ${medStaff.user.lastName}`,
+          email: medStaff.user.username,
+          role: "nurse", // Assuming medical staff are nurses, can be adjusted based on position
+          department: medStaff.department || "General",
+          institute: data.clinic?.institutionName || "",
+          phone: medStaff.phone || "N/A",
+          status: "active",
+          joinDate: medStaff.createdAt,
+          licenseNumber: medStaff.qualification || "N/A",
+          yearsOfExperience: medStaff.yearsOfExperience,
+          position: medStaff.position,
+          qualification: medStaff.qualification,
+          gender: medStaff.gender || "N/A",
+          dateOfBirth: medStaff.dateOfBirth,
+        });
+      });
+    }
+
+    return staff;
+  };
 
   const roles = [
-    { value: '', label: 'All Roles' },
-    { value: 'doctor', label: 'Doctor' },
-    { value: 'nurse', label: 'Assistant' },
-    { value: 'lab', label: 'Lab Technician' }
+    { value: "", label: "All Roles" },
+    { value: "doctor", label: "Doctor" },
+    { value: "nurse", label: "Assistant" },
+    { value: "lab", label: "Lab Technician" },
   ];
 
   // Filter staff to show only those from the admin's institute
-  const filteredStaff = staffData.filter(staff => {
-    const matchesSearch = staff.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         staff.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesRole = filterRole === '' || staff.role === filterRole;
-    const matchesInstitute = staff.institute === adminInstitute; // Only show staff from admin's institute
-    return matchesSearch && matchesRole && matchesInstitute;
+  const filteredStaff = staffData.filter((staff) => {
+    const matchesSearch =
+      staff.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      staff.email.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesRole = filterRole === "" || staff.role === filterRole;
+    return matchesSearch && matchesRole;
   });
 
   // Pagination logic
@@ -124,51 +157,65 @@ const ManageStaff = () => {
 
   const handleView = (staff) => {
     setSelectedStaff(staff);
-    setModalType('view');
+    setModalType("view");
   };
 
   const handleEdit = (staff) => {
     setSelectedStaff(staff);
-    setModalType('edit');
+    setModalType("edit");
   };
 
   const handleDelete = (staff) => {
     setSelectedStaff(staff);
-    setModalType('delete');
+    setModalType("delete");
   };
 
   const handleAddStaff = () => {
-    setModalType('add');
+    setModalType("add");
   };
 
   const handleAddStaffSubmit = (newStaff) => {
     const staffWithId = {
       ...newStaff,
       id: staffData.length + 1,
-      institute: adminInstitute // Ensure staff is added to admin's institute
+      institute: adminInstitute, // Ensure staff is added to admin's institute
     };
-    setStaffData(prev => [...prev, staffWithId]);
+    setStaffData((prev) => [...prev, staffWithId]);
     setModalType(null);
-    setActionMessage({ type: 'success', text: `${getRoleDisplayName(newStaff.role)} added successfully` });
+    setActionMessage({
+      type: "success",
+      text: `${getRoleDisplayName(newStaff.role)} added successfully`,
+    });
     setTimeout(() => setActionMessage(null), 3000);
+    // TODO: Call API to add staff member
   };
 
   const confirmDelete = () => {
-    setStaffData(prev => prev.filter(staff => staff.id !== selectedStaff.id));
+    setStaffData((prev) =>
+      prev.filter((staff) => staff.id !== selectedStaff.id)
+    );
     setModalType(null);
     setSelectedStaff(null);
-    setActionMessage({ type: 'success', text: 'Staff member deleted successfully' });
+    setActionMessage({
+      type: "success",
+      text: "Staff member deleted successfully",
+    });
     setTimeout(() => setActionMessage(null), 3000);
+    // TODO: Call API to delete staff member
   };
 
   const handleEditSave = (updatedStaff) => {
-    setStaffData(prev => prev.map(staff => 
-      staff.id === updatedStaff.id ? updatedStaff : staff
-    ));
+    setStaffData((prev) =>
+      prev.map((staff) => (staff.id === updatedStaff.id ? updatedStaff : staff))
+    );
     setModalType(null);
     setSelectedStaff(null);
-    setActionMessage({ type: 'success', text: 'Staff member updated successfully' });
+    setActionMessage({
+      type: "success",
+      text: "Staff member updated successfully",
+    });
     setTimeout(() => setActionMessage(null), 3000);
+    // TODO: Call API to update staff member
   };
 
   const closeModal = () => {
@@ -178,26 +225,26 @@ const ManageStaff = () => {
 
   const getRoleColor = (role) => {
     const colors = {
-      doctor: 'bg-teal-100 text-teal-800',
-      nurse: 'bg-teal-100 text-teal-800', // Changed from orange to teal for unified scheme
-      lab: 'bg-teal-100 text-teal-800'
+      doctor: "bg-teal-100 text-teal-800",
+      nurse: "bg-teal-100 text-teal-800", // Changed from orange to teal for unified scheme
+      lab: "bg-teal-100 text-teal-800",
     };
-    return colors[role] || 'bg-gray-100 text-gray-800';
+    return colors[role] || "bg-gray-100 text-gray-800";
   };
 
   const getRoleDisplayName = (role) => {
     const displayNames = {
-      doctor: 'Doctor',
-      nurse: 'Assistant',
-      lab: 'Lab Technician'
+      doctor: "Doctor",
+      nurse: "Assistant",
+      lab: "Lab Technician",
     };
     return displayNames[role] || role.charAt(0).toUpperCase() + role.slice(1);
   };
 
   const getStatusColor = (status) => {
-    return status === 'active' 
-      ? 'bg-green-100 text-green-800' 
-      : 'bg-red-100 text-red-800';
+    return status === "active"
+      ? "bg-green-100 text-green-800"
+      : "bg-red-100 text-red-800";
   };
 
   return (
@@ -205,16 +252,22 @@ const ManageStaff = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Manage Clinic Staff</h1>
-          <p className="text-gray-600 mt-1">View, edit, and manage staff members for {adminInstitute}</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Manage Clinic Staff
+          </h1>
+          <p className="text-gray-600 mt-1">
+            View, edit, and manage staff members for{" "}
+            {adminInstitute || "your clinic"}
+          </p>
         </div>
         <div className="flex items-center space-x-3">
-          <Button 
+          <Button
             onClick={handleAddStaff}
             variant="primary"
             role="clinicadmin"
             size="md"
             icon={UserPlus}
+            disabled={loading}
           >
             Add Staff
           </Button>
@@ -226,304 +279,383 @@ const ManageStaff = () => {
 
       {/* Action Message */}
       {actionMessage && (
-        <div className={`rounded-lg p-4 flex items-center space-x-3 ${
-          actionMessage.type === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
-        }`}>
-          {actionMessage.type === 'success' ? (
+        <div
+          className={`rounded-lg p-4 flex items-center space-x-3 ${
+            actionMessage.type === "success"
+              ? "bg-green-50 border border-green-200"
+              : "bg-red-50 border border-red-200"
+          }`}
+        >
+          {actionMessage.type === "success" ? (
             <CheckCircle className="w-5 h-5 text-green-600" />
           ) : (
             <AlertCircle className="w-5 h-5 text-red-600" />
           )}
-          <span className={`font-medium ${
-            actionMessage.type === 'success' ? 'text-green-800' : 'text-red-800'
-          }`}>
+          <span
+            className={`font-medium ${
+              actionMessage.type === "success"
+                ? "text-green-800"
+                : "text-red-800"
+            }`}
+          >
             {actionMessage.text}
           </span>
         </div>
       )}
 
-      {/* Search and Filter */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-          <div className="flex-1 max-w-md">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search by name or email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Filter className="w-5 h-5 text-gray-500" />
-              <select
-                value={filterRole}
-                onChange={(e) => setFilterRole(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
-              >
-                {roles.map(role => (
-                  <option key={role.value} value={role.value}>
-                    {role.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div className="text-sm text-gray-600">
-              {filteredStaff.length} staff members
-            </div>
+      {/* Loading State */}
+      {loading ? (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading staff data...</p>
           </div>
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Search and Filter */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+              <div className="flex-1 max-w-md">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search by name or email..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
 
-      {/* Staff Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Staff Member
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Role & Department
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Institute
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Contact
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {currentStaff.map((staff) => (
-                <tr key={staff.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{staff.name}</div>
-                      <div className="text-sm text-gray-500">{staff.email}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleColor(staff.role)}`}>
-                        {getRoleDisplayName(staff.role)}
-                      </span>
-                      <div className="text-sm text-gray-500 mt-1">{staff.department}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{staff.institute}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{staff.phone}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(staff.status)}`}>
-                      {staff.status.charAt(0).toUpperCase() + staff.status.slice(1)}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex items-center space-x-2">
-                      <Button
-                        variant="ghost"
-                        role="lab"
-                        size="xs"
-                        icon={Eye}
-                        onClick={() => handleView(staff)}
-                        className="p-1"
-                      />
-                      <Button
-                        variant="ghost"
-                        role="lab"
-                        size="xs"
-                        icon={Edit3}
-                        onClick={() => handleEdit(staff)}
-                        className="p-1"
-                      />
-                      <Button
-                        variant="ghost"
-                        role="danger"
-                        size="xs"
-                        icon={Trash2}
-                        onClick={() => handleDelete(staff)}
-                        className="p-1"
-                      />
-                      <Button
-                        variant="ghost"
-                        role="neutral"
-                        size="xs"
-                        icon={MoreVertical}
-                        onClick={() => {}}
-                        className="p-1"
-                      />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <Filter className="w-5 h-5 text-gray-500" />
+                  <select
+                    value={filterRole}
+                    onChange={(e) => setFilterRole(e.target.value)}
+                    className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                  >
+                    {roles.map((role) => (
+                      <option key={role.value} value={role.value}>
+                        {role.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
-            <div className="text-sm text-gray-700">
-              Showing {startIndex + 1} to {Math.min(endIndex, filteredStaff.length)} of {filteredStaff.length} results
-            </div>
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="ghost"
-                role="neutral"
-                size="sm"
-                icon={ChevronLeft}
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="p-2"
-              />
-              
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
-                <Button
-                  key={page}
-                  variant={currentPage === page ? "primary" : "ghost"}
-                  role="lab"
-                  size="sm"
-                  onClick={() => handlePageChange(page)}
-                  className="px-3 py-2"
-                >
-                  {page}
-                </Button>
-              ))}
-              
-              <Button
-                variant="ghost"
-                role="neutral"
-                size="sm"
-                icon={ChevronRight}
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="p-2"
-              />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Modals */}
-      {/* Add Staff Modal */}
-      <AddStaffModal
-        isOpen={modalType === 'add'}
-        onClose={closeModal}
-        onSubmit={handleAddStaffSubmit}
-        adminInstitute={adminInstitute}
-      />
-
-      {/* View Modal */}
-      <Modal
-        isOpen={modalType === 'view'}
-        onClose={closeModal}
-        title="Staff Details"
-      >
-        {selectedStaff && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Name</label>
-                <p className="text-gray-900">{selectedStaff.name}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
-                <p className="text-gray-900">{selectedStaff.email}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Role</label>
-                <p className="text-gray-900 capitalize">{selectedStaff.role}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Department</label>
-                <p className="text-gray-900">{selectedStaff.department}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Institute</label>
-                <p className="text-gray-900">{selectedStaff.institute}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Phone</label>
-                <p className="text-gray-900">{selectedStaff.phone}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">License Number</label>
-                <p className="text-gray-900">{selectedStaff.licenseNumber}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Join Date</label>
-                <p className="text-gray-900">{new Date(selectedStaff.joinDate).toLocaleDateString()}</p>
+                <div className="text-sm text-gray-600">
+                  {filteredStaff.length} staff members
+                </div>
               </div>
             </div>
           </div>
-        )}
-      </Modal>
 
-      {/* Edit Modal */}
-      <Modal
-        isOpen={modalType === 'edit'}
-        onClose={closeModal}
-        title="Edit Staff Member"
-      >
-        {selectedStaff && (
-          <StaffEditForm
-            staff={selectedStaff}
-            onSave={handleEditSave}
-            onCancel={closeModal}
+          {/* Staff Table */}
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Staff Member
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Role & Department
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Institute
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Contact
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {currentStaff.map((staff) => (
+                    <tr
+                      key={staff.id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {staff.name}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {staff.email}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <span
+                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleColor(
+                              staff.role
+                            )}`}
+                          >
+                            {getRoleDisplayName(staff.role)}
+                          </span>
+                          <div className="text-sm text-gray-500 mt-1">
+                            {staff.department}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {staff.institute}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {staff.phone}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                            staff.status
+                          )}`}
+                        >
+                          {staff.status.charAt(0).toUpperCase() +
+                            staff.status.slice(1)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            variant="ghost"
+                            role="lab"
+                            size="xs"
+                            icon={Eye}
+                            onClick={() => handleView(staff)}
+                            className="p-1"
+                          />
+                          <Button
+                            variant="ghost"
+                            role="lab"
+                            size="xs"
+                            icon={Edit3}
+                            onClick={() => handleEdit(staff)}
+                            className="p-1"
+                          />
+                          <Button
+                            variant="ghost"
+                            role="danger"
+                            size="xs"
+                            icon={Trash2}
+                            onClick={() => handleDelete(staff)}
+                            className="p-1"
+                          />
+                          <Button
+                            variant="ghost"
+                            role="neutral"
+                            size="xs"
+                            icon={MoreVertical}
+                            onClick={() => {}}
+                            className="p-1"
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+                <div className="text-sm text-gray-700">
+                  Showing {startIndex + 1} to{" "}
+                  {Math.min(endIndex, filteredStaff.length)} of{" "}
+                  {filteredStaff.length} results
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    role="neutral"
+                    size="sm"
+                    icon={ChevronLeft}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="p-2"
+                  />
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <Button
+                        key={page}
+                        variant={currentPage === page ? "primary" : "ghost"}
+                        role="lab"
+                        size="sm"
+                        onClick={() => handlePageChange(page)}
+                        className="px-3 py-2"
+                      >
+                        {page}
+                      </Button>
+                    )
+                  )}
+
+                  <Button
+                    variant="ghost"
+                    role="neutral"
+                    size="sm"
+                    icon={ChevronRight}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="p-2"
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Modals */}
+          {/* Add Staff Modal */}
+          <AddStaffModal
+            isOpen={modalType === "add"}
+            onClose={closeModal}
+            onSubmit={handleAddStaffSubmit}
+            adminInstitute={adminInstitute}
           />
-        )}
-      </Modal>
 
-      {/* Delete Confirmation Modal */}
-      <Modal
-        isOpen={modalType === 'delete'}
-        onClose={closeModal}
-        title="Confirm Deletion"
-      >
-        {selectedStaff && (
-          <div className="space-y-4">
-            <p className="text-gray-700">
-              Are you sure you want to delete <strong>{selectedStaff.name}</strong>? 
-              This action cannot be undone.
-            </p>
-            <div className="flex items-center justify-end space-x-3">
-              <Button
-                variant="ghost"
-                role="neutral"
-                size="md"
-                onClick={closeModal}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="primary"
-                role="danger"
-                size="md"
-                onClick={confirmDelete}
-              >
-                Delete
-              </Button>
-            </div>
-          </div>
-        )}
-      </Modal>
+          {/* View Modal */}
+          <Modal
+            isOpen={modalType === "view"}
+            onClose={closeModal}
+            title="Staff Details"
+          >
+            {selectedStaff && (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Name
+                    </label>
+                    <p className="text-gray-900">{selectedStaff.name}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Email
+                    </label>
+                    <p className="text-gray-900">{selectedStaff.email}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Role
+                    </label>
+                    <p className="text-gray-900 capitalize">
+                      {getRoleDisplayName(selectedStaff.role)}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Department
+                    </label>
+                    <p className="text-gray-900">{selectedStaff.department}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Institute
+                    </label>
+                    <p className="text-gray-900">{selectedStaff.institute}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Phone
+                    </label>
+                    <p className="text-gray-900">{selectedStaff.phone}</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      License/Qualification
+                    </label>
+                    <p className="text-gray-900">
+                      {selectedStaff.licenseNumber}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                      Join Date
+                    </label>
+                    <p className="text-gray-900">
+                      {new Date(selectedStaff.joinDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                  {selectedStaff.yearsOfExperience && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700">
+                        Years of Experience
+                      </label>
+                      <p className="text-gray-900">
+                        {selectedStaff.yearsOfExperience} years
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </Modal>
+
+          {/* Edit Modal */}
+          <Modal
+            isOpen={modalType === "edit"}
+            onClose={closeModal}
+            title="Edit Staff Member"
+          >
+            {selectedStaff && (
+              <StaffEditForm
+                staff={selectedStaff}
+                onSave={handleEditSave}
+                onCancel={closeModal}
+              />
+            )}
+          </Modal>
+
+          {/* Delete Confirmation Modal */}
+          <Modal
+            isOpen={modalType === "delete"}
+            onClose={closeModal}
+            title="Confirm Deletion"
+          >
+            {selectedStaff && (
+              <div className="space-y-4">
+                <p className="text-gray-700">
+                  Are you sure you want to delete{" "}
+                  <strong>{selectedStaff.name}</strong>? This action cannot be
+                  undone.
+                </p>
+                <div className="flex items-center justify-end space-x-3">
+                  <Button
+                    variant="ghost"
+                    role="neutral"
+                    size="md"
+                    onClick={closeModal}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    role="danger"
+                    size="md"
+                    onClick={confirmDelete}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            )}
+          </Modal>
+        </>
+      )}
     </div>
   );
 };
