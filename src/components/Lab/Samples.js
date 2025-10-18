@@ -510,10 +510,10 @@ const Samples = () => {
                   Status
                 </th>
                 <th className="text-left py-4 px-6 font-medium text-gray-600 text-sm">
-                  Timing
+                  Received
                 </th>
                 <th className="text-left py-4 px-6 font-medium text-gray-600 text-sm">
-                  Collection
+                  Expected
                 </th>
                 <th className="text-left py-4 px-6 font-medium text-gray-600 text-sm">
                   Actions
@@ -939,7 +939,7 @@ const Samples = () => {
             </div>
 
             {/* Collection Information */}
-            <div className="bg-gray-50 rounded-lg p-4">
+            {/* <div className="bg-gray-50 rounded-lg p-4">
               <h3 className="text-lg font-semibold text-gray-800 mb-3">
                 Collection Information
               </h3>
@@ -953,7 +953,7 @@ const Samples = () => {
                   </p>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             {/* Notes */}
             {viewSample.notes && (

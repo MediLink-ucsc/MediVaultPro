@@ -11,6 +11,7 @@ import {
   Microscope,
   Save,
   X,
+  ListIcon,
 } from "lucide-react";
 import ApiService from "../../services/apiService";
 import Button from "../Common/Button";
@@ -179,9 +180,9 @@ const AddSample = ({ onSubmit, onCancel }) => {
       newErrors.testTypeId = "Test type is required";
     }
 
-    if (!formData.collectedBy.trim()) {
-      newErrors.collectedBy = "Collected by is required";
-    }
+    // if (!formData.collectedBy.trim()) {
+    //   newErrors.collectedBy = "Collected by is required";
+    // }
 
     if (!formData.volume.trim()) {
       newErrors.volume = "Volume is required";
@@ -686,11 +687,11 @@ const AddSample = ({ onSubmit, onCancel }) => {
       {/* Collection Information */}
       <div className="bg-gray-50 rounded-lg p-4">
         <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-          <User className="w-5 h-5 mr-2 text-teal-600" />
-          Collection Information
+          <ListIcon className="w-5 h-5 mr-2 text-teal-600" />
+          Other Information
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Collected By *
             </label>
@@ -710,7 +711,7 @@ const AddSample = ({ onSubmit, onCancel }) => {
                 {errors.collectedBy}
               </p>
             )}
-          </div>
+          </div> */}
 
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-2">

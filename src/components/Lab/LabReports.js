@@ -440,7 +440,7 @@ const LabReports = () => {
                                 {report.testType}
                               </div>
                               <div className="text-xs text-gray-400">
-                                {report.fileType} • {report.fileSize}
+                                {report.fileType}
                               </div>
                             </div>
                           </div>
