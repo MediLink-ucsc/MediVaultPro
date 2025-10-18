@@ -329,6 +329,13 @@ class ApiService {
     );
     return response.json();
   }
+
+  static async getInstituteActivities(id) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.DASHBOARD.INSTITUTE_ACTIVITIES(id)
+    );
+    return response.json();
+  }
 }
 
 export default ApiService;

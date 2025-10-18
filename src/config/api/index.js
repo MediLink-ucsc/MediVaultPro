@@ -58,6 +58,8 @@ export const API_ENDPOINTS = {
     LAB_STATS: `${API_BASE_URL}/api/${VERSION}/labReport/workflow/lab/dashboard/stats`,
     LAB_ACTIVITIES: (id) =>
       `${API_BASE_URL}/api/${VERSION}/activity/entities/lab/${id}/activities`,
+    INSTITUTE_ACTIVITIES: (id) =>
+      `${API_BASE_URL}/api/${VERSION}/activity/entities/institution/${id}/activities`,
   },
 };
 
