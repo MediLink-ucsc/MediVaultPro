@@ -4,6 +4,8 @@ import { Save, X, Plus, Trash2, ClipboardList } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Button from '../Common/Button';
 import dataStore from '../../utils/dataStore';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 // Backend integration removed
 
 const CarePlanForm = ({ patient, onSubmit, onCancel, existingPlan = null }) => {
@@ -130,24 +132,50 @@ const CarePlanForm = ({ patient, onSubmit, onCancel, existingPlan = null }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    // Backend integration removed, just call onSubmit with formData
-    if (onSubmit) onSubmit(formData);
-    alert('Care plan saved successfully!');
-  };
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+      if (!validateForm()) return;
 
+      const token = localStorage.getItem('token');
+      let nurseUserId = null;
 
-  const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'Critical': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'High': return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'Medium': return 'bg-amber-100 text-amber-800 border-amber-200';
-      case 'Low': return 'bg-teal-100 text-teal-800 border-teal-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
+      if (token) {
+        const decoded = jwtDecode(token); // decode JWT
+        nurseUserId = decoded.id;      // or whatever key holds the nurse ID
+      }
+      // Map formData to backend format
+      const payload = {
+        patientId: String(patient?.id),
+        nurseUserId, // replace with actual logged-in nurse ID
+        planType: formData.planType,
+        priority: formData.priority,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        description: formData.description,
+        goals: formData.goals,
+        tasks: formData.tasks.map(task => ({
+          taskDescription: task.task,
+          dueDate: task.dueDate,
+          priority: task.priority
+        }))
+      };
+
+      try {
+         const token = localStorage.getItem('token'); // if JWT required
+          const res = await axios.post(
+            `http://localhost:3000/api/v1/patientRecords/careplans/insert`,
+            payload,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+
+        alert('Care plan saved successfully!');
+        if (onSubmit) onSubmit(res.data); // return saved care plan
+      } catch (err) {
+        console.error('Failed to save care plan:', err.response || err);
+        alert('Failed to save care plan. Please try again.');
+      }
+    };
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">

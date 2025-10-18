@@ -30,7 +30,7 @@ const PatientCard = ({ patient, latestVitals, activeCarePlans, onRecordVitals, o
         <span>{patient.phone}</span>
       </div>
     </div>
-    <div className="grid grid-cols-2 gap-2 mb-4 p-3 bg-gray-50 rounded-lg">
+    {/* <div className="grid grid-cols-2 gap-2 mb-4 p-3 bg-gray-50 rounded-lg">
       <div className="text-center">
         <div className="text-xs text-gray-500">Last Vitals</div>
         <div className="text-sm font-medium text-gray-800">
@@ -41,7 +41,7 @@ const PatientCard = ({ patient, latestVitals, activeCarePlans, onRecordVitals, o
         <div className="text-xs text-gray-500">Care Plans</div>
         <div className="text-sm font-medium text-orange-600">{activeCarePlans}</div>
       </div>
-    </div>
+    </div> */}
     <div className="grid grid-cols-2 gap-2 mb-3">
       <Button
         variant="primary"

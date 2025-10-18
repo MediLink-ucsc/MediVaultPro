@@ -11,8 +11,15 @@ import {
 import { useNavigate } from "react-router-dom";
 import StatsCard from "../Common/StatsCard";
 import Button from "../Common/Button";
+import { jwtDecode } from 'jwt-decode'; // correct for your version
+const token = localStorage.getItem('token');
+if (token) {
+  const decoded = jwtDecode(token);
+  console.log(decoded); // nurse info should show
+}
 
 const NurseDashboardOverview = () => {
+
   const navigate = useNavigate();
 
   const stats = [
