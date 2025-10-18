@@ -8,7 +8,9 @@ export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/login`,
     LOGOUT: `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/logout`,
-    REGISTER: `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/register`,
+    REGISTER_DOCTOR: `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/doctor/register`,
+    REGISTER_lLABASSISTANT: `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/labassistant/register`,
+    REGISTER_MEDICALSTAFF: `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/medicalstaff/register`,
     PASSWORD_RESET_REQUEST: `${API_BASE_URL}/api/${VERSION}/auth/password-reset/request`,
     PASSWORD_RESET: `${API_BASE_URL}/api/${VERSION}/auth/password-reset/reset`,
   },

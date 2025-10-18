@@ -174,20 +174,20 @@ const ManageStaff = () => {
     setModalType("add");
   };
 
-  const handleAddStaffSubmit = (newStaff) => {
-    const staffWithId = {
-      ...newStaff,
-      id: staffData.length + 1,
-      institute: adminInstitute, // Ensure staff is added to admin's institute
-    };
-    setStaffData((prev) => [...prev, staffWithId]);
+  const handleAddStaffSubmit = async (newStaff) => {
+    // Close modal
     setModalType(null);
+
+    // Show success message
     setActionMessage({
       type: "success",
       text: `${getRoleDisplayName(newStaff.role)} added successfully`,
     });
+
+    // Refresh staff list from API
+    await fetchClinicStaff();
+
     setTimeout(() => setActionMessage(null), 3000);
-    // TODO: Call API to add staff member
   };
 
   const confirmDelete = () => {

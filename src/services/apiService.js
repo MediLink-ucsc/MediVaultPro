@@ -54,6 +54,40 @@ class ApiService {
     });
   }
 
+  // Registration methods
+  static async registerDoctor(doctorData) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.AUTH.REGISTER_DOCTOR,
+      {
+        method: "POST",
+        body: JSON.stringify(doctorData),
+      }
+    );
+    return response.json();
+  }
+
+  static async registerLabAssistant(labAssistantData) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.AUTH.REGISTER_lLABASSISTANT,
+      {
+        method: "POST",
+        body: JSON.stringify(labAssistantData),
+      }
+    );
+    return response.json();
+  }
+
+  static async registerMedicalStaff(medicalStaffData) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.AUTH.REGISTER_MEDICALSTAFF,
+      {
+        method: "POST",
+        body: JSON.stringify(medicalStaffData),
+      }
+    );
+    return response.json();
+  }
+
   // Password reset
   static async requestPasswordReset(username) {
     const response = await this.makeRequest(

@@ -1,132 +1,213 @@
 // src/components/ClinicAdmin/StaffForms/AddDoctorForm.js
-import React, { useState } from 'react';
-import { User, Mail, Phone, Building, Calendar, FileText, Award, MapPin } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  User,
+  Mail,
+  Phone,
+  Building,
+  Calendar,
+  FileText,
+  Award,
+  MapPin,
+} from "lucide-react";
+import ApiService from "../../../services/apiService";
+import { getHospitalIdFromToken } from "../../../utils/jwtHelper";
 
-const AddDoctorForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospital" }) => {
+const AddDoctorForm = ({
+  onSubmit,
+  onCancel,
+  adminInstitute = "City General Hospital",
+}) => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
     institute: adminInstitute, // Auto-populated from admin's institute
-    department: '',
-    specialization: '',
-    licenseNumber: '',
-    medicalDegree: '',
-    experience: '',
-    address: '',
-    emergencyContact: '',
-    emergencyPhone: '',
-    consultationFee: '',
+    department: "",
+    specialization: "",
+    licenseNumber: "",
+    medicalDegree: "",
+    experience: "",
+    gender: "",
+    dateOfBirth: "",
+    address: "",
+    emergencyContact: "",
+    emergencyPhone: "",
+    consultationFee: "",
     availableDays: [],
     consultationHours: {
-      start: '',
-      end: ''
-    }
+      start: "",
+      end: "",
+    },
   });
 
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const departments = [
-    'Cardiology',
-    'Neurology', 
-    'Orthopedics',
-    'Pediatrics',
-    'Gynecology',
-    'Dermatology',
-    'Psychiatry',
-    'General Medicine',
-    'Surgery',
-    'Emergency Medicine',
-    'Radiology',
-    'Anesthesiology'
+    "Cardiology",
+    "Neurology",
+    "Orthopedics",
+    "Pediatrics",
+    "Gynecology",
+    "Dermatology",
+    "Psychiatry",
+    "General Medicine",
+    "Surgery",
+    "Emergency Medicine",
+    "Radiology",
+    "Anesthesiology",
   ];
 
   const specializations = [
-    'Interventional Cardiology',
-    'Pediatric Cardiology',
-    'Cardiac Surgery',
-    'Neurosurgery',
-    'Stroke Medicine',
-    'Pediatric Neurology',
-    'Orthopedic Surgery',
-    'Sports Medicine',
-    'Spine Surgery',
-    'General Pediatrics',
-    'Neonatology',
-    'Pediatric Surgery',
-    'Obstetrics',
-    'Reproductive Endocrinology',
-    'Cosmetic Dermatology',
-    'Dermatopathology',
-    'General Surgery',
-    'Trauma Surgery',
-    'Emergency Medicine'
+    "Interventional Cardiology",
+    "Pediatric Cardiology",
+    "Cardiac Surgery",
+    "Neurosurgery",
+    "Stroke Medicine",
+    "Pediatric Neurology",
+    "Orthopedic Surgery",
+    "Sports Medicine",
+    "Spine Surgery",
+    "General Pediatrics",
+    "Neonatology",
+    "Pediatric Surgery",
+    "Obstetrics",
+    "Reproductive Endocrinology",
+    "Cosmetic Dermatology",
+    "Dermatopathology",
+    "General Surgery",
+    "Trauma Surgery",
+    "Emergency Medicine",
   ];
 
   const daysOfWeek = [
-    'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
   ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: "",
       }));
     }
   };
 
   const handleConsultationHoursChange = (field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       consultationHours: {
         ...prev.consultationHours,
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
   const handleDaysChange = (day) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       availableDays: prev.availableDays.includes(day)
-        ? prev.availableDays.filter(d => d !== day)
-        : [...prev.availableDays, day]
+        ? prev.availableDays.filter((d) => d !== day)
+        : [...prev.availableDays, day],
     }));
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
-    if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
-    if (!formData.department) newErrors.department = 'Department is required';
-    if (!formData.licenseNumber.trim()) newErrors.licenseNumber = 'License number is required';
-    if (!formData.medicalDegree.trim()) newErrors.medicalDegree = 'Medical degree is required';
-    if (!formData.experience.trim()) newErrors.experience = 'Experience is required';
+    if (!formData.firstName.trim())
+      newErrors.firstName = "First name is required";
+    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(formData.email))
+      newErrors.email = "Email is invalid";
+    if (!formData.phone.trim()) newErrors.phone = "Phone is required";
+    if (!formData.department) newErrors.department = "Department is required";
+    if (!formData.licenseNumber.trim())
+      newErrors.licenseNumber = "License number is required";
+    if (!formData.medicalDegree.trim())
+      newErrors.medicalDegree = "Medical degree is required";
+    if (!formData.experience.trim())
+      newErrors.experience = "Experience is required";
+    if (!formData.gender) newErrors.gender = "Gender is required";
+    if (!formData.dateOfBirth)
+      newErrors.dateOfBirth = "Date of birth is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit({
-        ...formData,
-        role: 'doctor',
-        status: 'active',
-        joinDate: new Date().toISOString().split('T')[0]
-      });
+      try {
+        setIsSubmitting(true);
+
+        // Get hospital ID from token
+        const hospitalId = getHospitalIdFromToken();
+
+        if (!hospitalId) {
+          throw new Error("Hospital ID not found. Please login again.");
+        }
+
+        // Prepare doctor data for API
+        const doctorData = {
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          username: formData.email.trim(), // Email is used as username
+          specialty: formData.specialization || formData.department,
+          licenseNumber: formData.licenseNumber.trim(),
+          yearsOfExperience: parseInt(formData.experience),
+          hospitalId: hospitalId,
+          hospitalName: adminInstitute,
+          gender: formData.gender,
+          dateOfBirth: formData.dateOfBirth,
+          // Additional fields that might be needed
+          phone: formData.phone.trim(),
+          address: formData.address.trim(),
+          medicalDegree: formData.medicalDegree.trim(),
+        };
+
+        console.log("Submitting doctor data:", doctorData);
+
+        // Call API to register doctor
+        const response = await ApiService.registerDoctor(doctorData);
+
+        console.log("Doctor registered successfully:", response);
+
+        // Call parent's onSubmit with the response data
+        onSubmit({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          role: "doctor",
+          status: "active",
+          joinDate: new Date().toISOString(),
+        });
+      } catch (error) {
+        console.error("Error adding doctor:", error);
+        setErrors({
+          submit: error.message || "Failed to add doctor. Please try again.",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -140,26 +221,58 @@ const AddDoctorForm = ({ onSubmit, onCancel, adminInstitute = "City General Hosp
           </div>
           Personal Information
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Full Name *
+              First Name *
             </label>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="firstName"
+              value={formData.firstName}
               onChange={handleInputChange}
               className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-teal-100 focus:border-teal-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
-                errors.name ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-gray-200 hover:border-teal-300'
+                errors.firstName
+                  ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                  : "border-gray-200 hover:border-teal-300"
               }`}
-              placeholder="Dr. John Doe"
+              placeholder="John"
             />
-            {errors.name && <p className="mt-2 text-sm text-red-600 flex items-center">
-              <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">!</span>
-              {errors.name}
-            </p>}
+            {errors.firstName && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.firstName}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Last Name *
+            </label>
+            <input
+              type="text"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-teal-100 focus:border-teal-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
+                errors.lastName
+                  ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                  : "border-gray-200 hover:border-teal-300"
+              }`}
+              placeholder="Doe"
+            />
+            {errors.lastName && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.lastName}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -174,15 +287,21 @@ const AddDoctorForm = ({ onSubmit, onCancel, adminInstitute = "City General Hosp
                 value={formData.email}
                 onChange={handleInputChange}
                 className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-teal-100 focus:border-teal-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
-                  errors.email ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-gray-200 hover:border-teal-300'
+                  errors.email
+                    ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                    : "border-gray-200 hover:border-teal-300"
                 }`}
                 placeholder="doctor@hospital.com"
               />
             </div>
-            {errors.email && <p className="mt-2 text-sm text-red-600 flex items-center">
-              <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">!</span>
-              {errors.email}
-            </p>}
+            {errors.email && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.email}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -197,15 +316,75 @@ const AddDoctorForm = ({ onSubmit, onCancel, adminInstitute = "City General Hosp
                 value={formData.phone}
                 onChange={handleInputChange}
                 className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-teal-100 focus:border-teal-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
-                  errors.phone ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-gray-200 hover:border-teal-300'
+                  errors.phone
+                    ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                    : "border-gray-200 hover:border-teal-300"
                 }`}
                 placeholder="+94 xxx xxx xxx"
               />
             </div>
-            {errors.phone && <p className="mt-2 text-sm text-red-600 flex items-center">
-              <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">!</span>
-              {errors.phone}
-            </p>}
+            {errors.phone && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.phone}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Gender *
+            </label>
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleInputChange}
+              className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-teal-100 focus:border-teal-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
+                errors.gender
+                  ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                  : "border-gray-200 hover:border-teal-300"
+              }`}
+            >
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+            {errors.gender && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.gender}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Date of Birth *
+            </label>
+            <input
+              type="date"
+              name="dateOfBirth"
+              value={formData.dateOfBirth}
+              onChange={handleInputChange}
+              className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-teal-100 focus:border-teal-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
+                errors.dateOfBirth
+                  ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                  : "border-gray-200 hover:border-teal-300"
+              }`}
+            />
+            {errors.dateOfBirth && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.dateOfBirth}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -235,7 +414,7 @@ const AddDoctorForm = ({ onSubmit, onCancel, adminInstitute = "City General Hosp
           </div>
           Professional Information
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -244,7 +423,9 @@ const AddDoctorForm = ({ onSubmit, onCancel, adminInstitute = "City General Hosp
             <div className="px-4 py-3 bg-gradient-to-r from-orange-100 to-orange-50 border-2 border-orange-200 rounded-xl text-gray-700 font-medium">
               {adminInstitute}
             </div>
-            <p className="mt-2 text-xs text-gray-500">Staff will be added to your institute</p>
+            <p className="mt-2 text-xs text-gray-500">
+              Staff will be added to your institute
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -256,18 +437,26 @@ const AddDoctorForm = ({ onSubmit, onCancel, adminInstitute = "City General Hosp
               value={formData.department}
               onChange={handleInputChange}
               className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
-                errors.department ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-gray-200 hover:border-orange-300'
+                errors.department
+                  ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                  : "border-gray-200 hover:border-orange-300"
               }`}
             >
               <option value="">Select Department</option>
               {departments.map((dept, index) => (
-                <option key={index} value={dept}>{dept}</option>
+                <option key={index} value={dept}>
+                  {dept}
+                </option>
               ))}
             </select>
-            {errors.department && <p className="mt-2 text-sm text-red-600 flex items-center">
-              <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">!</span>
-              {errors.department}
-            </p>}
+            {errors.department && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.department}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -282,7 +471,9 @@ const AddDoctorForm = ({ onSubmit, onCancel, adminInstitute = "City General Hosp
             >
               <option value="">Select Specialization</option>
               {specializations.map((spec, index) => (
-                <option key={index} value={spec}>{spec}</option>
+                <option key={index} value={spec}>
+                  {spec}
+                </option>
               ))}
             </select>
           </div>
@@ -299,15 +490,21 @@ const AddDoctorForm = ({ onSubmit, onCancel, adminInstitute = "City General Hosp
                 value={formData.licenseNumber}
                 onChange={handleInputChange}
                 className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
-                  errors.licenseNumber ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-gray-200 hover:border-orange-300'
+                  errors.licenseNumber
+                    ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                    : "border-gray-200 hover:border-orange-300"
                 }`}
                 placeholder="MD-12345"
               />
             </div>
-            {errors.licenseNumber && <p className="mt-2 text-sm text-red-600 flex items-center">
-              <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">!</span>
-              {errors.licenseNumber}
-            </p>}
+            {errors.licenseNumber && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.licenseNumber}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -322,15 +519,21 @@ const AddDoctorForm = ({ onSubmit, onCancel, adminInstitute = "City General Hosp
                 value={formData.medicalDegree}
                 onChange={handleInputChange}
                 className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
-                  errors.medicalDegree ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-gray-200 hover:border-orange-300'
+                  errors.medicalDegree
+                    ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                    : "border-gray-200 hover:border-orange-300"
                 }`}
                 placeholder="MBBS, MD, etc."
               />
             </div>
-            {errors.medicalDegree && <p className="mt-2 text-sm text-red-600 flex items-center">
-              <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">!</span>
-              {errors.medicalDegree}
-            </p>}
+            {errors.medicalDegree && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.medicalDegree}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -344,20 +547,26 @@ const AddDoctorForm = ({ onSubmit, onCancel, adminInstitute = "City General Hosp
               onChange={handleInputChange}
               min="0"
               className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
-                errors.experience ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-gray-200 hover:border-orange-300'
+                errors.experience
+                  ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                  : "border-gray-200 hover:border-orange-300"
               }`}
               placeholder="5"
             />
-            {errors.experience && <p className="mt-2 text-sm text-red-600 flex items-center">
-              <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">!</span>
-              {errors.experience}
-            </p>}
+            {errors.experience && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.experience}
+              </p>
+            )}
           </div>
         </div>
       </div>
 
       {/* Emergency Contact */}
-      <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 p-6 rounded-xl border border-gray-200/50 shadow-soft">
+      {/* <div className="bg-gradient-to-br from-gray-50 to-gray-100/50 p-6 rounded-xl border border-gray-200/50 shadow-soft">
         <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
           <div className="w-10 h-10 bg-gradient-to-br from-gray-500 to-gray-600 rounded-lg flex items-center justify-center mr-3 shadow-medium">
             <Phone className="w-5 h-5 text-white" />
@@ -394,10 +603,10 @@ const AddDoctorForm = ({ onSubmit, onCancel, adminInstitute = "City General Hosp
             />
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Consultation Details */}
-      <div className="bg-gradient-to-br from-teal-50 to-teal-100/50 p-6 rounded-xl border border-teal-200/50 shadow-soft">
+      {/* <div className="bg-gradient-to-br from-teal-50 to-teal-100/50 p-6 rounded-xl border border-teal-200/50 shadow-soft">
         <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
           <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center mr-3 shadow-medium">
             <Calendar className="w-5 h-5 text-white" />
@@ -466,22 +675,35 @@ const AddDoctorForm = ({ onSubmit, onCancel, adminInstitute = "City General Hosp
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Form Actions */}
+      {errors.submit && (
+        <div className="rounded-lg p-4 bg-red-50 border border-red-200">
+          <p className="text-sm text-red-600 flex items-center">
+            <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+              !
+            </span>
+            {errors.submit}
+          </p>
+        </div>
+      )}
+
       <div className="flex items-center justify-end space-x-4 pt-8 border-t border-gray-200/50">
         <button
           type="button"
           onClick={onCancel}
-          className="px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium shadow-soft"
+          disabled={isSubmitting}
+          className="px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium shadow-soft disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-8 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl hover:from-teal-600 hover:to-teal-700 transition-all duration-200 font-medium shadow-medium hover:shadow-strong transform hover:-translate-y-0.5"
+          disabled={isSubmitting}
+          className="px-8 py-3 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl hover:from-teal-600 hover:to-teal-700 transition-all duration-200 font-medium shadow-medium hover:shadow-strong transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
         >
-          Add Doctor
+          {isSubmitting ? "Adding Doctor..." : "Add Doctor"}
         </button>
       </div>
     </form>

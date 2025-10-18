@@ -1,153 +1,238 @@
 // src/components/ClinicAdmin/StaffForms/AddNurseForm.js
-import React, { useState } from 'react';
-import { User, Mail, Phone, Building, Calendar, FileText, Award, MapPin, Heart } from 'lucide-react';
+import React, { useState } from "react";
+import {
+  User,
+  Mail,
+  Phone,
+  Building,
+  Calendar,
+  FileText,
+  Award,
+  MapPin,
+  Heart,
+} from "lucide-react";
+import ApiService from "../../../services/apiService";
+import { getHospitalIdFromToken } from "../../../utils/jwtHelper";
 
-const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospital" }) => {
+const AddNurseForm = ({
+  onSubmit,
+  onCancel,
+  adminInstitute = "City General Hospital",
+}) => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
     institute: adminInstitute, // Auto-populated from admin's institute
-    department: '',
-    specialization: '',
-    licenseNumber: '',
-    nursingDegree: '',
-    experience: '',
-    address: '',
-    emergencyContact: '',
-    emergencyPhone: '',
-    shiftPreference: '',
+    department: "",
+    specialization: "",
+    licenseNumber: "",
+    qualification: "",
+    experience: "",
+    gender: "",
+    dateOfBirth: "",
+    address: "",
+    position: "",
+    emergencyContact: "",
+    emergencyPhone: "",
+    shiftPreference: "",
     certifications: [],
     workingHours: {
-      start: '',
-      end: ''
+      start: "",
+      end: "",
     },
-    availableDays: []
+    availableDays: [],
   });
 
   const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const departments = [
-    'Emergency',
-    'Pediatrics',
-    'Maternity',
-    'Surgery',
-    'Cardiology',
-    'Neurology',
-    'Orthopedics',
-    'Oncology',
-    'Psychiatry',
-    'Outpatient',
-    'Day Surgery'
+    "Emergency",
+    "Pediatrics",
+    "Maternity",
+    "Surgery",
+    "Cardiology",
+    "Neurology",
+    "Orthopedics",
+    "Oncology",
+    "Psychiatry",
+    "Outpatient",
+    "Day Surgery",
   ];
 
   const specializations = [
-    'Emergency Nursing',
-    'Pediatric Nursing',
-    'Surgical Nursing',
-    'Cardiac Nursing',
-    'Oncology Nursing',
-    'Psychiatric Nursing',
-    'Geriatric Nursing',
-    'Community Health Nursing',
-    'Midwifery',
-    'Anesthesia Nursing',
-    'Infection Control',
-    'Wound Care'
+    "Emergency Nursing",
+    "Pediatric Nursing",
+    "Surgical Nursing",
+    "Cardiac Nursing",
+    "Oncology Nursing",
+    "Psychiatric Nursing",
+    "Geriatric Nursing",
+    "Community Health Nursing",
+    "Midwifery",
+    "Anesthesia Nursing",
+    "Infection Control",
+    "Wound Care",
   ];
 
   const certifications = [
-    'Basic Life Support (BLS)',
-    'Advanced Cardiovascular Life Support (ACLS)',
-    'Pediatric Advanced Life Support (PALS)',
-    'Certified Emergency Nurse (CEN)',
-    'Certified Pediatric Nurse (CPN)',
-    'Certified Wound Care Nurse',
-    'Infection Prevention and Control',
-    'Trauma Nursing Core Course (TNCC)',
-    'Certified Ambulatory Care Nurse (CACN)'
+    "Basic Life Support (BLS)",
+    "Advanced Cardiovascular Life Support (ACLS)",
+    "Pediatric Advanced Life Support (PALS)",
+    "Certified Emergency Nurse (CEN)",
+    "Certified Pediatric Nurse (CPN)",
+    "Certified Wound Care Nurse",
+    "Infection Prevention and Control",
+    "Trauma Nursing Core Course (TNCC)",
+    "Certified Ambulatory Care Nurse (CACN)",
   ];
 
   const shiftOptions = [
-    { value: 'morning', label: 'Morning Shift (6 AM - 2 PM)' },
-    { value: 'afternoon', label: 'Afternoon Shift (2 PM - 10 PM)' },
-    { value: 'full-day', label: 'Full Day (8 AM - 6 PM)' },
-    { value: 'flexible', label: 'Flexible' }
+    { value: "morning", label: "Morning Shift (6 AM - 2 PM)" },
+    { value: "afternoon", label: "Afternoon Shift (2 PM - 10 PM)" },
+    { value: "full-day", label: "Full Day (8 AM - 6 PM)" },
+    { value: "flexible", label: "Flexible" },
   ];
 
   const daysOfWeek = [
-    'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
   ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: "",
       }));
     }
   };
 
   const handleWorkingHoursChange = (field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       workingHours: {
         ...prev.workingHours,
-        [field]: value
-      }
+        [field]: value,
+      },
     }));
   };
 
   const handleDaysChange = (day) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       availableDays: prev.availableDays.includes(day)
-        ? prev.availableDays.filter(d => d !== day)
-        : [...prev.availableDays, day]
+        ? prev.availableDays.filter((d) => d !== day)
+        : [...prev.availableDays, day],
     }));
   };
 
   const handleCertificationChange = (certification) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       certifications: prev.certifications.includes(certification)
-        ? prev.certifications.filter(c => c !== certification)
-        : [...prev.certifications, certification]
+        ? prev.certifications.filter((c) => c !== certification)
+        : [...prev.certifications, certification],
     }));
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.name.trim()) newErrors.name = 'Name is required';
-    if (!formData.email.trim()) newErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
-    if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
-    if (!formData.department) newErrors.department = 'Department is required';
-    if (!formData.licenseNumber.trim()) newErrors.licenseNumber = 'License number is required';
-    if (!formData.nursingDegree.trim()) newErrors.nursingDegree = 'Nursing degree is required';
-    if (!formData.experience.trim()) newErrors.experience = 'Experience is required';
+    if (!formData.firstName.trim())
+      newErrors.firstName = "First name is required";
+    if (!formData.lastName.trim()) newErrors.lastName = "Last name is required";
+    if (!formData.email.trim()) newErrors.email = "Email is required";
+    else if (!/\S+@\S+\.\S+/.test(formData.email))
+      newErrors.email = "Email is invalid";
+    if (!formData.phone.trim()) newErrors.phone = "Phone is required";
+    if (!formData.department) newErrors.department = "Department is required";
+    if (!formData.qualification.trim())
+      newErrors.qualification = "Qualification is required";
+    if (!formData.experience.trim())
+      newErrors.experience = "Experience is required";
+    if (!formData.position.trim()) newErrors.position = "Position is required";
+    if (!formData.gender) newErrors.gender = "Gender is required";
+    if (!formData.dateOfBirth)
+      newErrors.dateOfBirth = "Date of birth is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit({
-        ...formData,
-        role: 'nurse',
-        status: 'active',
-        joinDate: new Date().toISOString().split('T')[0]
-      });
+      try {
+        setIsSubmitting(true);
+
+        // Get hospital ID from token
+        const hospitalId = getHospitalIdFromToken();
+
+        if (!hospitalId) {
+          throw new Error("Hospital ID not found. Please login again.");
+        }
+
+        // Prepare medical staff data for API
+        const medicalStaffData = {
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          username: formData.email.trim(), // Email is used as username
+          position: formData.position.trim(),
+          qualification: formData.qualification.trim(),
+          department: formData.department,
+          yearsOfExperience: parseInt(formData.experience),
+          hospitalId: hospitalId,
+          hospitalName: adminInstitute,
+          gender: formData.gender,
+          dateOfBirth: formData.dateOfBirth,
+          // Additional fields that might be needed
+          phone: formData.phone.trim(),
+          address: formData.address.trim(),
+        };
+
+        console.log("Submitting medical staff data:", medicalStaffData);
+
+        // Call API to register medical staff
+        const response = await ApiService.registerMedicalStaff(
+          medicalStaffData
+        );
+
+        console.log("Medical staff registered successfully:", response);
+
+        // Call parent's onSubmit with the response data
+        onSubmit({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          role: "nurse",
+          status: "active",
+          joinDate: new Date().toISOString(),
+        });
+      } catch (error) {
+        console.error("Error adding medical staff:", error);
+        setErrors({
+          submit:
+            error.message || "Failed to add staff member. Please try again.",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -161,26 +246,58 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
           </div>
           Personal Information
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Full Name *
+              First Name *
             </label>
             <input
               type="text"
-              name="name"
-              value={formData.name}
+              name="firstName"
+              value={formData.firstName}
               onChange={handleInputChange}
               className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
-                errors.name ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-gray-200 hover:border-orange-300'
+                errors.firstName
+                  ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                  : "border-gray-200 hover:border-orange-300"
               }`}
-              placeholder="Jane Smith"
+              placeholder="Jane"
             />
-            {errors.name && <p className="mt-2 text-sm text-red-600 flex items-center">
-              <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">!</span>
-              {errors.name}
-            </p>}
+            {errors.firstName && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.firstName}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Last Name *
+            </label>
+            <input
+              type="text"
+              name="lastName"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
+                errors.lastName
+                  ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                  : "border-gray-200 hover:border-orange-300"
+              }`}
+              placeholder="Smith"
+            />
+            {errors.lastName && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.lastName}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -195,15 +312,21 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
                 value={formData.email}
                 onChange={handleInputChange}
                 className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
-                  errors.email ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-gray-200 hover:border-orange-300'
+                  errors.email
+                    ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                    : "border-gray-200 hover:border-orange-300"
                 }`}
                 placeholder="nurse@hospital.com"
               />
             </div>
-            {errors.email && <p className="mt-2 text-sm text-red-600 flex items-center">
-              <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">!</span>
-              {errors.email}
-            </p>}
+            {errors.email && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.email}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -218,15 +341,75 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
                 value={formData.phone}
                 onChange={handleInputChange}
                 className={`w-full pl-12 pr-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
-                  errors.phone ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-gray-200 hover:border-orange-300'
+                  errors.phone
+                    ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                    : "border-gray-200 hover:border-orange-300"
                 }`}
                 placeholder="+94 xxx xxx xxx"
               />
             </div>
-            {errors.phone && <p className="mt-2 text-sm text-red-600 flex items-center">
-              <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">!</span>
-              {errors.phone}
-            </p>}
+            {errors.phone && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.phone}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Gender *
+            </label>
+            <select
+              name="gender"
+              value={formData.gender}
+              onChange={handleInputChange}
+              className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
+                errors.gender
+                  ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                  : "border-gray-200 hover:border-orange-300"
+              }`}
+            >
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+            {errors.gender && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.gender}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Date of Birth *
+            </label>
+            <input
+              type="date"
+              name="dateOfBirth"
+              value={formData.dateOfBirth}
+              onChange={handleInputChange}
+              className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-orange-100 focus:border-orange-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
+                errors.dateOfBirth
+                  ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                  : "border-gray-200 hover:border-orange-300"
+              }`}
+            />
+            {errors.dateOfBirth && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.dateOfBirth}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -256,7 +439,7 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
           </div>
           Professional Information
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -265,7 +448,9 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
             <div className="px-4 py-3 bg-gradient-to-r from-teal-100 to-teal-50 border-2 border-teal-200 rounded-xl text-gray-700 font-medium">
               {adminInstitute}
             </div>
-            <p className="mt-2 text-xs text-gray-500">Staff will be added to your institute</p>
+            <p className="mt-2 text-xs text-gray-500">
+              Staff will be added to your institute
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -277,18 +462,52 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
               value={formData.department}
               onChange={handleInputChange}
               className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-teal-100 focus:border-teal-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
-                errors.department ? 'border-red-400 focus:border-red-500 focus:ring-red-100' : 'border-gray-200 hover:border-teal-300'
+                errors.department
+                  ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                  : "border-gray-200 hover:border-teal-300"
               }`}
             >
               <option value="">Select Department</option>
               {departments.map((dept, index) => (
-                <option key={index} value={dept}>{dept}</option>
+                <option key={index} value={dept}>
+                  {dept}
+                </option>
               ))}
             </select>
-            {errors.department && <p className="mt-2 text-sm text-red-600 flex items-center">
-              <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">!</span>
-              {errors.department}
-            </p>}
+            {errors.department && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.department}
+              </p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Position *
+            </label>
+            <input
+              type="text"
+              name="position"
+              value={formData.position}
+              onChange={handleInputChange}
+              className={`w-full px-4 py-3 border-2 rounded-xl focus:ring-4 focus:ring-teal-100 focus:border-teal-500 transition-all duration-200 bg-white/70 backdrop-blur-sm ${
+                errors.position
+                  ? "border-red-400 focus:border-red-500 focus:ring-red-100"
+                  : "border-gray-200 hover:border-teal-300"
+              }`}
+              placeholder="e.g., Registered Nurse, Staff Nurse"
+            />
+            {errors.position && (
+              <p className="mt-2 text-sm text-red-600 flex items-center">
+                <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+                  !
+                </span>
+                {errors.position}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -303,49 +522,35 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
             >
               <option value="">Select Specialization</option>
               {specializations.map((spec, index) => (
-                <option key={index} value={spec}>{spec}</option>
+                <option key={index} value={spec}>
+                  {spec}
+                </option>
               ))}
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Nursing License Number *
-            </label>
-            <div className="relative">
-              <FileText className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="text"
-                name="licenseNumber"
-                value={formData.licenseNumber}
-                onChange={handleInputChange}
-                className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                  errors.licenseNumber ? 'border-red-500' : 'border-gray-300'
-                }`}
-                placeholder="RN-12345"
-              />
-            </div>
-            {errors.licenseNumber && <p className="mt-1 text-sm text-red-600">{errors.licenseNumber}</p>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Nursing Degree *
+              Qualification *
             </label>
             <div className="relative">
               <Award className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                name="nursingDegree"
-                value={formData.nursingDegree}
+                name="qualification"
+                value={formData.qualification}
                 onChange={handleInputChange}
                 className={`w-full pl-10 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                  errors.nursingDegree ? 'border-red-500' : 'border-gray-300'
+                  errors.qualification ? "border-red-500" : "border-gray-300"
                 }`}
-                placeholder="BSN, ADN, etc."
+                placeholder="e.g., BSN, ADN, Diploma in Nursing"
               />
             </div>
-            {errors.nursingDegree && <p className="mt-1 text-sm text-red-600">{errors.nursingDegree}</p>}
+            {errors.qualification && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.qualification}
+              </p>
+            )}
           </div>
 
           <div>
@@ -359,17 +564,19 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
               onChange={handleInputChange}
               min="0"
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                errors.experience ? 'border-red-500' : 'border-gray-300'
+                errors.experience ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="3"
             />
-            {errors.experience && <p className="mt-1 text-sm text-red-600">{errors.experience}</p>}
+            {errors.experience && (
+              <p className="mt-1 text-sm text-red-600">{errors.experience}</p>
+            )}
           </div>
         </div>
       </div>
 
       {/* Work Schedule */}
-      <div className="bg-gray-50 p-4 rounded-lg">
+      {/* <div className="bg-gray-50 p-4 rounded-lg">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Calendar className="w-5 h-5 mr-2 text-orange-600" />
           Work Schedule
@@ -440,10 +647,10 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Certifications */}
-      <div className="bg-gray-50 p-4 rounded-lg">
+      {/* <div className="bg-gray-50 p-4 rounded-lg">
         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
           <Heart className="w-5 h-5 mr-2 text-orange-600" />
           Certifications
@@ -462,10 +669,10 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
             </label>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Emergency Contact */}
-      <div className="bg-gray-50 p-4 rounded-lg">
+      {/* <div className="bg-gray-50 p-4 rounded-lg">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Emergency Contact
         </h3>
@@ -499,22 +706,35 @@ const AddNurseForm = ({ onSubmit, onCancel, adminInstitute = "City General Hospi
             />
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Form Actions */}
+      {errors.submit && (
+        <div className="rounded-lg p-4 bg-red-50 border border-red-200">
+          <p className="text-sm text-red-600 flex items-center">
+            <span className="w-4 h-4 bg-red-100 rounded-full flex items-center justify-center mr-2">
+              !
+            </span>
+            {errors.submit}
+          </p>
+        </div>
+      )}
+
       <div className="flex items-center justify-end space-x-4 pt-8 border-t border-gray-200/50">
         <button
           type="button"
           onClick={onCancel}
-          className="px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium shadow-soft"
+          disabled={isSubmitting}
+          className="px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-medium shadow-soft disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Cancel
         </button>
         <button
           type="submit"
-          className="px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-200 font-medium shadow-medium hover:shadow-strong transform hover:-translate-y-0.5"
+          disabled={isSubmitting}
+          className="px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl hover:from-orange-600 hover:to-orange-700 transition-all duration-200 font-medium shadow-medium hover:shadow-strong transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
         >
-          Add Nurse
+          {isSubmitting ? "Adding Staff..." : "Add Nurse"}
         </button>
       </div>
     </form>
