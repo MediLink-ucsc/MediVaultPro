@@ -3,23 +3,16 @@ import React, { useState } from 'react';
 import { 
   Pill, 
   User, 
-  Clock, 
-  Check, 
-  ExternalLink, 
   Search, 
-  Filter,
-  Calendar,
-  AlertCircle,
-  ShoppingBag
+  Calendar
 } from 'lucide-react';
-import Button from '../Common/Button';
 
 const Medications = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('today');
 
   // Mock prescription data
-  const [prescriptions, setPrescriptions] = useState([
+  const [prescriptions] = useState([
     {
       id: 1,
       patientName: 'Likitha Chathubhashini',
@@ -30,8 +23,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '09:30',
       doctor: 'Dr. Smith',
-      status: 'pending',
-      isUrgent: true
+      hospitalName: 'Lanka Hospital'
     },
     {
       id: 2,
@@ -43,8 +35,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '09:35',
       doctor: 'Dr. Smith',
-      status: 'pending',
-      isUrgent: false
+      hospitalName: 'Lanka Hospital'
     },
     {
       id: 3,
@@ -56,8 +47,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '10:15',
       doctor: 'Dr. Johnson',
-      status: 'pending',
-      isUrgent: false
+      hospitalName: 'Asiri Hospital'
     },
     {
       id: 4,
@@ -69,10 +59,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '10:20',
       doctor: 'Dr. Johnson',
-      status: 'given',
-      isUrgent: false,
-      completedBy: 'Nurse Sarah',
-      completedTime: '10:45'
+      hospitalName: 'Asiri Hospital'
     },
     {
       id: 5,
@@ -84,10 +71,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '11:00',
       doctor: 'Dr. Wilson',
-      status: 'given',
-      isUrgent: false,
-      completedBy: 'Nurse Sarah',
-      completedTime: '11:30'
+      hospitalName: 'Nawaloka Hospital'
     },
     {
       id: 6,
@@ -99,8 +83,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '11:05',
       doctor: 'Dr. Wilson',
-      status: 'pending',
-      isUrgent: false
+      hospitalName: 'Nawaloka Hospital'
     },
     {
       id: 7,
@@ -112,10 +95,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '11:10',
       doctor: 'Dr. Wilson',
-      status: 'referred',
-      isUrgent: false,
-      completedBy: 'Nurse Mary',
-      completedTime: '11:45'
+      hospitalName: 'Nawaloka Hospital'
     },
     {
       id: 8,
@@ -127,10 +107,7 @@ const Medications = () => {
       prescribedDate: '2025-10-18',
       prescribedTime: '14:30',
       doctor: 'Dr. Brown',
-      status: 'referred',
-      isUrgent: false,
-      completedBy: 'Nurse Mary',
-      completedTime: '15:00'
+      hospitalName: 'Durdans Hospital'
     },
     {
       id: 9,
@@ -142,10 +119,7 @@ const Medications = () => {
       prescribedDate: '2025-10-18',
       prescribedTime: '14:35',
       doctor: 'Dr. Brown',
-      status: 'given',
-      isUrgent: false,
-      completedBy: 'Nurse Sarah',
-      completedTime: '15:30'
+      hospitalName: 'Durdans Hospital'
     },
     {
       id: 10,
@@ -157,8 +131,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '08:45',
       doctor: 'Dr. Smith',
-      status: 'pending',
-      isUrgent: false
+      hospitalName: 'Lanka Hospital'
     },
     {
       id: 11,
@@ -170,8 +143,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '08:50',
       doctor: 'Dr. Smith',
-      status: 'pending',
-      isUrgent: false
+      hospitalName: 'Lanka Hospital'
     },
     {
       id: 12,
@@ -183,10 +155,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '08:55',
       doctor: 'Dr. Smith',
-      status: 'given',
-      isUrgent: false,
-      completedBy: 'Nurse Sarah',
-      completedTime: '09:15'
+      hospitalName: 'Lanka Hospital'
     },
     {
       id: 13,
@@ -198,8 +167,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '12:30',
       doctor: 'Dr. Johnson',
-      status: 'pending',
-      isUrgent: true
+      hospitalName: 'Asiri Hospital'
     },
     {
       id: 14,
@@ -211,8 +179,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '12:35',
       doctor: 'Dr. Johnson',
-      status: 'pending',
-      isUrgent: false
+      hospitalName: 'Asiri Hospital'
     },
     {
       id: 15,
@@ -224,10 +191,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '13:15',
       doctor: 'Dr. Wilson',
-      status: 'referred',
-      isUrgent: false,
-      completedBy: 'Nurse Mary',
-      completedTime: '13:45'
+      hospitalName: 'Nawaloka Hospital'
     },
     {
       id: 16,
@@ -239,10 +203,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '13:20',
       doctor: 'Dr. Wilson',
-      status: 'referred',
-      isUrgent: false,
-      completedBy: 'Nurse Mary',
-      completedTime: '13:45'
+      hospitalName: 'Nawaloka Hospital'
     },
     {
       id: 17,
@@ -254,8 +215,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '13:25',
       doctor: 'Dr. Wilson',
-      status: 'pending',
-      isUrgent: false
+      hospitalName: 'Nawaloka Hospital'
     },
     {
       id: 18,
@@ -267,8 +227,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '09:15',
       doctor: 'Dr. Smith',
-      status: 'pending',
-      isUrgent: false
+      hospitalName: 'Lanka Hospital'
     },
     {
       id: 19,
@@ -280,8 +239,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '10:30',
       doctor: 'Dr. Johnson',
-      status: 'pending',
-      isUrgent: true
+      hospitalName: 'Asiri Hospital'
     },
     {
       id: 20,
@@ -293,8 +251,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '14:15',
       doctor: 'Dr. Smith',
-      status: 'pending',
-      isUrgent: true
+      hospitalName: 'Lanka Hospital'
     },
     {
       id: 21,
@@ -306,8 +263,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '14:20',
       doctor: 'Dr. Smith',
-      status: 'pending',
-      isUrgent: false
+      hospitalName: 'Lanka Hospital'
     },
     {
       id: 22,
@@ -319,8 +275,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '15:00',
       doctor: 'Dr. Wilson',
-      status: 'pending',
-      isUrgent: false
+      hospitalName: 'Nawaloka Hospital'
     },
     {
       id: 23,
@@ -332,8 +287,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '15:05',
       doctor: 'Dr. Wilson',
-      status: 'pending',
-      isUrgent: true
+      hospitalName: 'Nawaloka Hospital'
     },
     {
       id: 24,
@@ -345,8 +299,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '16:30',
       doctor: 'Dr. Johnson',
-      status: 'pending',
-      isUrgent: false
+      hospitalName: 'Asiri Hospital'
     },
     {
       id: 25,
@@ -358,8 +311,7 @@ const Medications = () => {
       prescribedDate: '2025-10-19',
       prescribedTime: '16:35',
       doctor: 'Dr. Johnson',
-      status: 'pending',
-      isUrgent: false
+      hospitalName: 'Asiri Hospital'
     }
   ]);
 
@@ -368,18 +320,8 @@ const Medications = () => {
     const today = new Date().toISOString().split('T')[0];
     let filtered = prescriptions;
 
-    switch (activeFilter) {
-      case 'today':
-        filtered = prescriptions.filter(p => p.prescribedDate === today);
-        break;
-      case 'pending':
-        filtered = prescriptions.filter(p => p.status === 'pending');
-        break;
-      case 'completed':
-        filtered = prescriptions.filter(p => p.status === 'given' || p.status === 'referred');
-        break;
-      default:
-        filtered = prescriptions;
+    if (activeFilter === 'today') {
+      filtered = prescriptions.filter(p => p.prescribedDate === today);
     }
 
     // Apply search filter
@@ -416,84 +358,18 @@ const Medications = () => {
       group.prescriptions.sort((a, b) => a.prescribedTime.localeCompare(b.prescribedTime));
     });
 
-    // Sort patient groups: patients with pending prescriptions first, completed ones at bottom
-    const sortedGroups = Object.values(grouped).sort((a, b) => {
-      const aPendingCount = a.prescriptions.filter(p => p.status === 'pending').length;
-      const bPendingCount = b.prescriptions.filter(p => p.status === 'pending').length;
-      
-      // If patient A has pending prescriptions and B doesn't, A comes first
-      if (aPendingCount > 0 && bPendingCount === 0) return -1;
-      // If patient B has pending prescriptions and A doesn't, B comes first
-      if (bPendingCount > 0 && aPendingCount === 0) return 1;
-      
-      // If both have pending or both are complete, sort by patient name
-      return a.patientName.localeCompare(b.patientName);
-    });
+    // Sort patient groups by patient name
+    const sortedGroups = Object.values(grouped).sort((a, b) => 
+      a.patientName.localeCompare(b.patientName)
+    );
 
     return sortedGroups;
   };
 
-  const handleMarkGiven = (id) => {
-    setPrescriptions(prev => prev.map(p => 
-      p.id === id 
-        ? { 
-            ...p, 
-            status: 'given', 
-            completedBy: 'Current Nurse',
-            completedTime: new Date().toLocaleTimeString('en-US', { 
-              hour12: false, 
-              hour: '2-digit', 
-              minute: '2-digit' 
-            })
-          }
-        : p
-    ));
-  };
 
-  const handleReferToPharmacy = (id) => {
-    setPrescriptions(prev => prev.map(p => 
-      p.id === id 
-        ? { 
-            ...p, 
-            status: 'referred', 
-            completedBy: 'Current Nurse',
-            completedTime: new Date().toLocaleTimeString('en-US', { 
-              hour12: false, 
-              hour: '2-digit', 
-              minute: '2-digit' 
-            })
-          }
-        : p
-    ));
-  };
-
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'pending':
-        return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'given':
-        return 'bg-teal-100 text-teal-800 border-teal-200';
-      case 'referred':
-        return 'bg-amber-100 text-amber-800 border-amber-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
-
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case 'given':
-        return <Check className="w-3 h-3" />;
-      case 'referred':
-        return <ExternalLink className="w-3 h-3" />;
-      default:
-        return <Clock className="w-3 h-3" />;
-    }
-  };
 
   const filteredPrescriptions = getFilteredPrescriptions();
   const groupedPrescriptions = getGroupedPrescriptions();
-  const pendingCount = prescriptions.filter(p => p.status === 'pending').length;
   const todayCount = prescriptions.filter(p => p.prescribedDate === new Date().toISOString().split('T')[0]).length;
 
   return (
@@ -502,12 +378,9 @@ const Medications = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Prescription Management</h1>
-          <p className="text-sm text-gray-600">Manage and track prescribed medications</p>
+          <p className="text-sm text-gray-600">View and manage prescribed medications</p>
         </div>
         <div className="flex items-center space-x-2 text-sm">
-          <div className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full font-medium">
-            {pendingCount} Pending
-          </div>
           <div className="bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-medium">
             {todayCount} Today
           </div>
@@ -520,9 +393,8 @@ const Medications = () => {
           {/* Filter Tabs */}
           <div className="flex bg-teal-50 rounded-lg p-1 border border-teal-200">
             {[
-              { key: 'today', label: 'Today', icon: Calendar },
-              { key: 'pending', label: 'Pending', icon: Clock },
-              { key: 'completed', label: 'Completed', icon: Check }
+              { key: 'today', label: 'Today\'s Prescriptions', icon: Calendar },
+              { key: 'all', label: 'All Prescriptions', icon: Pill }
             ].map(({ key, label, icon: Icon }) => (
               <button
                 key={key}
@@ -563,30 +435,18 @@ const Medications = () => {
           </div>
         ) : (
           <div className="divide-y divide-orange-100">
-            {groupedPrescriptions.map((patientGroup, groupIndex) => {
-              const pendingCount = patientGroup.prescriptions.filter(p => p.status === 'pending').length;
-              const isCompleted = pendingCount === 0;
-              
-              return (
-              <div key={`${patientGroup.patientId}-${groupIndex}`} className={`p-4 transition-colors ${isCompleted ? 'bg-gray-50 opacity-75' : 'hover:bg-orange-50'}`}>
+            {groupedPrescriptions.map((patientGroup, groupIndex) => (
+              <div key={`${patientGroup.patientId}-${groupIndex}`} className="p-4 transition-colors hover:bg-orange-50">
                 {/* Patient Header */}
                 <div className="flex items-center justify-between mb-4 pb-3 border-b border-orange-100">
                   <div className="flex items-center space-x-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${isCompleted ? 'bg-gray-200' : 'bg-teal-100'}`}>
-                      <User className={`w-5 h-5 ${isCompleted ? 'text-gray-500' : 'text-teal-600'}`} />
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 bg-teal-100">
+                      <User className="w-5 h-5 text-teal-600" />
                     </div>
                     <div>
-                      <div className="flex items-center space-x-2">
-                        <h3 className={`font-bold text-lg ${isCompleted ? 'text-gray-600' : 'text-gray-800'}`}>
-                          {patientGroup.patientName}
-                        </h3>
-                        {isCompleted && (
-                          <div className="flex items-center space-x-1 bg-teal-100 text-teal-800 px-2 py-1 rounded-full text-xs font-medium">
-                            <Check className="w-3 h-3" />
-                            <span>Complete</span>
-                          </div>
-                        )}
-                      </div>
+                      <h3 className="font-bold text-lg text-gray-800">
+                        {patientGroup.patientName}
+                      </h3>
                       <div className="flex items-center space-x-2">
                         <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
                           {patientGroup.patientId}
@@ -594,11 +454,6 @@ const Medications = () => {
                         <span className="text-sm text-gray-500">
                           {patientGroup.prescriptions.length} medication{patientGroup.prescriptions.length !== 1 ? 's' : ''}
                         </span>
-                        {pendingCount > 0 && (
-                          <span className="text-sm bg-orange-100 text-orange-800 px-2 py-1 rounded-full font-medium">
-                            {pendingCount} pending
-                          </span>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -606,80 +461,40 @@ const Medications = () => {
 
                 {/* Medications List */}
                 <div className="space-y-3">
-                  {patientGroup.prescriptions.map((prescription, index) => (
-                    <div key={prescription.id} className="flex items-start justify-between bg-gray-50 rounded-lg p-3 border-l-4 border-l-orange-200">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start space-x-3">
-                          <div className="flex items-center space-x-2 flex-1">
-                            <Pill className="w-4 h-4 text-orange-400 flex-shrink-0 mt-0.5" />
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center space-x-2 mb-1">
-                                <span className="font-semibold text-gray-800">
-                                  {prescription.drug} {prescription.dosage}
-                                </span>
-                                {prescription.isUrgent && (
-                                  <AlertCircle className="w-4 h-4 text-orange-600 flex-shrink-0" />
-                                )}
-                              </div>
-                              <p className="text-sm text-gray-600 mb-1">
-                                {prescription.instructions}
-                              </p>
-                              <div className="flex items-center space-x-4 text-xs text-gray-500">
-                                <span>
-                                  {prescription.prescribedDate} at {prescription.prescribedTime}
-                                </span>
-                                <span>• {prescription.doctor}</span>
-                              </div>
-                              
-                              {/* Completion Info */}
-                              {prescription.status !== 'pending' && (
-                                <p className="text-xs text-gray-500 mt-1">
-                                  {prescription.status === 'given' ? 'Dispensed' : 'Referred to pharmacy'} by {prescription.completedBy} at {prescription.completedTime}
-                                </p>
-                              )}
+                  {patientGroup.prescriptions.map((prescription) => (
+                    <div key={prescription.id} className="bg-gray-50 rounded-lg p-4 border-l-4 border-l-orange-200">
+                      <div className="flex items-start space-x-3">
+                        <Pill className="w-4 h-4 text-orange-400 flex-shrink-0 mt-0.5" />
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-2">
+                            <span className="font-semibold text-gray-800 text-lg">
+                              {prescription.drug} {prescription.dosage}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 mb-3">
+                            {prescription.instructions}
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-500">
+                            <div>
+                              <span className="font-medium">Patient:</span> {prescription.patientName} ({prescription.patientId})
+                            </div>
+                            <div>
+                              <span className="font-medium">Hospital:</span> {prescription.hospitalName}
+                            </div>
+                            <div>
+                              <span className="font-medium">Doctor:</span> {prescription.doctor}
+                            </div>
+                            <div>
+                              <span className="font-medium">Prescribed:</span> {prescription.prescribedDate} at {prescription.prescribedTime}
                             </div>
                           </div>
                         </div>
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex items-center space-x-2 ml-4">
-                        {/* Status Badge */}
-                        <span className={`inline-flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium border ${getStatusBadge(prescription.status)}`}>
-                          {getStatusIcon(prescription.status)}
-                          <span className="capitalize">{prescription.status}</span>
-                        </span>
-
-                        {/* Action Buttons */}
-                        {prescription.status === 'pending' && (
-                          <div className="flex space-x-1">
-                            <Button
-                              variant="secondary"
-                              size="sm"
-                              icon={Check}
-                              onClick={() => handleMarkGiven(prescription.id)}
-                              className="text-xs"
-                            >
-                              Dispense
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              icon={ShoppingBag}
-                              onClick={() => handleReferToPharmacy(prescription.id)}
-                              className="text-xs"
-                            >
-                              Refer
-                            </Button>
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-              );
-            })}
+            ))}
           </div>
         )}
       </div>
