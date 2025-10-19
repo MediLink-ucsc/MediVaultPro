@@ -5,7 +5,7 @@ import VitalSignsForm from './VitalSignsForm';
 import CarePlanForm from './CarePlanForm';
 import PatientMedicalHistory from './PatientMedicalHistory';
 import Button from '../Common/Button';
-import { Activity, ClipboardList } from 'lucide-react';
+import { Activity, ClipboardList, CheckCircle, Circle, Calendar, User, Edit } from 'lucide-react';
 
   const getConditionColor = (condition) => {
   switch (condition.toLowerCase()) {
@@ -40,6 +40,10 @@ const PatientModals = ({
   handleCancelCarePlan,
   selectedCarePlan,
   handleCarePlanSubmit,
+  showViewCarePlansModal,
+  handleCloseViewCarePlans,
+  handleUpdateCarePlan,
+  getSampleCarePlans,
   showMedicalHistoryModal,
   handleCloseMedicalHistory,
   handleRecordVitals,
@@ -52,7 +56,37 @@ const PatientModals = ({
   getActiveCarePlans,
   getActiveMedications,
   getPatientMedications
-}) => (
+}) => {
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
+  const getProgressColor = (progress) => {
+    if (progress >= 80) return 'bg-teal-500';
+    if (progress >= 60) return 'bg-teal-400';
+    if (progress >= 40) return 'bg-orange-500';
+    return 'bg-gray-400';
+  };
+
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return 'bg-green-100 text-green-800';
+      case 'completed':
+        return 'bg-teal-100 text-teal-800';
+      case 'paused':
+        return 'bg-yellow-100 text-yellow-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  return (
 
     
   <>
@@ -101,6 +135,117 @@ const PatientModals = ({
     >
       {selectedPatient && (
         <PatientMedicalHistory patient={selectedPatient} />
+      )}
+    </Modal>
+
+    {/* View Care Plans Modal */}
+    <Modal
+      isOpen={showViewCarePlansModal}
+      onClose={handleCloseViewCarePlans}
+      title={`Care Plans - ${selectedPatient ? `${selectedPatient.firstName} ${selectedPatient.lastName}` : ''}`}
+      size="xl"
+    >
+      {selectedPatient && (
+        <div className="space-y-4">
+          {getSampleCarePlans(selectedPatient.id).map((plan) => (
+            <div key={plan.id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                    <ClipboardList className="w-6 h-6 text-orange-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800">{plan.planType}</h3>
+                    <p className="text-sm text-gray-600">Created by {plan.createdBy}</p>
+                  </div>
+                </div>
+                
+                <div className="text-right">
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(plan.status)}`}>
+                    {plan.status}
+                  </span>
+                  <div className="flex items-center space-x-2 mt-2">
+                    <Calendar className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm text-gray-600">
+                      {formatDate(plan.startDate)} - {formatDate(plan.endDate)}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <div className="w-24 bg-gray-200 rounded-full h-2">
+                      <div 
+                        className={`h-2 rounded-full ${getProgressColor(plan.progress)}`}
+                        style={{ width: `${plan.progress}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-sm font-medium text-gray-600">{plan.progress}%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h4 className="font-medium text-gray-800 mb-3 flex items-center space-x-2">
+                  <ClipboardList className="w-5 h-5 text-orange-600" />
+                  <span>Care Plan Tasks</span>
+                </h4>
+                
+                <div className="space-y-2">
+                  {plan.tasks.map((task) => (
+                    <div key={task.id} className="flex items-center space-x-3">
+                      {task.completed ? (
+                        <CheckCircle className="w-5 h-5 text-teal-500 flex-shrink-0" />
+                      ) : (
+                        <Circle className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                      )}
+                      <span className={`text-sm ${task.completed ? 'text-gray-500 line-through' : 'text-gray-700'}`}>
+                        {task.task}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                
+                {plan.notes && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <p className="text-sm text-gray-600">
+                      <strong>Notes:</strong> {plan.notes}
+                    </p>
+                  </div>
+                )}
+                
+                <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center">
+                  <span className="text-sm text-gray-600">
+                    {plan.tasks.filter(task => task.completed).length} of {plan.tasks.length} tasks completed
+                  </span>
+                  {plan.status === 'Active' && (
+                    <button 
+                      onClick={() => handleUpdateCarePlan(plan)}
+                      className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors text-sm flex items-center space-x-2"
+                    >
+                      <Edit className="w-4 h-4" />
+                      <span>Update Plan</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+          
+          {getSampleCarePlans(selectedPatient.id).length === 0 && (
+            <div className="text-center py-12">
+              <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-600 mb-2">No care plans found</h3>
+              <p className="text-gray-500">This patient doesn't have any care plans yet.</p>
+            </div>
+          )}
+          
+          <div className="flex justify-end mt-6">
+            <button
+              className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 mr-2"
+              onClick={handleCloseViewCarePlans}
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
     </Modal>
 
@@ -171,5 +316,6 @@ const PatientModals = ({
 
   </>
 );
+};
 
 export default PatientModals;

@@ -2,9 +2,9 @@ import React from 'react';
 import { User, Phone } from 'lucide-react';
 import Button from '../Common/Button';
 import { useNavigate } from 'react-router-dom';
-import { Activity, ClipboardList, FileText, Eye } from 'lucide-react';
+import { ClipboardList, FileText, Eye, FolderOpen } from 'lucide-react';
 
-const PatientCard = ({ patient, latestVitals, activeCarePlans, onRecordVitals, onCreateCarePlan, onViewMedicalHistory, onViewPatientDetails, getConditionColor }) => {
+const PatientCard = ({ patient, latestVitals, activeCarePlans, onCreateCarePlan, onViewCarePlans, onViewMedicalHistory, onViewPatientDetails, getConditionColor }) => {
   const navigate = useNavigate();
   return (
     <div className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
@@ -48,11 +48,11 @@ const PatientCard = ({ patient, latestVitals, activeCarePlans, onRecordVitals, o
         variant="primary"
         role="nurse"
         size="sm"
-        icon={Activity}  // ✅ Pass the component
-        onClick={() => onRecordVitals(patient)}
+        icon={FolderOpen}
+        onClick={() => onViewCarePlans(patient)}
         fullWidth
       >
-        Record Vitals
+        View Care Plans
       </Button>
 
       <Button

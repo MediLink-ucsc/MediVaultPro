@@ -1,11 +1,16 @@
 // src/components/Nurse/CarePlans.js
 import React, { useState, useEffect } from 'react';
 import { ClipboardList, User, Calendar, CheckCircle, Circle, Search, Plus, Edit, Eye } from 'lucide-react';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import Button from '../Common/Button';
 import CarePlanForm from './CarePlanForm';
 import dataStore from '../../utils/dataStore';
 
 const CarePlans = () => {
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const patientIdFromUrl = searchParams.get('patientId');
+  
   const [searchTerm, setSearchTerm] = useState('');
   const [showCarePlanForm, setShowCarePlanForm] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -36,11 +41,19 @@ const CarePlans = () => {
     setPatients(allPatients);
   };
 
-  const filteredCarePlans = carePlans.filter(plan =>
-    plan.patient.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    plan.planType.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    plan.condition.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredCarePlans = carePlans.filter(plan => {
+    // If patientId is provided in URL, filter by that patient first
+    if (patientIdFromUrl && plan.patientId !== parseInt(patientIdFromUrl)) {
+      return false;
+    }
+    
+    // Then apply search term filter
+    return (
+      plan.patient.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      plan.planType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      plan.condition.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   const handleCreateCarePlan = () => {
     // For now, we'll use the first patient. In a real app, this would be a patient selector
@@ -113,8 +126,15 @@ const CarePlans = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Care Plans</h1>
-          <p className="text-gray-600 mt-2">Manage and track patient care plans</p>
+          <h1 className="text-3xl font-bold text-gray-800">
+            {patientIdFromUrl ? `Care Plans` : 'Care Plans'}
+          </h1>
+          <p className="text-gray-600 mt-2">
+            {patientIdFromUrl 
+              ? `Viewing care plans for selected patient` 
+              : 'Manage and track patient care plans'
+            }
+          </p>
         </div>
         <button 
           className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition duration-200 flex items-center space-x-2"
