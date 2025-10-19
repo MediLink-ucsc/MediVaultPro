@@ -2,8 +2,9 @@ import React from 'react';
 import { User, Phone } from 'lucide-react';
 import Button from '../Common/Button';
 import { useNavigate } from 'react-router-dom';
+import { ClipboardList, FileText, Eye, FolderOpen } from 'lucide-react';
 
-const PatientCard = ({ patient, latestVitals, activeCarePlans, onRecordVitals, onCreateCarePlan, onViewMedicalHistory, onViewPatientDetails, getConditionColor }) => {
+const PatientCard = ({ patient, latestVitals, activeCarePlans, onCreateCarePlan, onViewCarePlans, onViewMedicalHistory, onViewPatientDetails, getConditionColor }) => {
   const navigate = useNavigate();
   return (
     <div className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
@@ -30,7 +31,7 @@ const PatientCard = ({ patient, latestVitals, activeCarePlans, onRecordVitals, o
         <span>{patient.phone}</span>
       </div>
     </div>
-    <div className="grid grid-cols-2 gap-2 mb-4 p-3 bg-gray-50 rounded-lg">
+    {/* <div className="grid grid-cols-2 gap-2 mb-4 p-3 bg-gray-50 rounded-lg">
       <div className="text-center">
         <div className="text-xs text-gray-500">Last Vitals</div>
         <div className="text-sm font-medium text-gray-800">
@@ -41,45 +42,46 @@ const PatientCard = ({ patient, latestVitals, activeCarePlans, onRecordVitals, o
         <div className="text-xs text-gray-500">Care Plans</div>
         <div className="text-sm font-medium text-orange-600">{activeCarePlans}</div>
       </div>
-    </div>
+    </div> */}
     <div className="grid grid-cols-2 gap-2 mb-3">
       <Button
         variant="primary"
         role="nurse"
         size="sm"
-        icon="Activity"
-        onClick={() => onRecordVitals(patient)}
+        icon={FolderOpen}
+        onClick={() => onViewCarePlans(patient)}
         fullWidth
       >
-        Record Vitals
+        View Care Plans
       </Button>
+
       <Button
         variant="outline"
         role="nurse"
         size="sm"
-        icon="ClipboardList"
+        icon={ClipboardList}  // ✅ Correct
         onClick={() => onCreateCarePlan(patient)}
         fullWidth
       >
         Care Plan
       </Button>
-    </div>
-    <div className="grid grid-cols-2 gap-2">
+
       <Button
         variant="outline"
         role="nurse"
         size="sm"
-        icon="FileText"
-        onClick={() => navigate(`/nurse/patients/history/${patient.id}`)}
+        icon={FileText}  // ✅ Correct
+        onClick={() => onViewMedicalHistory(patient)}
         fullWidth
       >
         History
       </Button>
+
       <Button
         variant="secondary"
         role="nurse"
         size="sm"
-        icon="Eye"
+        icon={Eye}  // ✅ Correct
         onClick={() => onViewPatientDetails(patient)}
         fullWidth
       >
