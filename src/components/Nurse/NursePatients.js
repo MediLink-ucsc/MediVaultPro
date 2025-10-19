@@ -192,176 +192,65 @@ import axios from 'axios';
   };
 
   // Sample care plans data for demonstration
-  const getSampleCarePlans = (patientId) => {
-    return [
-      {
-        id: 1,
-        patientId: patientId,
-        planType: "Post-Surgical Care",
-        priority: "High",
-        startDate: "2024-10-15",
-        endDate: "2024-11-15",
-        description: "Comprehensive post-surgical care plan focusing on recovery and preventing complications. Monitor patient's healing progress and manage pain effectively.",
-        goals: "Full recovery without complications, return to normal activities within 4 weeks, pain management, infection prevention",
-        status: "Active",
-        progress: 75,
-        tasks: [
-          { 
-            id: 1, 
-            task: "Monitor vital signs every 4 hours", 
-            dueDate: "2024-10-20",
-            priority: "High",
-            completed: true,
-            completedDate: "2024-10-16",
-            completedBy: "Nurse Sarah Johnson"
-          },
-          { 
-            id: 2, 
-            task: "Administer pain medication as prescribed", 
-            dueDate: "2024-10-25",
-            priority: "High",
-            completed: true,
-            completedDate: "2024-10-17",
-            completedBy: "Nurse Sarah Johnson"
-          },
-          { 
-            id: 3, 
-            task: "Encourage mobility and walking exercises", 
-            dueDate: "2024-10-30",
-            priority: "Medium",
-            completed: true,
-            completedDate: "2024-10-18",
-            completedBy: "Nurse Sarah Johnson"
-          },
-          { 
-            id: 4, 
-            task: "Monitor surgical site for infection signs", 
-            dueDate: "2024-11-10",
-            priority: "High",
-            completed: false 
-          },
-          { 
-            id: 5, 
-            task: "Coordinate physical therapy sessions", 
-            dueDate: "2024-11-15",
-            priority: "Medium",
-            completed: false 
-          }
-        ],
-        createdBy: "Nurse Sarah Johnson",
-        createdDate: "2024-10-15"
-      },
-      {
-        id: 2,
-        patientId: patientId,
-        planType: "Diabetes Management",
-        priority: "Medium",
-        startDate: "2024-10-01",
-        endDate: "2024-12-31",
-        description: "Long-term diabetes management plan to maintain optimal blood glucose levels and prevent complications. Includes dietary monitoring and medication compliance.",
-        goals: "Maintain HbA1c below 7%, prevent diabetic complications, improve quality of life through proper glucose management",
-        status: "Active",
-        progress: 60,
-        tasks: [
-          { 
-            id: 1, 
-            task: "Check blood glucose levels twice daily", 
-            dueDate: "2024-12-31",
-            priority: "High",
-            completed: true,
-            completedDate: "2024-10-10",
-            completedBy: "Nurse Maria Garcia"
-          },
-          { 
-            id: 2, 
-            task: "Administer insulin as prescribed", 
-            dueDate: "2024-12-31",
-            priority: "High",
-            completed: true,
-            completedDate: "2024-10-12",
-            completedBy: "Nurse Maria Garcia"
-          },
-          { 
-            id: 3, 
-            task: "Monitor diet and carbohydrate intake", 
-            dueDate: "2024-11-30",
-            priority: "Medium",
-            completed: false 
-          },
-          { 
-            id: 4, 
-            task: "Daily foot inspection for diabetic complications", 
-            dueDate: "2024-12-31",
-            priority: "Medium",
-            completed: true,
-            completedDate: "2024-10-14",
-            completedBy: "Nurse Maria Garcia"
-          },
-          { 
-            id: 5, 
-            task: "Weekly weight monitoring", 
-            dueDate: "2024-12-31",
-            priority: "Low",
-            completed: false 
-          }
-        ],
-        createdBy: "Nurse Maria Garcia",
-        createdDate: "2024-10-01"
-      },
-      {
-        id: 3,
-        patientId: patientId,
-        planType: "Medication Management",
-        priority: "Medium",
-        startDate: "2024-09-20",
-        endDate: "2024-10-20",
-        description: "Ensure proper medication compliance and monitor for adverse effects. Patient education on medication schedules and side effects.",
-        goals: "100% medication compliance, no adverse drug reactions, patient understanding of medication regimen",
-        status: "Completed",
-        progress: 100,
-        tasks: [
-          { 
-            id: 1, 
-            task: "Patient education on medication schedule", 
-            dueDate: "2024-09-25",
-            priority: "High",
-            completed: true,
-            completedDate: "2024-09-22",
-            completedBy: "Nurse John Smith"
-          },
-          { 
-            id: 2, 
-            task: "Set up pill organizer system", 
-            dueDate: "2024-09-30",
-            priority: "Medium",
-            completed: true,
-            completedDate: "2024-09-25",
-            completedBy: "Nurse John Smith"
-          },
-          { 
-            id: 3, 
-            task: "Family education on medication support", 
-            dueDate: "2024-10-05",
-            priority: "Medium",
-            completed: true,
-            completedDate: "2024-10-02",
-            completedBy: "Nurse John Smith"
-          },
-          { 
-            id: 4, 
-            task: "Final compliance assessment", 
-            dueDate: "2024-10-20",
-            priority: "High",
-            completed: true,
-            completedDate: "2024-10-18",
-            completedBy: "Nurse John Smith"
-          }
-        ],
-        createdBy: "Nurse John Smith",
-        createdDate: "2024-09-20"
-      }
-    ];
+  const [carePlans, setCarePlans] = useState([]);
+
+  useEffect(() => {
+    if (showViewCarePlansModal && selectedPatient) {
+      fetchCarePlans(selectedPatient.id);
+    }
+  }, [showViewCarePlansModal, selectedPatient]);
+
+  const fetchCarePlans = async (patientId) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/v1/patientRecords/careplans/${patientId}`);
+      setCarePlans(response.data);
+    } catch (error) {
+      console.error("Error fetching care plans:", error);
+      setCarePlans([]); // fallback if error
+    }
   };
+
+  const [latestVitals, setLatestVitals] = useState(null);
+
+  useEffect(() => {
+    if (showPatientDetailsModal && selectedPatient) {
+      fetchLatestVitals(selectedPatient.id);
+    }
+  }, [showPatientDetailsModal, selectedPatient]);
+
+  const fetchLatestVitals = async (patientId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/v1/patientRecords/quickexam/last/${patientId}`
+      );
+      setLatestVitals(response.data);
+    } catch (error) {
+      console.error("Error fetching latest vitals:", error);
+      setLatestVitals(null); // fallback if error
+    }
+  };
+
+  const [prescriptions, setPrescriptions] = useState([]);
+
+  useEffect(() => {
+    if (showMedicalHistoryModal && selectedPatient) {
+      fetchPrescriptions(selectedPatient.id);
+    }
+  }, [showMedicalHistoryModal, selectedPatient]);
+
+  const fetchPrescriptions = async (patientId) => {
+    console.log('Fetching prescriptions for patientId:', patientId);
+    try {
+      const response = await axios.get(`http://localhost:3000/api/v1/patientRecords/prescription/${patientId}`);
+      setPrescriptions(response.data);
+      console.log('Fetched prescriptions:', response.data);
+    } catch (error) {
+      console.error("Error fetching prescriptions:", error);
+      setPrescriptions([]);
+    }
+  };
+
+  
 
   return (
     <div className="space-y-6">
@@ -448,7 +337,7 @@ import axios from 'axios';
         handleCarePlanSubmit={handleCarePlanSubmit}
         showViewCarePlansModal={showViewCarePlansModal}
         handleCloseViewCarePlans={handleCloseViewCarePlans}
-        getSampleCarePlans={getSampleCarePlans}
+        carePlans={carePlans}
         showMedicalHistoryModal={showMedicalHistoryModal}
         handleCloseMedicalHistory={handleCloseMedicalHistory}
         handleCreateCarePlan={handleCreateCarePlan}
@@ -460,6 +349,8 @@ import axios from 'axios';
         getActiveCarePlans={getActiveCarePlans}
         getActiveMedications={getActiveMedications}
         getPatientMedications={getPatientMedications}
+        latestVitalSigns={latestVitals}
+        prescriptions={prescriptions}
       />
     </div>
   );

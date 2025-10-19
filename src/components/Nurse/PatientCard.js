@@ -71,7 +71,7 @@ const PatientCard = ({ patient, latestVitals, activeCarePlans, onCreateCarePlan,
         role="nurse"
         size="sm"
         icon={FileText}  // ✅ Correct
-        onClick={() => navigate(`/nurse/patients/history/${patient.id}`)}
+        onClick={() => onViewMedicalHistory(patient)}
         fullWidth
       >
         History
