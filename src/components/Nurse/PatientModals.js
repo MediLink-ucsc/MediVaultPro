@@ -5,7 +5,7 @@ import VitalSignsForm from './VitalSignsForm';
 import CarePlanForm from './CarePlanForm';
 import PatientMedicalHistory from './PatientMedicalHistory';
 import Button from '../Common/Button';
-import { Activity, ClipboardList, CheckCircle, Circle, Calendar, User, Edit } from 'lucide-react';
+import { Activity, ClipboardList, CheckCircle, Circle, Calendar, User } from 'lucide-react';
 
   const getConditionColor = (condition) => {
   switch (condition.toLowerCase()) {
@@ -42,7 +42,6 @@ const PatientModals = ({
   handleCarePlanSubmit,
   showViewCarePlansModal,
   handleCloseViewCarePlans,
-  handleUpdateCarePlan,
   getSampleCarePlans,
   showMedicalHistoryModal,
   handleCloseMedicalHistory,
@@ -215,15 +214,6 @@ const PatientModals = ({
                   <span className="text-sm text-gray-600">
                     {plan.tasks.filter(task => task.completed).length} of {plan.tasks.length} tasks completed
                   </span>
-                  {plan.status === 'Active' && (
-                    <button 
-                      onClick={() => handleUpdateCarePlan(plan)}
-                      className="bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors text-sm flex items-center space-x-2"
-                    >
-                      <Edit className="w-4 h-4" />
-                      <span>Update Plan</span>
-                    </button>
-                  )}
                 </div>
               </div>
             </div>

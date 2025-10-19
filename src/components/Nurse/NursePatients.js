@@ -142,13 +142,6 @@ import axios from 'axios';
     setSelectedCarePlan(null);
   };
 
-  const handleUpdateCarePlan = (carePlan) => {
-    setSelectedCarePlan(carePlan);
-    setSelectedPatient(patients.find(p => p.id === carePlan.patientId));
-    setShowViewCarePlansModal(false);
-    setShowCarePlanModal(true);
-  };
-
   const handleViewMedicalHistory = (patient) => {
     setSelectedPatient(patient);
     setShowMedicalHistoryModal(true);
@@ -455,7 +448,6 @@ import axios from 'axios';
         handleCarePlanSubmit={handleCarePlanSubmit}
         showViewCarePlansModal={showViewCarePlansModal}
         handleCloseViewCarePlans={handleCloseViewCarePlans}
-        handleUpdateCarePlan={handleUpdateCarePlan}
         getSampleCarePlans={getSampleCarePlans}
         showMedicalHistoryModal={showMedicalHistoryModal}
         handleCloseMedicalHistory={handleCloseMedicalHistory}
