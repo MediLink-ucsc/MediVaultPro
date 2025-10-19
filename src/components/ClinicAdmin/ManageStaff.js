@@ -91,7 +91,7 @@ const ManageStaff = () => {
           role: "doctor",
           department: doctor.specialty || "General Medicine",
           institute: data.clinic?.institutionName || "",
-          phone: doctor.phone || "N/A",
+          phone: doctor.contactNo || "N/A",
           status: "active",
           joinDate: doctor.createdAt,
           licenseNumber: doctor.licenseNumber || "N/A",
@@ -113,7 +113,7 @@ const ManageStaff = () => {
           role: "nurse", // Assuming medical staff are nurses, can be adjusted based on position
           department: medStaff.department || "General",
           institute: data.clinic?.institutionName || "",
-          phone: medStaff.phone || "N/A",
+          phone: medStaff.contactNo || "N/A",
           status: "active",
           joinDate: medStaff.createdAt,
           licenseNumber: medStaff.qualification || "N/A",
@@ -204,18 +204,81 @@ const ManageStaff = () => {
     // TODO: Call API to delete staff member
   };
 
-  const handleEditSave = (updatedStaff) => {
-    setStaffData((prev) =>
-      prev.map((staff) => (staff.id === updatedStaff.id ? updatedStaff : staff))
-    );
-    setModalType(null);
-    setSelectedStaff(null);
-    setActionMessage({
-      type: "success",
-      text: "Staff member updated successfully",
-    });
-    setTimeout(() => setActionMessage(null), 3000);
-    // TODO: Call API to update staff member
+  const handleEditSave = async (updatedStaff) => {
+    try {
+      // Determine which API endpoint to use based on role
+      let response;
+      const staffId = updatedStaff.rawId; // Use the raw ID from the backend
+
+      // Prepare the data based on staff type
+      if (updatedStaff.role === "doctor") {
+        const doctorData = {
+          firstName: updatedStaff.name.split(" ")[0],
+          lastName: updatedStaff.name.split(" ").slice(1).join(" "),
+          licenseNumber: updatedStaff.licenseNumber,
+          specialty: updatedStaff.department,
+          yearsOfExperience: updatedStaff.yearsOfExperience,
+          gender: updatedStaff.gender,
+          dateOfBirth: updatedStaff.dateOfBirth,
+        };
+        response = await ApiService.editDoctor(staffId, doctorData);
+      } else if (updatedStaff.role === "nurse") {
+        const medicalStaffData = {
+          firstName: updatedStaff.name.split(" ")[0],
+          lastName: updatedStaff.name.split(" ").slice(1).join(" "),
+          position: updatedStaff.position,
+          department: updatedStaff.department,
+          qualification:
+            updatedStaff.qualification || updatedStaff.licenseNumber,
+          yearsOfExperience: updatedStaff.yearsOfExperience,
+          gender: updatedStaff.gender,
+          dateOfBirth: updatedStaff.dateOfBirth,
+        };
+        response = await ApiService.editMedicalStaff(staffId, medicalStaffData);
+      } else if (updatedStaff.role === "lab") {
+        const labAssistantData = {
+          firstName: updatedStaff.name.split(" ")[0],
+          lastName: updatedStaff.name.split(" ").slice(1).join(" "),
+          department: updatedStaff.department,
+          qualification:
+            updatedStaff.qualification || updatedStaff.licenseNumber,
+          yearsOfExperience: updatedStaff.yearsOfExperience,
+          gender: updatedStaff.gender,
+          dateOfBirth: updatedStaff.dateOfBirth,
+        };
+        response = await ApiService.editLabAssistant(staffId, labAssistantData);
+      }
+
+      if (response && response.success) {
+        // Update local state with the updated data
+        setStaffData((prev) =>
+          prev.map((staff) =>
+            staff.id === updatedStaff.id ? updatedStaff : staff
+          )
+        );
+
+        setModalType(null);
+        setSelectedStaff(null);
+
+        setActionMessage({
+          type: "success",
+          text: response.message || "Staff member updated successfully",
+        });
+
+        // Refresh staff list from API to get the latest data
+        await fetchClinicStaff();
+
+        setTimeout(() => setActionMessage(null), 3000);
+      }
+    } catch (error) {
+      console.error("Error updating staff:", error);
+      setActionMessage({
+        type: "error",
+        text:
+          error.message || "Failed to update staff member. Please try again.",
+      });
+      setTimeout(() => setActionMessage(null), 5000);
+    }
   };
 
   const closeModal = () => {

@@ -89,6 +89,40 @@ class ApiService {
     return response.json();
   }
 
+  // Edit staff
+  static async editDoctor(id, doctorData) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.CLINIC.EDIT_DOCTOR(id),
+      {
+        method: "PATCH",
+        body: JSON.stringify(doctorData),
+      }
+    );
+    return response.json();
+  }
+
+  static async editMedicalStaff(id, medicalStaffData) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.CLINIC.EDIT_MEDICAL_STAFF(id),
+      {
+        method: "PATCH",
+        body: JSON.stringify(medicalStaffData),
+      }
+    );
+    return response.json();
+  }
+
+  static async editLabAssistant(id, labAssistantData) {
+    const response = await this.makeRequest(
+      API_ENDPOINTS.CLINIC.EDIT_LAB_ASSISTANT(id),
+      {
+        method: "PATCH",
+        body: JSON.stringify(labAssistantData),
+      }
+    );
+    return response.json();
+  }
+
   // Password reset
   static async requestPasswordReset(username) {
     const response = await this.makeRequest(

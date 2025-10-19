@@ -30,6 +30,12 @@ export const API_ENDPOINTS = {
       `${API_BASE_URL}/api/${VERSION}/institutions/clinic/${id}/details`,
     GET_STAFF: (id) =>
       `${API_BASE_URL}/api/${VERSION}/institutions/clinic/${id}/staff`,
+    EDIT_DOCTOR: (id) =>
+      `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/doctor/${id}`,
+    EDIT_MEDICAL_STAFF: (id) =>
+      `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/medical-staff/${id}`,
+    EDIT_LAB_ASSISTANT: (id) =>
+      `${API_BASE_URL}/api/${VERSION}/auth/medvaultpro/lab-assistant/${id}`,
   },
   LAB_REPORT: {
     CREATE_TEST_TYPE: `${API_BASE_URL}/api/${VERSION}/labReport/report/addTestType`,
