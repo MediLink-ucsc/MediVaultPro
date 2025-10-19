@@ -10,66 +10,12 @@ import PatientMedicalHistory from './PatientMedicalHistory';
 import PatientCard from './PatientCard';
 import PatientModals from './PatientModals';
 import dataStore from '../../utils/dataStore';
+import axios from 'axios';
 // Backend integration removed
 
   const NursePatients = () => {
-    const [patients, setPatients] = useState([
-      {
-        id: 1,
-        firstName: 'Likitha',
-        lastName: 'Chathubhashini',
-        age: 34,
-        gender: 'Female',
-        phone: '071-1234567',
-        condition: 'Stable',
-        username: 'likitha.c',
-        lastVisit: '2024-06-28',
-      },
-      {
-        id: 2,
-        firstName: 'Hansaja',
-        lastName: 'Damsara',
-        age: 45,
-        gender: 'Male',
-        phone: '072-9876543',
-        condition: 'Monitoring',
-        username: 'hansaja.d',
-        lastVisit: '2024-06-25',
-      },
-      {
-        id: 3,
-        firstName: 'Sathya',
-        lastName: 'Abeysinghe',
-        age: 28,
-        gender: 'Female',
-        phone: '077-5551234',
-        condition: 'Good',
-        username: 'sathya.a',
-        lastVisit: '2024-06-30',
-      },
-      {
-        id: 4,
-        firstName: 'Saranga',
-        lastName: 'Dissanayake',
-        age: 62,
-        gender: 'Male',
-        phone: '078-2223344',
-        condition: 'Recovering',
-        username: 'saranga.d',
-        lastVisit: '2024-06-26',
-      },
-      {
-        id: 5,
-        firstName: 'Anjula',
-        lastName: 'Himashi',
-        age: 39,
-        gender: 'Female',
-        phone: '075-8889999',
-        condition: 'Stable',
-        username: 'anjula.h',
-        lastVisit: '2024-06-29',
-      },
-    ]);
+
+   
     const [patientVitalSigns, setPatientVitalSigns] = useState([]);
     const [patientCarePlans, setPatientCarePlans] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -82,6 +28,45 @@ import dataStore from '../../utils/dataStore';
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [selectedCarePlan, setSelectedCarePlan] = useState(null);
     const [latestVitalSigns, setLatestVitalSigns] = useState(null);
+
+    const [patients, setPatients] = useState([]);
+
+    useEffect(() => {
+      const fetchPatients = async () => {
+        try {
+           const token = localStorage.getItem('token'); // or sessionStorage, depending on login flow
+
+          const response = await axios.get(
+            'http://localhost:3000/api/v1/patientRecords/patientlist',
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const data = response.data;
+          // Map API data to your PatientCard format
+          const formattedPatients = data.map((item) => ({
+            id: item.patientId,
+            firstName: item.user.firstName,
+            lastName: item.user.lastName,
+            age: item.age,
+            gender: item.gender,
+            phone: item.user.username,
+            condition: item.condition,
+            lastVisit: item.lastVisited,
+          }));
+
+          setPatients(formattedPatients);
+        } catch (error) {
+          console.error('Error fetching patients:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchPatients();
+    }, []);
 
 
 
@@ -97,19 +82,25 @@ import dataStore from '../../utils/dataStore';
     });
 
   const getConditionColor = (condition) => {
-    switch (condition.toLowerCase()) {
-      case 'stable':
-        return 'bg-teal-100 text-teal-800';
-      case 'good':
-        return 'bg-teal-100 text-teal-800';
-      case 'recovering':
-        return 'bg-teal-100 text-teal-800';
-      case 'monitoring':
-        return 'bg-orange-100 text-orange-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
+  switch (condition.toLowerCase()) {
+    case 'stable':
+      return 'bg-teal-100 text-teal-800';
+    case 'good':
+      return 'bg-green-100 text-green-800';
+    case 'recovering':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'monitoring':
+      return 'bg-orange-100 text-orange-800';
+    case 'critical':
+      return 'bg-red-100 text-red-800';
+    case 'emergency':
+      return 'bg-red-200 text-red-900';
+    case 'serious':
+      return 'bg-red-300 text-red-900';
+    default:
+      return 'bg-gray-100 text-gray-800';
+  }
+};
 
   const handleNewPatientSubmit = (newPatient) => {
   console.log('New patient created:', newPatient);
@@ -258,12 +249,17 @@ import dataStore from '../../utils/dataStore';
                 patient={patient}
                 latestVitals={getLatestVitalSigns(patient.id)}
                 activeCarePlans={getActiveCarePlans(patient.id)}
+                patientCarePlans={getPatientCarePlans(patient.id)}
+                patientVitalSigns={getPatientVitalSigns(patient.id)}
+                activeMedications={getActiveMedications(patient.id)}
+                allMedications={getPatientMedications(patient.id)}
                 onRecordVitals={handleRecordVitals}
                 onCreateCarePlan={handleCreateCarePlan}
                 onViewMedicalHistory={handleViewMedicalHistory}
                 onViewPatientDetails={handleViewPatientDetails}
                 getConditionColor={getConditionColor}
               />
+
             ))}
           </div>
 

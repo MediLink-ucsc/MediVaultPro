@@ -2,6 +2,7 @@ import React from 'react';
 import { User, Phone } from 'lucide-react';
 import Button from '../Common/Button';
 import { useNavigate } from 'react-router-dom';
+import { Activity, ClipboardList, FileText, Eye } from 'lucide-react';
 
 const PatientCard = ({ patient, latestVitals, activeCarePlans, onRecordVitals, onCreateCarePlan, onViewMedicalHistory, onViewPatientDetails, getConditionColor }) => {
   const navigate = useNavigate();
@@ -47,39 +48,40 @@ const PatientCard = ({ patient, latestVitals, activeCarePlans, onRecordVitals, o
         variant="primary"
         role="nurse"
         size="sm"
-        icon="Activity"
+        icon={Activity}  // ✅ Pass the component
         onClick={() => onRecordVitals(patient)}
         fullWidth
       >
         Record Vitals
       </Button>
+
       <Button
         variant="outline"
         role="nurse"
         size="sm"
-        icon="ClipboardList"
+        icon={ClipboardList}  // ✅ Correct
         onClick={() => onCreateCarePlan(patient)}
         fullWidth
       >
         Care Plan
       </Button>
-    </div>
-    <div className="grid grid-cols-2 gap-2">
+
       <Button
         variant="outline"
         role="nurse"
         size="sm"
-        icon="FileText"
+        icon={FileText}  // ✅ Correct
         onClick={() => navigate(`/nurse/patients/history/${patient.id}`)}
         fullWidth
       >
         History
       </Button>
+
       <Button
         variant="secondary"
         role="nurse"
         size="sm"
-        icon="Eye"
+        icon={Eye}  // ✅ Correct
         onClick={() => onViewPatientDetails(patient)}
         fullWidth
       >
