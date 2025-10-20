@@ -313,10 +313,13 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
+      alert("Prescription sent successfully!");
+
       showToast(
         `Prescription sent successfully! ID: ${data.prescriptionId}`,
         "success"
       );
+      
 
       if (onSubmit) onSubmit(e);
     } catch (error) {

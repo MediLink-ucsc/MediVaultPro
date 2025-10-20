@@ -421,7 +421,7 @@ const PatientList = () => {
                         >
                           <Eye className="w-5 h-5" />
                         </button>
-                        <button
+                        {/* <button
                           className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50"
                           title="Schedule Appointment"
                           onClick={(e) => {
@@ -430,7 +430,7 @@ const PatientList = () => {
                           }}
                         >
                           <Calendar className="w-5 h-5" />
-                        </button>
+                        </button> */}
                       </div>
                     </td>
                   </tr>

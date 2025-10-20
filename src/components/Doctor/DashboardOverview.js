@@ -8,18 +8,89 @@ import LabOrderForm from './QuickActions/LabOrderForm';
 import SOAPForm from './QuickActions/SOAPForm';
 import QuickExamForm from './QuickActions/QuickExamForm';
 import Button from '../Common/Button';
+import axios from 'axios';
+import { useEffect } from 'react';
 
 const DashboardOverview = ({user}) => {
   
   console.log("HEADER USER:", user);
   const [activeModal, setActiveModal] = useState(null);
 
+  const [visitedCount, setVisitedCount] = useState('-');
+  const [prescriptionCount, setPrescriptionCount] = useState('-');
+  const [emergencyCount, setEmergencyCount] = useState('-'); // new state
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    const fetchVisitedPatientsCount = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:3000/api/v1/patientRecords/doctor/visitedpatientcount`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setVisitedCount(res.data.visitedPatientsCount);
+      } catch (error) {
+        console.error('Error fetching visited patients count:', error);
+        setVisitedCount('-');
+      }
+    };
+
+    const fetchPrescriptionCount = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:3000/api/v1/patientRecords/doctor/prescriptioncount`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setPrescriptionCount(res.data.prescriptionsCount);
+      } catch (error) {
+        console.error('Error fetching prescription count:', error);
+        setPrescriptionCount('-');
+      }
+    };
+
+    const fetchEmergencyCount = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:3000/api/v1/patientRecords/doctor/emergencypatientcount`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setEmergencyCount(res.data.emergencyPatientsCount);
+      } catch (error) {
+        console.error('Error fetching emergency patients count:', error);
+        setEmergencyCount('-');
+      }
+    };
+
+    fetchVisitedPatientsCount();
+    fetchPrescriptionCount();
+    fetchEmergencyCount(); // call new API
+  }, []);
+
   const stats = [
-    { title: 'Total Patients', value: '1,234', icon: Users, color: 'teal', trend: '+12%' },
-    { title: 'Patient Visits', value: '245', icon: Users, color: 'teal', trend: '+12%' },
-    { title: 'Prescriptions', value: '189', icon: Activity, color: 'teal', trend: '+8%' },
-    { title: 'Pending Reports', value: '8', icon: FileText, color: 'orange', trend: '-2%' }, // Orange for pending urgent reports
-  ];
+  {
+    title: 'Patient Visits',
+    value: visitedCount,
+    icon: Users,
+    color: 'teal',
+    trend: 'Total patients you have seen',
+  },
+  {
+    title: 'Prescriptions',
+    value: prescriptionCount,
+    icon: Activity,
+    color: 'teal',
+    trend: 'Prescriptions you have issued to patients',
+  },
+  {
+    title: 'Emergency Patients',
+    value: emergencyCount,
+    icon: FileText,
+    color: 'orange',
+    trend: 'Number of patients in emergency condition',
+  },
+];
+
 
   const quickActions = [
     { title: 'Prescribe', icon: Pill, color: 'orange', description: 'Write prescription' }, // Orange for urgent prescriptions
@@ -67,17 +138,22 @@ const DashboardOverview = ({user}) => {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-800">Doctor Dashboard</h1>
-        <p className="text-gray-600 mt-2">Welcome back, Dr. {user.firstName} {user.lastName}</p>
+        <p className="text-gray-600 mt-2">
+          Welcome back, Dr. {user.firstName} {user.lastName}
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+      {/* Stats Cards: 3 cards full width */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {stats.map((stat, index) => (
           <StatsCard key={index} {...stat} />
         ))}
       </div>
 
+      {/* Quick Actions */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 min-h-[300px]">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -94,54 +170,17 @@ const DashboardOverview = ({user}) => {
                 className="flex-col h-auto py-4 text-center"
                 fullWidth
               >
-              <div className="mt-2 py-6">
-                <div className="font-medium text-sm">{action.title}</div>
-                <div className="text-xs opacity-80 mt-1">{action.description}</div>
-              </div>
-
+                <div className="mt-2 py-6">
+                  <div className="font-medium text-sm">{action.title}</div>
+                  <div className="text-xs opacity-80 mt-1">{action.description}</div>
+                </div>
               </Button>
             );
           })}
         </div>
       </div>
 
-
-      {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"> */}
-        {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Recent Patients</h3>
-          <div className="space-y-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
-                <div className="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center">
-                  <Users className="w-5 h-5 text-teal-600" />
-                </div>
-                <div className="flex-1">
-                  <div className="font-medium text-gray-800">Patient {i}</div>
-                  <div className="text-sm text-orange-600">Requires immediate attention</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div> */}
-
-        {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Medication Schedule</h3>
-          <div className="space-y-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
-                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                  <Pill className="w-5 h-5 text-orange-600" />
-                </div>
-                <div className="flex-1">
-                  <div className="font-medium text-gray-800">Patient {i} - Medication</div>
-                  <div className="text-sm text-gray-600">Due at {8 + i}:00 AM</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div> */}
-      {/* </div> */}
-
+      {/* Modals */}
       <Modal
         isOpen={activeModal !== null}
         onClose={() => setActiveModal(null)}
@@ -150,6 +189,7 @@ const DashboardOverview = ({user}) => {
         {getModalContent()}
       </Modal>
     </div>
+
   );
 };
 

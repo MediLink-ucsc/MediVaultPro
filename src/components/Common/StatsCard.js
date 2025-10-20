@@ -47,7 +47,7 @@ const StatsCard = ({ title, value, icon: Icon, color, trend }) => {
           <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
           {trend && (
             <p className={`text-sm mt-1 ${trendColor}`}>
-              {trend} from last month
+              {trend} 
             </p>
           )}
         </div>
