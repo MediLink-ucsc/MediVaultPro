@@ -5,7 +5,6 @@ import {
   Search,
   Filter,
   Eye,
-  Calendar,
   FileText,
   Pill,
   Stethoscope,
@@ -235,20 +234,6 @@ const PatientList = () => {
     }
   };
 
-  const handleScheduleCalendarEvent = (patientId) => {
-    const patient = patients.find((p) => p.id === patientId);
-    localStorage.setItem(
-      "selectedPatientForAppointment",
-      JSON.stringify({
-        id: patient?.id,
-        name: `${patient?.firstName} ${patient?.lastName}`,
-        phone: patient?.phone,
-        condition: patient?.condition,
-      })
-    );
-    navigate("/doctor/calendar");
-  };
-
   const handleBackToList = () => setSelectedPatient(null);
 
   const filteredPatients = patients.filter((patient) => {
@@ -439,16 +424,6 @@ const PatientList = () => {
                           }}
                         >
                           <Eye className="w-5 h-5" />
-                        </button>
-                        <button
-                          className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50"
-                          title="Schedule Appointment"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleScheduleCalendarEvent(patient.id);
-                          }}
-                        >
-                          <Calendar className="w-5 h-5" />
                         </button>
                       </div>
                     </td>

@@ -1,6 +1,6 @@
 // src/components/Doctor/DashboardOverview.js
 import React, { useState } from 'react';
-import { Users, Calendar, FileText, Pill, Clipboard, FlaskConical, Stethoscope, Activity } from 'lucide-react';
+import { Users, FileText, Pill, Clipboard, FlaskConical, Stethoscope, Activity } from 'lucide-react';
 import StatsCard from '../Common/StatsCard';
 import Modal from '../Common/Modal';
 import PrescriptionForm from './QuickActions/PrescriptionForm';
@@ -16,7 +16,6 @@ const DashboardOverview = ({user}) => {
 
   const stats = [
     { title: 'Total Patients', value: '1,234', icon: Users, color: 'teal', trend: '+12%' },
-    { title: 'Today\'s Calendar Events', value: '24', icon: Calendar, color: 'orange', trend: '+3%' }, // Orange for urgent appointments
     { title: 'Patient Visits', value: '245', icon: Users, color: 'teal', trend: '+12%' },
     { title: 'Prescriptions', value: '189', icon: Activity, color: 'teal', trend: '+8%' },
     { title: 'Pending Reports', value: '8', icon: FileText, color: 'orange', trend: '-2%' }, // Orange for pending urgent reports
