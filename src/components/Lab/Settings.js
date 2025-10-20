@@ -59,8 +59,6 @@ const Settings = () => {
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'preferences', label: 'Preferences', icon: SettingsIcon },
     { id: 'security', label: 'Security', icon: Shield },
   ];
 
@@ -450,10 +448,6 @@ const Settings = () => {
     switch (activeTab) {
       case 'profile':
         return renderProfileSettings();
-      case 'notifications':
-        return renderNotificationSettings();
-      case 'preferences':
-        return renderPreferencesSettings();
       case 'security':
         return renderSecuritySettings();
       default:
