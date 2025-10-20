@@ -102,13 +102,84 @@ import axios from 'axios';
   }
 };
 
-  const handleNewPatientSubmit = (newPatient) => {
-  console.log('New patient created:', newPatient);
-  setShowNewPatientModal(false);
-  // Reload patients from API
-  // fetchPatients removed
-  alert(`Patient ${newPatient.firstName} ${newPatient.lastName} has been registered successfully!`);
+  const handleNewPatientSubmit = async (newPatient) => {
+  try {
+    const payload = {
+      firstName: newPatient.firstName,
+      lastName: newPatient.lastName,
+      username: newPatient.username,
+      password: newPatient.password,
+      age: Number(newPatient.age),
+      gender: newPatient.gender, // "Male" or "Female"
+    };
+
+    const token = localStorage.getItem("token");
+
+    const res = await axios.post(
+      "http://localhost:3000/api/v1/auth/patient/register",
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const createdPatient = res.data;
+    console.log("New patient created:", createdPatient);
+
+    setShowNewPatientModal(false);
+
+    // ✅ Centered success popup
+    const popup = document.createElement("div");
+    popup.innerText = `✅ Patient ${createdPatient.firstName} ${createdPatient.lastName} registered successfully!`;
+    popup.style.position = "fixed";
+    popup.style.top = "50%";
+    popup.style.left = "50%";
+    popup.style.transform = "translate(-50%, -50%)"; // center vertically & horizontally
+    popup.style.backgroundColor = "#10B981"; // green
+    popup.style.color = "white";
+    popup.style.padding = "16px 24px";
+    popup.style.borderRadius = "10px";
+    popup.style.fontWeight = "500";
+    popup.style.fontSize = "16px";
+    popup.style.boxShadow = "0 8px 16px rgba(0,0,0,0.2)";
+    popup.style.zIndex = "9999";
+    popup.style.textAlign = "center";
+    document.body.appendChild(popup);
+
+    setTimeout(() => popup.remove(), 3000);
+  } catch (err) {
+    console.error("Failed to create patient:", err.response || err);
+
+    // ❌ Centered error popup
+    const errorPopup = document.createElement("div");
+    errorPopup.innerText =
+      err.response?.data?.message ||
+      "❌ Failed to register patient. Please check your input.";
+    errorPopup.style.position = "fixed";
+    errorPopup.style.top = "50%";
+    errorPopup.style.left = "50%";
+    errorPopup.style.transform = "translate(-50%, -50%)";
+    errorPopup.style.backgroundColor = "#EF4444"; // red
+    errorPopup.style.color = "white";
+    errorPopup.style.padding = "16px 24px";
+    errorPopup.style.borderRadius = "10px";
+    errorPopup.style.fontWeight = "500";
+    errorPopup.style.fontSize = "16px";
+    errorPopup.style.boxShadow = "0 8px 16px rgba(0,0,0,0.2)";
+    errorPopup.style.zIndex = "9999";
+    errorPopup.style.textAlign = "center";
+    document.body.appendChild(errorPopup);
+
+    setTimeout(() => errorPopup.remove(), 4000);
+  }
 };
+
+
+
+
 
   const handleViewCarePlans = (patient) => {
     setSelectedPatient(patient);

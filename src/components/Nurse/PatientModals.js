@@ -245,7 +245,7 @@ const PatientModals = ({
           <h2 className="text-xl font-semibold text-gray-800">
             {selectedPatient.firstName} {selectedPatient.lastName}
           </h2>
-          <p className="text-gray-600">Username: {selectedPatient.username}</p>
+          {/* <p className="text-gray-600">Username: {selectedPatient.username}</p> */}
           <p className="text-gray-600">Phone: {selectedPatient.phone}</p>
         </div>
       </div>
