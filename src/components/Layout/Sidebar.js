@@ -40,7 +40,7 @@ const Sidebar = ({ user }) => {
         return [
           { icon: LayoutDashboard, label: "Dashboard", path: "/doctor" },
           { icon: Users, label: "Patients", path: "/doctor/patients" },
-          { icon: Calendar, label: "Calendar", path: "/doctor/calendar" },
+          // { icon: Calendar, label: "Calendar", path: "/doctor/calendar" },
           { icon: FileText, label: "My Feed", path: "/doctor/myfeed" },
           { icon: Settings, label: "Settings", path: "/doctor/settings" },
         ];

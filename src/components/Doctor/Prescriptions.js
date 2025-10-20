@@ -28,8 +28,8 @@ const Prescriptions = ({ patient }) => {
 
   const filterOptions = [
     { id: 'all', label: 'All Prescriptions', icon: FileText },
-    { id: 'active', label: 'Active', icon: CheckCircle },
-    { id: 'completed', label: 'Completed', icon: AlertCircle }
+    // { id: 'active', label: 'Active', icon: CheckCircle },
+    // { id: 'completed', label: 'Completed', icon: AlertCircle }
   ];
 
   // ✅ Fetch prescriptions from API when component mounts or patient changes

@@ -61,8 +61,8 @@ const NurseSettings = () => {
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
-    // { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'preferences', label: 'Preferences', icon: SettingsIcon },
+    // // { id: 'notifications', label: 'Notifications', icon: Bell },
+    // { id: 'preferences', label: 'Preferences', icon: SettingsIcon },
     { id: 'security', label: 'Security', icon: Shield },
   ];
 

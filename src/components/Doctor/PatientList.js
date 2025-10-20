@@ -82,12 +82,13 @@ const PatientList = () => {
         id: p.patientId,
         age: p.age,
         gender: p.gender,
-        lastVisit: p.lastVisited,
+        lastVisit: p.visitRecords?.[0]?.lastVisitedDate || "-",
         condition: p.condition,
         firstName: p.user.firstName,
         lastName: p.user.lastName,
         phone: p.user.username,
       }));
+      console.log("Fetched patients:", mappedPatients);
       setPatients(mappedPatients);
     } catch (error) {
       console.error("Error fetching patients:", error);
@@ -292,10 +293,10 @@ const PatientList = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center space-x-2">
+          {/* <button className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center space-x-2">
             <Filter className="w-5 h-5" />
             <span>Filter</span>
-          </button>
+          </button> */}
         </div>
 
         {/* Table */}
@@ -357,7 +358,7 @@ const PatientList = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
                         <span className="text-gray-500">{patient.lastVisit}</span>
-                        <button
+                        {/* <button
                           onClick={(e) => openEditLastVisit(e, patient)}
                           className="text-gray-400 hover:text-teal-600 p-1 rounded hover:bg-teal-50"
                           title="Edit Last Visit Date"
@@ -376,7 +377,7 @@ const PatientList = () => {
                               d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
                             />
                           </svg>
-                        </button>
+                        </button> */}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -440,7 +441,7 @@ const PatientList = () => {
                         >
                           <Eye className="w-5 h-5" />
                         </button>
-                        <button
+                        {/* <button
                           className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50"
                           title="Schedule Appointment"
                           onClick={(e) => {
@@ -449,7 +450,7 @@ const PatientList = () => {
                           }}
                         >
                           <Calendar className="w-5 h-5" />
-                        </button>
+                        </button> */}
                       </div>
                     </td>
                   </tr>

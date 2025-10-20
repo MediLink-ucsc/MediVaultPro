@@ -26,6 +26,7 @@ import {
 import VitalSignsTab from './VitalSignsTab';
 import MedicalHistory from './MedicalHistory';
 import Prescriptions from './Prescriptions';
+import CarePlans from './CarePlans';
 import dataStore from '../../utils/dataStore';
 
 const EnhancedPatientDetails = ({ patient, onBack }) => {
@@ -162,11 +163,11 @@ const EnhancedPatientDetails = ({ patient, onBack }) => {
                 {patientData.condition}
               </span>
             </div>
-            <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
               <User className="w-4 h-4 text-gray-400" />
               <span className="text-sm text-gray-600">Assigned Nurse:</span>
               <span className="text-sm font-medium">{patientData.assignedNurse}</span>
-            </div>
+            </div> */}
             <div className="flex items-center space-x-2">
               <Calendar className="w-4 h-4 text-gray-400" />
               <span className="text-sm text-gray-600">Last Visit:</span>
@@ -383,7 +384,7 @@ const EnhancedPatientDetails = ({ patient, onBack }) => {
       case 'vitals':
         return <VitalSignsTab patientData={patientData}  />;
       case 'carePlans':
-        return renderCarePlans();
+        return <CarePlans patient={patientData} />; 
       case 'history':
         return <MedicalHistory patient={patientData} />;
       case 'medications':
