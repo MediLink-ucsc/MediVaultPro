@@ -5,7 +5,6 @@ import {
   Search,
   Filter,
   Eye,
-  Calendar,
   FileText,
   Pill,
   Stethoscope,
@@ -66,17 +65,16 @@ const PatientList = () => {
 
   const fetchPatients = async () => {
     try {
-
       const token = localStorage.getItem("token"); // or sessionStorage
 
       const res = await axios.get(
-      "http://localhost:3000/api/v1/patientRecords/visitedpatients",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+        "http://localhost:3000/api/v1/patientRecords/visitedpatients",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       // Map API response to the structure used in the table
       const mappedPatients = res.data.map((p) => ({
         id: p.patientId,
@@ -146,37 +144,34 @@ const PatientList = () => {
   };
 
   const handleLastVisitSubmit = async (e) => {
-      e.preventDefault();
-      const { patient, lastVisit } = editLastVisitModal;
+    e.preventDefault();
+    const { patient, lastVisit } = editLastVisitModal;
 
-      try {
-        const token = localStorage.getItem("token"); // or wherever you store it
-        console.log("Token:", token);
+    try {
+      const token = localStorage.getItem("token"); // or wherever you store it
+      console.log("Token:", token);
 
-        await axios.patch(
-          `http://localhost:3000/api/v1/auth/medvaultpro/patient/${patient.id}/last-visited`,
-          { lastVisited: lastVisit },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+      await axios.patch(
+        `http://localhost:3000/api/v1/auth/medvaultpro/patient/${patient.id}/last-visited`,
+        { lastVisited: lastVisit },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-        setPatients((prevPatients) =>
-          prevPatients.map((p) =>
-            p.id === patient.id ? { ...p, lastVisit } : p
-          )
-        );
+      setPatients((prevPatients) =>
+        prevPatients.map((p) => (p.id === patient.id ? { ...p, lastVisit } : p))
+      );
 
-        setEditLastVisitModal({ isOpen: false, patient: null, lastVisit: "" });
-        // alert("Last visited date updated successfully.");
-      } catch (error) {
-        console.error(error);
-        alert("Failed to update last visited date. Please try again.");
-      }
-    };
-
+      setEditLastVisitModal({ isOpen: false, patient: null, lastVisit: "" });
+      // alert("Last visited date updated successfully.");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to update last visited date. Please try again.");
+    }
+  };
 
   const handleConditionSubmit = async (e) => {
     e.preventDefault();
@@ -198,9 +193,7 @@ const PatientList = () => {
       );
 
       setPatients((prevPatients) =>
-        prevPatients.map((p) =>
-          p.id === patient.id ? { ...p, condition } : p
-        )
+        prevPatients.map((p) => (p.id === patient.id ? { ...p, condition } : p))
       );
 
       setEditConditionModal({ isOpen: false, patient: null, condition: "" });
@@ -210,7 +203,6 @@ const PatientList = () => {
       alert("Failed to update condition. Please try again.");
     }
   };
-
 
   const handleDelete = (patientId) => {
     const patient = patients.find((p) => p.id === patientId);
@@ -234,20 +226,6 @@ const PatientList = () => {
         name: `${patient.firstName} ${patient.lastName}`,
       });
     }
-  };
-
-  const handleScheduleCalendarEvent = (patientId) => {
-    const patient = patients.find((p) => p.id === patientId);
-    localStorage.setItem(
-      "selectedPatientForAppointment",
-      JSON.stringify({
-        id: patient?.id,
-        name: `${patient?.firstName} ${patient?.lastName}`,
-        phone: patient?.phone,
-        condition: patient?.condition,
-      })
-    );
-    navigate("/doctor/calendar");
   };
 
   const handleBackToList = () => setSelectedPatient(null);
@@ -357,7 +335,9 @@ const PatientList = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
-                        <span className="text-gray-500">{patient.lastVisit}</span>
+                        <span className="text-gray-500">
+                          {patient.lastVisit}
+                        </span>
                         {/* <button
                           onClick={(e) => openEditLastVisit(e, patient)}
                           className="text-gray-400 hover:text-teal-600 p-1 rounded hover:bg-teal-50"
@@ -441,7 +421,7 @@ const PatientList = () => {
                         >
                           <Eye className="w-5 h-5" />
                         </button>
-                        {/* <button
+                        <button
                           className="text-blue-600 hover:text-blue-800 p-1 rounded hover:bg-blue-50"
                           title="Schedule Appointment"
                           onClick={(e) => {
@@ -450,7 +430,7 @@ const PatientList = () => {
                           }}
                         >
                           <Calendar className="w-5 h-5" />
-                        </button> */}
+                        </button>
                       </div>
                     </td>
                   </tr>

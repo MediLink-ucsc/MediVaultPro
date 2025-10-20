@@ -66,7 +66,6 @@ const Settings = () => {
   const tabs = [
     { id: 'general', label: 'General', icon: Globe },
     { id: 'security', label: 'Security', icon: Shield },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'backup', label: 'Backup', icon: Database },
   ];
 
@@ -359,38 +358,8 @@ const Settings = () => {
   const renderNotificationSettings = () => (
     <div className="space-y-6">
       <div className="space-y-4">
-        {Object.entries(settings.notifications).map(([key, value]) => {
-          const descriptions = {
-            emailNotifications: 'Send notifications via email to clinic administrators',
-            smsNotifications: 'Send urgent notifications via SMS alerts',
-            systemAlerts: 'Receive system maintenance and error notifications',
-            maintenanceAlerts: 'Get notified about scheduled maintenance windows',
-            securityAlerts: 'Immediate alerts for security-related events',
-            reportNotifications: 'Daily and weekly clinic performance reports'
-          };
 
-          return (
-            <div key={key} className="flex items-center justify-between p-5 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-              <div className="flex-1">
-                <h4 className="font-medium text-gray-800 mb-1">
-                  {key.replace(/([A-Z])/g, ' $1').trim().replace(/^\w/, c => c.toUpperCase())}
-                </h4>
-                <p className="text-sm text-gray-600">
-                  {descriptions[key]}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer ml-4">
-                <input
-                  type="checkbox"
-                  checked={value}
-                  onChange={(e) => handleInputChange('notifications', key, e.target.checked)}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 peer-focus:ring-opacity-50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-teal-600 peer-checked:shadow-lg peer-checked:shadow-teal-200"></div>
-              </label>
-            </div>
-          );
-        })}
+        {/* Notification settings have been removed */}
       </div>
     </div>
   );

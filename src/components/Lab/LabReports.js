@@ -45,7 +45,7 @@ const LabReports = () => {
         ? new Date(labResult.createdAt).toISOString().split("T")[0]
         : new Date().toISOString().split("T")[0],
       technician:
-        labResult.createdBy?.name || labResult.technician || "Unknown",
+        labResult.createdBy?.name || labResult.technician || "In-house",
       urgency: labResult.labSample?.priority || labResult.priority || "normal",
       fileSize: labResult.fileSize || "Unknown",
       fileType: labResult.fileType || "PDF",
@@ -291,7 +291,13 @@ const LabReports = () => {
                     Completed
                   </div>
                   <div className="text-2xl font-bold text-gray-900">
-                    {reports.filter((r) => r.status === "completed").length}
+                    {
+                      reports.filter(
+                        (r) =>
+                          r.status === "manually_edited" ||
+                          r.status === "processed"
+                      ).length
+                    }
                   </div>
                   <div className="text-xs text-teal-600 mt-1">
                     Successfully completed

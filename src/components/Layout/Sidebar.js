@@ -3,9 +3,7 @@ import { NavLink } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
-  Calendar,
   TestTube,
-  BarChart3,
   Settings,
   FlaskConical,
   ChevronRight,
@@ -40,7 +38,6 @@ const Sidebar = ({ user }) => {
         return [
           { icon: LayoutDashboard, label: "Dashboard", path: "/doctor" },
           { icon: Users, label: "Patients", path: "/doctor/patients" },
-          // { icon: Calendar, label: "Calendar", path: "/doctor/calendar" },
           { icon: FileText, label: "My Feed", path: "/doctor/myfeed" },
           { icon: Settings, label: "Settings", path: "/doctor/settings" },
         ];
@@ -61,7 +58,6 @@ const Sidebar = ({ user }) => {
           { icon: FlaskConical, label: "Samples", path: "/lab/samples" },
           { icon: TestTube, label: "Reports", path: "/lab/reports" },
           { icon: BookTemplate, label: "Templates", path: "/lab/templates" },
-          { icon: BarChart3, label: "Analytics", path: "/lab/analytics" },
           { icon: Settings, label: "Settings", path: "/lab/settings" },
         ];
       case "clinicadmin":

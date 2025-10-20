@@ -551,11 +551,12 @@ const Samples = () => {
                       </div>
                       <div>
                         <div className="font-medium text-gray-800">
-                          {sample.patientName}
-                        </div>
-                        <div className="text-sm text-gray-500">
+                          {/* {sample.patientName} */}
                           {sample.patientId}
                         </div>
+                        {/* <div className="text-sm text-gray-500">
+                          {sample.patientId}
+                        </div> */}
                       </div>
                     </div>
                   </td>
@@ -597,36 +598,37 @@ const Samples = () => {
                   </td>
                   <td className="py-4 px-6">
                     <div>
-                      <div className="text-sm font-medium text-gray-800">
+                      {/* <div className="text-sm font-medium text-gray-800">
                         Received
-                      </div>
+                      </div> */}
                       <div className="text-xs text-gray-600">
                         {sample.receivedTime}
                       </div>
                       <div className="text-xs text-gray-500">
                         {sample.receivedDate}
                       </div>
-                      <div className="text-sm font-medium text-gray-800 mt-2">
+                      {/* <div className="text-sm font-medium text-gray-800 mt-2">
                         Expected
                       </div>
                       <div className="text-xs text-gray-600">
                         {sample.expectedTime}
-                      </div>
+                      </div> */}
                     </div>
                   </td>
                   <td className="py-4 px-6">
                     <div>
                       <div className="text-sm text-gray-800">
-                        {sample.collectedBy}
+                        {/* {sample.collectedBy} */}
+                        {sample.expectedTime}
                       </div>
-                      {sample.notes && (
+                      {/* {sample.notes && (
                         <div
                           className="text-xs text-teal-600 mt-1"
                           title={sample.notes}
                         >
                           Note available
                         </div>
-                      )}
+                      )} */}
                     </div>
                   </td>
                   <td className="py-4 px-6">
