@@ -1,7 +1,7 @@
 // src/components/Doctor/Prescriptions.js
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { 
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import {
   Search,
   Filter,
   Plus,
@@ -13,43 +13,42 @@ import {
   FileText,
   User,
   Download,
-  X
-} from 'lucide-react';
-import PrescriptionForm from './QuickActions/PrescriptionForm';
-import { jsPDF } from 'jspdf';
-
+  X,
+} from "lucide-react";
+import PrescriptionForm from "./QuickActions/PrescriptionForm";
+import { jsPDF } from "jspdf";
 
 const Prescriptions = ({ patient }) => {
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
   const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const filterOptions = [
-    { id: 'all', label: 'All Prescriptions', icon: FileText },
+    { id: "all", label: "All Prescriptions", icon: FileText },
     // { id: 'active', label: 'Active', icon: CheckCircle },
     // { id: 'completed', label: 'Completed', icon: AlertCircle }
   ];
 
   // ✅ Fetch prescriptions from API when component mounts or patient changes
-  useEffect(() => {
+  const fetchPrescriptions = async () => {
     if (!patient?.id) return;
 
-    const fetchPrescriptions = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(
-          `http://localhost:3000/api/v1/patientRecords/prescription/${patient.id}`
-        );
-        setPrescriptions(response.data || []);
-      } catch (error) {
-        console.error('Error fetching prescriptions:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `http://localhost:3000/api/v1/patientRecords/prescription/${patient.id}`
+      );
+      setPrescriptions(response.data || []);
+    } catch (error) {
+      console.error("Error fetching prescriptions:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchPrescriptions();
   }, [patient?.id]);
 
@@ -57,41 +56,59 @@ const Prescriptions = ({ patient }) => {
     const doc = new jsPDF();
 
     // Colors
-    const teal = '#14B8A6'; // similar to your UI
-    const gray = '#374151';
+    const teal = "#14B8A6"; // similar to your UI
+    const gray = "#374151";
 
     // Title & Hospital Name
     doc.setFillColor(teal);
-    doc.rect(0, 0, 210, 20, 'F'); // header bar
+    doc.rect(0, 0, 210, 20, "F"); // header bar
     doc.setFontSize(16);
-    doc.setTextColor('#ffffff');
-    doc.text('Prescription', 105, 14, { align: 'center' });
+    doc.setTextColor("#ffffff");
+    doc.text("Prescription", 105, 14, { align: "center" });
 
     doc.setFontSize(12);
     doc.setTextColor(gray);
-    doc.text(`Hospital: ${prescription.doctor?.hospitalName || ''}`, 105, 28, { align: 'center' });
+    doc.text(`Hospital: ${prescription.doctor?.hospitalName || ""}`, 105, 28, {
+      align: "center",
+    });
 
     // Patient & Doctor Info
     let y = 40;
     doc.setFontSize(12);
     doc.setTextColor(gray);
     doc.text(`Patient ID: ${prescription.patientId}`, 20, y);
-    doc.text(`Doctor: ${prescription.doctor?.user?.firstName || ''} ${prescription.doctor?.user?.lastName || ''}`, 20, y + 8);
-    doc.text(`Specialty: ${prescription.doctor?.specialty || ''}`, 20, y + 16);
-    doc.text(`License: ${prescription.doctor?.licenseNumber || ''}`, 20, y + 24);
-    doc.text(`Date: ${new Date(prescription.createdAt).toLocaleDateString()}`, 20, y + 32);
+    doc.text(
+      `Doctor: ${prescription.doctor?.user?.firstName || ""} ${
+        prescription.doctor?.user?.lastName || ""
+      }`,
+      20,
+      y + 8
+    );
+    doc.text(`Specialty: ${prescription.doctor?.specialty || ""}`, 20, y + 16);
+    doc.text(
+      `License: ${prescription.doctor?.licenseNumber || ""}`,
+      20,
+      y + 24
+    );
+    doc.text(
+      `Date: ${new Date(prescription.createdAt).toLocaleDateString()}`,
+      20,
+      y + 32
+    );
 
     // Medications Table Header
     y += 45;
     doc.setFillColor(teal);
-    doc.setTextColor('#ffffff');
-    doc.rect(20, y - 6, 170, 8, 'F');
-    doc.text('Medications', 25, y);
+    doc.setTextColor("#ffffff");
+    doc.rect(20, y - 6, 170, 8, "F");
+    doc.text("Medications", 25, y);
 
     // Medications List
     doc.setTextColor(gray);
     prescription.medications.forEach((med, index) => {
-      const medText = `${index + 1}. ${med.medicineName} - ${med.dosage}, ${med.frequency}, ${med.duration}`;
+      const medText = `${index + 1}. ${med.medicineName} - ${med.dosage}, ${
+        med.frequency
+      }, ${med.duration}`;
       doc.text(medText, 25, y + 8);
       y += 8;
     });
@@ -100,9 +117,9 @@ const Prescriptions = ({ patient }) => {
     if (prescription.additionalInstructions) {
       y += 10;
       doc.setFillColor(teal);
-      doc.setTextColor('#ffffff');
-      doc.rect(20, y - 6, 170, 8, 'F');
-      doc.text('Additional Instructions', 25, y);
+      doc.setTextColor("#ffffff");
+      doc.rect(20, y - 6, 170, 8, "F");
+      doc.text("Additional Instructions", 25, y);
       doc.setTextColor(gray);
       doc.text(prescription.additionalInstructions, 25, y + 8);
       y += 16;
@@ -111,23 +128,26 @@ const Prescriptions = ({ patient }) => {
     // Footer
     doc.setFontSize(10);
     doc.setTextColor(gray);
-    doc.text(`Generated by MedVaultPro`, 105, 290, { align: 'center' });
+    doc.text(`Generated by MedVaultPro`, 105, 290, { align: "center" });
 
     // Save the PDF
     doc.save(`Prescription_${prescription.prescriptionId}.pdf`);
   };
 
-
-
   // ✅ Filter prescriptions based on search & status
-  const filteredPrescriptions = prescriptions.filter(prescription => {
-    const matchesStatus = filterStatus === 'all' || prescription.status === filterStatus;
+  const filteredPrescriptions = prescriptions.filter((prescription) => {
+    const matchesStatus =
+      filterStatus === "all" || prescription.status === filterStatus;
     const matchesSearch =
       !searchTerm ||
-      prescription.medications.some(med =>
+      prescription.medications.some((med) =>
         med.medicineName.toLowerCase().includes(searchTerm.toLowerCase())
       ) ||
-      (prescription.doctor?.user?.firstName + ' ' + prescription.doctor?.user?.lastName)
+      (
+        prescription.doctor?.user?.firstName +
+        " " +
+        prescription.doctor?.user?.lastName
+      )
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
 
@@ -135,17 +155,22 @@ const Prescriptions = ({ patient }) => {
   });
 
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
 
   const renderPrescriptionCard = (prescription) => {
-    const doctorName = `${prescription.doctor?.user?.firstName || ''} ${prescription.doctor?.user?.lastName || ''}`;
+    const doctorName = `${prescription.doctor?.user?.firstName || ""} ${
+      prescription.doctor?.user?.lastName || ""
+    }`;
     return (
-      <div key={prescription.prescriptionId} className="bg-white rounded-lg border border-gray-200 p-4 mb-4 hover:shadow-md transition-shadow">
+      <div
+        key={prescription.prescriptionId}
+        className="bg-white rounded-lg border border-gray-200 p-4 mb-4 hover:shadow-md transition-shadow"
+      >
         {/* Card Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-3">
@@ -163,7 +188,9 @@ const Prescriptions = ({ patient }) => {
                 <User className="w-4 h-4 text-gray-400" />
                 <span className="text-sm text-gray-600">{doctorName}</span>
                 <span className="text-sm text-gray-400">•</span>
-                <span className="text-sm text-gray-600">{prescription.doctor?.specialty}</span>
+                <span className="text-sm text-gray-600">
+                  {prescription.doctor?.specialty}
+                </span>
               </div>
             </div>
           </div>
@@ -171,24 +198,34 @@ const Prescriptions = ({ patient }) => {
 
         {/* Medications List */}
         <div className="space-y-3">
-          <h4 className="text-sm font-medium text-gray-700">Prescribed Medications:</h4>
+          <h4 className="text-sm font-medium text-gray-700">
+            Prescribed Medications:
+          </h4>
           {prescription.medications.map((medication, index) => (
             <div key={index} className="bg-gray-50 rounded-lg p-3">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-gray-800">{medication.medicineName}</span>
+                <span className="font-medium text-gray-800">
+                  {medication.medicineName}
+                </span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                 <div>
                   <span className="text-gray-600">Dosage:</span>
-                  <span className="ml-2 text-gray-800">{medication.dosage}</span>
+                  <span className="ml-2 text-gray-800">
+                    {medication.dosage}
+                  </span>
                 </div>
                 <div>
                   <span className="text-gray-600">Frequency:</span>
-                  <span className="ml-2 text-gray-800">{medication.frequency}</span>
+                  <span className="ml-2 text-gray-800">
+                    {medication.frequency}
+                  </span>
                 </div>
                 <div>
                   <span className="text-gray-600">Duration:</span>
-                  <span className="ml-2 text-gray-800">{medication.duration}</span>
+                  <span className="ml-2 text-gray-800">
+                    {medication.duration}
+                  </span>
                 </div>
               </div>
             </div>
@@ -198,8 +235,12 @@ const Prescriptions = ({ patient }) => {
         {/* Notes */}
         {prescription.additionalInstructions && (
           <div className="mt-4 text-sm">
-            <span className="font-medium text-gray-700">Additional Instructions:</span>
-            <p className="mt-1 text-gray-600">{prescription.additionalInstructions}</p>
+            <span className="font-medium text-gray-700">
+              Additional Instructions:
+            </span>
+            <p className="mt-1 text-gray-600">
+              {prescription.additionalInstructions}
+            </p>
           </div>
         )}
 
@@ -212,7 +253,6 @@ const Prescriptions = ({ patient }) => {
             <Download className="w-4 h-4" />
             <span className="text-sm">Download PDF</span>
           </button>
-
         </div>
       </div>
     );
@@ -223,14 +263,14 @@ const Prescriptions = ({ patient }) => {
       {/* Filters */}
       <div className="bg-white rounded-lg border border-gray-200 p-4">
         <div className="flex flex-wrap gap-3">
-          {filterOptions.map(option => (
+          {filterOptions.map((option) => (
             <button
               key={option.id}
               onClick={() => setFilterStatus(option.id)}
               className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-colors ${
                 filterStatus === option.id
-                  ? 'bg-teal-100 text-teal-700 border-teal-200'
-                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                  ? "bg-teal-100 text-teal-700 border-teal-200"
+                  : "bg-gray-50 text-gray-600 hover:bg-gray-100"
               } border`}
             >
               <option.icon className="w-4 h-4" />
@@ -252,7 +292,7 @@ const Prescriptions = ({ patient }) => {
 
       {/* New Prescription Button */}
       <div className="flex justify-end">
-        <button 
+        <button
           onClick={() => setShowPrescriptionForm(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700"
         >
@@ -266,19 +306,23 @@ const Prescriptions = ({ patient }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">New Prescription</h2>
-              <button 
+              <h2 className="text-xl font-semibold text-gray-800">
+                New Prescription
+              </h2>
+              <button
                 onClick={() => setShowPrescriptionForm(false)}
                 className="p-2 hover:bg-gray-100 rounded-full"
               >
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             </div>
-            <PrescriptionForm 
+            <PrescriptionForm
               selectedPatient={patient}
               onSubmit={(data) => {
-                console.log('Prescription submitted:', data);
+                console.log("Prescription submitted:", data);
                 setShowPrescriptionForm(false);
+                // Refresh prescriptions list
+                fetchPrescriptions();
               }}
             />
           </div>
@@ -288,9 +332,13 @@ const Prescriptions = ({ patient }) => {
       {/* Prescription List */}
       <div className="space-y-4">
         {loading ? (
-          <div className="text-center py-8 text-gray-500">Loading prescriptions...</div>
+          <div className="text-center py-8 text-gray-500">
+            Loading prescriptions...
+          </div>
         ) : filteredPrescriptions.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">No prescriptions found.</div>
+          <div className="text-center py-8 text-gray-500">
+            No prescriptions found.
+          </div>
         ) : (
           filteredPrescriptions.map(renderPrescriptionCard)
         )}
@@ -300,4 +348,3 @@ const Prescriptions = ({ patient }) => {
 };
 
 export default Prescriptions;
-

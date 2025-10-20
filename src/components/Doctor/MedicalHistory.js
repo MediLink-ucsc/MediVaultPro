@@ -30,17 +30,43 @@ const MedicalHistory = ({ patient }) => {
   const [selectedTest, setSelectedTest] = useState(null);
   const [medicalHistory, setMedicalHistory] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [labOrders, setLabOrders] = useState([]);
+  const [labResults, setLabResults] = useState([]);
+
+  // Fetch lab orders and lab results
+  const fetchLabData = async () => {
+    if (!patient?.id) return;
+
+    try {
+      const token = localStorage.getItem("token");
+
+      // Fetch lab orders
+      const ordersResponse = await axios.get(
+        `http://localhost:3000/api/v1/patientRecords/laborder/${patient.id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setLabOrders(ordersResponse.data || []);
+
+      // Fetch lab results
+      const resultsResponse = await axios.get(
+        `http://localhost:3000/api/v1/labReport/workflow/patients/${patient.id}/history`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setLabResults(resultsResponse.data?.data || {});
+    } catch (error) {
+      console.error("Error fetching lab data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchLabData();
+  }, [patient?.id]);
 
   useEffect(() => {
     const fetchMedicalHistory = async () => {
       if (!patient?.id) return;
 
       try {
-        // TODO: Replace this with actual API call
-        // const response = await fetch(`/api/patients/${patient.id}/medical-history`);
-        // const data = await response.json();
-        // setMedicalHistory(data);
-
         // Temporary mock data
         setMedicalHistory([
           {
@@ -246,166 +272,151 @@ const MedicalHistory = ({ patient }) => {
         return <Clock className="w-4 h-4 text-gray-600" />;
     }
   };
-  
 
+  // Transform lab orders and results into the format expected by the UI
+  const transformLabData = () => {
+    const transformedLabs = [];
 
-  // Hardcoded Lab Entries (for now)
-  const hardcodedLabHistory = [
-    {
-      id: 2,
-      date: "2024-06-20",
-      time: "2:00 PM",
-      type: "lab",
-      title: "Comprehensive Metabolic Panel and Lipid Profile",
-      doctor: "Dr. Sunethra Jayasinghe",
-      department: "Laboratory - Nawaloka Hospital",
-      status: "completed",
-      orderDetails: {
-        tests: [
-          {
-            test: "Comprehensive Metabolic Panel",
-            urgency: "Routine",
-            instructions: "8-hour fasting required",
-          },
-          {
-            test: "Lipid Profile",
-            urgency: "Routine",
-            instructions: "12-hour fasting required",
-          },
-        ],
-        clinicalInfo: "Monitoring diabetes and lipid management",
-      },
-      specimens: [
-        {
-          type: "Blood",
-          container: "Gold Top SST",
-          collectionTime: "2024-06-20 08:30 AM",
-          collectedBy: "Lab Tech Perera",
+    labOrders.forEach((order) => {
+      // Find corresponding samples/results for this order
+      const orderSamples =
+        labResults.samples?.filter((sample) =>
+          order.labTests?.some(
+            (test) =>
+              test.name === sample.testType?.value ||
+              test.name === sample.testType?.label
+          )
+        ) || [];
+
+      const labEntry = {
+        id: order.labOrderId,
+        date: new Date(order.createdAt).toLocaleDateString(),
+        time: new Date(order.createdAt).toLocaleTimeString(),
+        type: "lab",
+        title: order.labTests?.map((t) => t.name).join(", ") || "Lab Order",
+        doctor: order.doctor?.user
+          ? `Dr. ${order.doctor.user.firstName} ${order.doctor.user.lastName}`
+          : "Unknown Doctor",
+        department: "Laboratory",
+        status: orderSamples.some((s) => s.status === "completed")
+          ? "completed"
+          : "pending",
+        orderDetails: {
+          tests:
+            order.labTests?.map((test) => {
+              // Find matching sample for this test
+              const matchingSample = orderSamples.find(
+                (sample) =>
+                  test.name === sample.testType?.value ||
+                  test.name === sample.testType?.label
+              );
+
+              return {
+                test: test.name,
+                urgency: test.urgency,
+                instructions: test.specialInstructions || "",
+                status: matchingSample?.status || "pending",
+                results: matchingSample?.labResults?.[0]
+                  ? {
+                      uploadedBy: "Lab Technician",
+                      uploadDate: new Date(
+                        matchingSample.labResults[0].createdAt
+                      ).toLocaleDateString(),
+                      uploadTime: new Date(
+                        matchingSample.labResults[0].createdAt
+                      ).toLocaleTimeString(),
+                      parameters: matchingSample.labResults[0].extractedData
+                        ? Object.keys(
+                            matchingSample.labResults[0].extractedData
+                          )
+                            .filter(
+                              (key) =>
+                                key !== "_editMetadata" && key !== "Laboratory"
+                            )
+                            .map((key) => ({
+                              name: key,
+                              value:
+                                matchingSample.labResults[0].extractedData[key]
+                                  .value,
+                              unit: matchingSample.labResults[0].extractedData[
+                                key
+                              ].unit,
+                              range: "N/A",
+                              flag:
+                                matchingSample.labResults[0].extractedData[key]
+                                  .status === "normal"
+                                  ? "Normal"
+                                  : "Abnormal",
+                            }))
+                        : [],
+                      notes: matchingSample.notes || "",
+                      attachments: matchingSample.labResults[0]?.reportUrl
+                        ? ["Lab Report PDF"]
+                        : [],
+                    }
+                  : null,
+              };
+            }) || [],
+          clinicalInfo:
+            order.clinicalInformation || "No clinical information provided",
         },
-      ],
-      results: [
-        {
-          category: "Metabolic Panel",
-          tests: [
-            {
-              name: "Glucose, Fasting",
-              value: "142",
-              unit: "mg/dL",
-              range: "70-99",
-              flag: "High",
-            },
-            {
-              name: "Creatinine",
-              value: "0.9",
-              unit: "mg/dL",
-              range: "0.6-1.2",
-              flag: "Normal",
-            },
-            {
-              name: "BUN",
-              value: "15",
-              unit: "mg/dL",
-              range: "7-20",
-              flag: "Normal",
-            },
-            {
-              name: "eGFR",
-              value: "90",
-              unit: "mL/min",
-              range: ">60",
-              flag: "Normal",
-            },
-          ],
-        },
-        {
-          category: "Lipid Panel",
-          tests: [
-            {
-              name: "Total Cholesterol",
-              value: "195",
-              unit: "mg/dL",
-              range: "<200",
-              flag: "Normal",
-            },
-            {
-              name: "Triglycerides",
-              value: "150",
-              unit: "mg/dL",
-              range: "<150",
-              flag: "Borderline",
-            },
-            {
-              name: "HDL Cholesterol",
-              value: "45",
-              unit: "mg/dL",
-              range: ">40",
-              flag: "Normal",
-            },
-            {
-              name: "LDL Cholesterol",
-              value: "120",
-              unit: "mg/dL",
-              range: "<100",
-              flag: "High",
-            },
-          ],
-        },
-      ],
-      interpretation:
-        "Elevated fasting glucose consistent with diabetes. Lipid panel shows borderline triglycerides and elevated LDL cholesterol.",
-      recommendations: [
-        "Consider adjustment of diabetes management",
-        "Recommend lifestyle modifications for lipid management",
-        "Repeat lipid panel in 3 months after lifestyle changes",
-      ],
-    },
-  ];
+      };
+
+      transformedLabs.push(labEntry);
+    });
+
+    return transformedLabs;
+  };
 
   // Fetch SOAP notes for this patient
-  useEffect(() => {
+  const fetchSoapNotes = async () => {
     if (!patient?.id) return;
 
-    const fetchSoapNotes = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get(
-          `http://localhost:3000/api/v1/patientRecords/soapnote/${patient.id}`
-        );
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      const res = await axios.get(
+        `http://localhost:3000/api/v1/patientRecords/soapnote/${patient.id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-        const mappedSoapNotes = res.data.map((entry) => ({
-          id: entry.id,
-          date: new Date(entry.dateTime).toLocaleDateString(),
-          time: new Date(entry.dateTime).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          type: "consultation",
-          title: `SOAP Note - ${entry.doctor.user.firstName} ${entry.doctor.user.lastName}`,
-          doctor: `${entry.doctor.user.firstName} ${entry.doctor.user.lastName}`,
-          department:
-            entry.doctor.hospitalName + " - " + entry.doctor.specialty,
-          status: "completed",
-          subjective: entry.subjective,
-          objective: entry.objective,
-          assessment: entry.assessment,
-          plan: entry.plan,
-          patientId: entry.patientId,
-        }));
+      const mappedSoapNotes = res.data.map((entry) => ({
+        id: entry.id,
+        date: new Date(entry.dateTime).toLocaleDateString(),
+        time: new Date(entry.dateTime).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        type: "consultation",
+        title: `SOAP Note - ${entry.doctor.user.firstName} ${entry.doctor.user.lastName}`,
+        doctor: `${entry.doctor.user.firstName} ${entry.doctor.user.lastName}`,
+        department: entry.doctor.hospitalName + " - " + entry.doctor.specialty,
+        status: "completed",
+        subjective: entry.subjective,
+        objective: entry.objective,
+        assessment: entry.assessment,
+        plan: entry.plan,
+        patientId: entry.patientId,
+      }));
 
-        setMedicalHistory([...mappedSoapNotes, ...hardcodedLabHistory]);
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch SOAP notes:", error);
-        setMedicalHistory([...hardcodedLabHistory]);
-        setLoading(false);
-      }
-    };
+      setMedicalHistory(mappedSoapNotes);
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch SOAP notes:", error);
+      setMedicalHistory([]);
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchSoapNotes();
   }, [patient]);
 
+  // Combine medical history with transformed lab data
+  const combinedHistory = [...medicalHistory, ...transformLabData()];
+
   // Filter history entries
-  const filteredHistory = medicalHistory.filter((entry) => {
+  const filteredHistory = combinedHistory.filter((entry) => {
     const matchesType =
       filterType === "all" ||
       (filterType === "soap" && entry.type === "consultation") ||
@@ -447,9 +458,7 @@ const MedicalHistory = ({ patient }) => {
             </div>
             <div>
               <h3 className="font-medium text-gray-900">{entry.title}</h3>
-              <p className="text-sm text-gray-500">
-                {entry.date} 
-              </p>
+              <p className="text-sm text-gray-500">{entry.date}</p>
             </div>
           </div>
           <div
@@ -466,12 +475,12 @@ const MedicalHistory = ({ patient }) => {
         </div>
 
         <div className="space-y-3">
-          <div className="flex items-center space-x-2">
+          {/* <div className="flex items-center space-x-2">
             <User className="w-4 h-4 text-gray-400" />
             <span className="text-sm text-gray-600">{entry.doctor}</span>
             <span className="text-sm text-gray-400">•</span>
             <span className="text-sm text-gray-600">{entry.department}</span>
-          </div>
+          </div> */}
 
           {/* SOAP Note */}
           {isSOAP && (
@@ -549,7 +558,8 @@ const MedicalHistory = ({ patient }) => {
                                   : "bg-teal-100 text-teal-800"
                               }`}
                             >
-                              {(test.urgency?.charAt(0)?.toUpperCase() || "") + (test.urgency?.slice(1) || "")}
+                              {(test.urgency?.charAt(0)?.toUpperCase() || "") +
+                                (test.urgency?.slice(1) || "")}
                             </span>
                             <span
                               className={`px-2 py-0.5 text-xs font-medium rounded-full ${
@@ -560,7 +570,8 @@ const MedicalHistory = ({ patient }) => {
                                   : "bg-gray-100 text-gray-800"
                               }`}
                             >
-                              {(test.status?.charAt(0)?.toUpperCase() || "") + (test.status?.slice(1) || "")}
+                              {(test.status?.charAt(0)?.toUpperCase() || "") +
+                                (test.status?.slice(1) || "")}
                             </span>
                           </div>
                         </div>
@@ -745,8 +756,6 @@ const MedicalHistory = ({ patient }) => {
               )}
             </div>
           )}
-
-         
         </div>
       </div>
     );
@@ -833,6 +842,8 @@ const MedicalHistory = ({ patient }) => {
               onSubmit={(data) => {
                 console.log("SOAP Note submitted:", data);
                 setShowSOAPForm(false);
+                // Refresh SOAP notes
+                fetchSoapNotes();
               }}
             />
           </div>
@@ -859,6 +870,8 @@ const MedicalHistory = ({ patient }) => {
               onSubmit={(data) => {
                 console.log("Lab Order submitted:", data);
                 setShowLabOrderForm(false);
+                // Refresh lab data
+                fetchLabData();
               }}
             />
           </div>
