@@ -4,7 +4,6 @@ import { Routes, Route } from "react-router-dom";
 import LabDashboardOverview from "./LabDashboardOverview";
 import LabReports from "./LabReports";
 import Settings from "./Settings";
-import Analytics from "./Analytics";
 import Samples from "./Samples";
 import Templates from "./Templates";
 
@@ -13,7 +12,6 @@ const LabDashboard = ({ user }) => {
     <Routes>
       <Route path="/" element={<LabDashboardOverview user={user} />} />
       <Route path="/samples" element={<Samples />} />
-      <Route path="/analytics" element={<Analytics />} />
       <Route path="/reports" element={<LabReports />} />
       <Route path="/templates" element={<Templates />} />
       <Route path="/settings" element={<Settings />} />

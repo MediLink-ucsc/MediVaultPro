@@ -4,7 +4,6 @@ import {
   LayoutDashboard,
   Users,
   TestTube,
-  BarChart3,
   Settings,
   FlaskConical,
   ChevronRight,
@@ -59,7 +58,6 @@ const Sidebar = ({ user }) => {
           { icon: FlaskConical, label: "Samples", path: "/lab/samples" },
           { icon: TestTube, label: "Reports", path: "/lab/reports" },
           { icon: BookTemplate, label: "Templates", path: "/lab/templates" },
-          { icon: BarChart3, label: "Analytics", path: "/lab/analytics" },
           { icon: Settings, label: "Settings", path: "/lab/settings" },
         ];
       case "clinicadmin":
