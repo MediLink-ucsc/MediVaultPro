@@ -1,47 +1,60 @@
-import { useState } from 'react';
-import { Save } from 'lucide-react';
-import { motion } from 'framer-motion';
-import Button from '../../Common/Button';
-import axios from 'axios';
+import { useState } from "react";
+import { Save } from "lucide-react";
+import { motion } from "framer-motion";
+import Button from "../../Common/Button";
+import axios from "axios";
 
 const QuickExamForm = ({ selectedPatient }) => {
-  const [patientId, setPatientId] = useState(selectedPatient?.id || '');
-  const [username, setUsername] = useState('');
-  const [patientInfo, setPatientInfo] = useState(null); // store fetched patient info
+  const [patientId, setPatientId] = useState(
+    selectedPatient?.id?.toString() ||
+      selectedPatient?.patientId?.toString() ||
+      ""
+  );
+  const [username, setUsername] = useState("");
+  const [patientInfo, setPatientInfo] = useState(
+    selectedPatient ? selectedPatient : null
+  ); // store fetched patient info
 
-  const [bloodPressure, setBloodPressure] = useState('');
-  const [heartRate, setHeartRate] = useState('');
-  const [temperature, setTemperature] = useState('');
-  const [spo2, setSpo2] = useState('');
-  const [weight, setWeight] = useState('');
-  const [height, setHeight] = useState('');
-  const [generalAppearance, setGeneralAppearance] = useState('');
-  const [cardiovascular, setCardiovascular] = useState('');
-  const [respiratory, setRespiratory] = useState('');
-  const [abdominal, setAbdominal] = useState('');
-  const [neurological, setNeurological] = useState('');
-  const [additionalNotes, setAdditionalNotes] = useState('');
+  const [bloodPressure, setBloodPressure] = useState("");
+  const [heartRate, setHeartRate] = useState("");
+  const [temperature, setTemperature] = useState("");
+  const [spo2, setSpo2] = useState("");
+  const [weight, setWeight] = useState("");
+  const [height, setHeight] = useState("");
+  const [generalAppearance, setGeneralAppearance] = useState("");
+  const [cardiovascular, setCardiovascular] = useState("");
+  const [respiratory, setRespiratory] = useState("");
+  const [abdominal, setAbdominal] = useState("");
+  const [neurological, setNeurological] = useState("");
+  const [additionalNotes, setAdditionalNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1, when: 'beforeChildren' } },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1, when: "beforeChildren" },
+    },
   };
 
   const itemVariants = {
     hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100 } },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { type: "spring", stiffness: 100 },
+    },
   };
 
   // Fetch patient by username
   const fetchPatientByUsername = async () => {
-    if (!username) return alert('Please enter a username or contact number');
+    if (!username) return alert("Please enter a username or contact number");
 
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
-        alert('Unauthorized: No token found');
+        alert("Unauthorized: No token found");
         return;
       }
 
@@ -54,13 +67,13 @@ const QuickExamForm = ({ selectedPatient }) => {
         setPatientId(response.data.patientId.toString());
         setPatientInfo(response.data.user); // store name/username
       } else {
-        alert('Patient not found');
-        setPatientId('');
+        alert("Patient not found");
+        setPatientId("");
         setPatientInfo(null);
       }
     } catch (error) {
-      console.error('Error fetching patient:', error);
-      alert('Failed to fetch patient');
+      console.error("Error fetching patient:", error);
+      alert("Failed to fetch patient");
     } finally {
       setLoading(false);
     }
@@ -69,12 +82,13 @@ const QuickExamForm = ({ selectedPatient }) => {
   // Submit quick exam using axios
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!patientId) return alert('Please fetch a valid patient before submitting');
+    if (!patientId)
+      return alert("Please fetch a valid patient before submitting");
 
     setLoading(true);
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (!token) {
-      alert('Unauthorized: No token found');
+      alert("Unauthorized: No token found");
       setLoading(false);
       return;
     }
@@ -97,29 +111,34 @@ const QuickExamForm = ({ selectedPatient }) => {
 
     try {
       const response = await axios.post(
-        'http://localhost:3000/api/v1/patientRecords/quickexams/insert',
+        "http://localhost:3000/api/v1/patientRecords/quickexams/insert",
         payload,
-        { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` } }
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
 
-      alert('Quick exam saved successfully!');
+      alert("Quick exam saved successfully!");
 
       // Clear all fields except patientId
-      setBloodPressure('');
-      setHeartRate('');
-      setTemperature('');
-      setSpo2('');
-      setWeight('');
-      setHeight('');
-      setGeneralAppearance('');
-      setCardiovascular('');
-      setRespiratory('');
-      setAbdominal('');
-      setNeurological('');
-      setAdditionalNotes('');
+      setBloodPressure("");
+      setHeartRate("");
+      setTemperature("");
+      setSpo2("");
+      setWeight("");
+      setHeight("");
+      setGeneralAppearance("");
+      setCardiovascular("");
+      setRespiratory("");
+      setAbdominal("");
+      setNeurological("");
+      setAdditionalNotes("");
     } catch (error) {
-      console.error('Error saving quick exam:', error);
-      alert(error.response?.data?.message || 'Failed to save quick exam');
+      console.error("Error saving quick exam:", error);
+      alert(error.response?.data?.message || "Failed to save quick exam");
     } finally {
       setLoading(false);
     }
@@ -143,32 +162,52 @@ const QuickExamForm = ({ selectedPatient }) => {
             onChange={(e) => setUsername(e.target.value)}
             className="flex-1 p-3.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500"
           />
-          <Button type="button" size="sm" onClick={fetchPatientByUsername} disabled={loading}>
-            {loading ? 'Loading...' : 'Get ID'}
+          <Button
+            type="button"
+            size="sm"
+            onClick={fetchPatientByUsername}
+            disabled={loading}
+          >
+            {loading ? "Loading..." : "Get ID"}
           </Button>
         </motion.div>
       )}
 
       {/* Patient ID */}
       <motion.div variants={itemVariants}>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Patient *</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Patient *
+        </label>
         <input
           type="text"
           value={patientId}
           readOnly
-          className="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-100"
+          className="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50"
+          required
         />
-        {patientInfo && (
+        {selectedPatient && (
           <p className="mt-2 text-green-600">
-            Patient: {patientInfo.firstName} {patientInfo.lastName} ({patientInfo.username})
+            Patient: {selectedPatient.firstName} {selectedPatient.lastName}
+            {selectedPatient.phone && ` (${selectedPatient.phone})`}
+          </p>
+        )}
+        {patientInfo && !selectedPatient && (
+          <p className="mt-2 text-green-600">
+            Patient: {patientInfo.firstName} {patientInfo.lastName} (
+            {patientInfo.username || patientInfo.phone})
           </p>
         )}
       </motion.div>
 
       {/* Vital Signs */}
-      <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <motion.div
+        variants={itemVariants}
+        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+      >
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Blood Pressure (mmHg)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Blood Pressure (mmHg)
+          </label>
           <input
             type="text"
             value={bloodPressure}
@@ -178,7 +217,9 @@ const QuickExamForm = ({ selectedPatient }) => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Heart Rate (bpm)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Heart Rate (bpm)
+          </label>
           <input
             type="number"
             value={heartRate}
@@ -188,7 +229,9 @@ const QuickExamForm = ({ selectedPatient }) => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Temperature (°C)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Temperature (°C)
+          </label>
           <input
             type="number"
             step="0.1"
@@ -199,7 +242,9 @@ const QuickExamForm = ({ selectedPatient }) => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">SpO2 (%)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            SpO2 (%)
+          </label>
           <input
             type="number"
             value={spo2}
@@ -211,9 +256,14 @@ const QuickExamForm = ({ selectedPatient }) => {
       </motion.div>
 
       {/* Weight & Height */}
-      <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <motion.div
+        variants={itemVariants}
+        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+      >
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Weight (kg)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Weight (kg)
+          </label>
           <input
             type="number"
             step="0.1"
@@ -224,7 +274,9 @@ const QuickExamForm = ({ selectedPatient }) => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Height (cm)</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Height (cm)
+          </label>
           <input
             type="number"
             value={height}
@@ -237,7 +289,9 @@ const QuickExamForm = ({ selectedPatient }) => {
 
       {/* System Review */}
       <motion.div variants={itemVariants}>
-        <label className="block text-sm font-medium text-gray-700 mb-2">General Appearance</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          General Appearance
+        </label>
         <textarea
           rows="3"
           value={generalAppearance}
@@ -247,9 +301,14 @@ const QuickExamForm = ({ selectedPatient }) => {
         />
       </motion.div>
 
-      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <motion.div
+        variants={itemVariants}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Cardiovascular</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Cardiovascular
+          </label>
           <input
             type="text"
             value={cardiovascular}
@@ -259,7 +318,9 @@ const QuickExamForm = ({ selectedPatient }) => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Respiratory</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Respiratory
+          </label>
           <input
             type="text"
             value={respiratory}
@@ -269,7 +330,9 @@ const QuickExamForm = ({ selectedPatient }) => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Abdominal</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Abdominal
+          </label>
           <input
             type="text"
             value={abdominal}
@@ -279,7 +342,9 @@ const QuickExamForm = ({ selectedPatient }) => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Neurological</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Neurological
+          </label>
           <input
             type="text"
             value={neurological}
@@ -292,7 +357,9 @@ const QuickExamForm = ({ selectedPatient }) => {
 
       {/* Additional Notes */}
       <motion.div variants={itemVariants}>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Additional Notes</label>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Additional Notes
+        </label>
         <textarea
           rows="4"
           value={additionalNotes}
@@ -303,7 +370,10 @@ const QuickExamForm = ({ selectedPatient }) => {
       </motion.div>
 
       {/* Submit Button */}
-      <motion.div className="pt-6 border-t border-gray-100" variants={itemVariants}>
+      <motion.div
+        className="pt-6 border-t border-gray-100"
+        variants={itemVariants}
+      >
         <Button
           type="submit"
           variant="primary"
@@ -314,7 +384,7 @@ const QuickExamForm = ({ selectedPatient }) => {
           fullWidth
           disabled={loading}
         >
-          {loading ? 'Saving...' : 'Save Examination'}
+          {loading ? "Saving..." : "Save Examination"}
         </Button>
       </motion.div>
     </motion.form>

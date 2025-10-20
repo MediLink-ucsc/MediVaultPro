@@ -231,9 +231,16 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
     { name: "", dosage: "", frequency: "", duration: "" },
   ]);
   const [additionalInstructions, setAdditionalInstructions] = useState("");
-  const [patientId, setPatientId] = useState(selectedPatient?.patientId || "");
+  // Handle both 'id' and 'patientId' properties from selectedPatient
+  const [patientId, setPatientId] = useState(
+    selectedPatient?.id?.toString() ||
+      selectedPatient?.patientId?.toString() ||
+      ""
+  );
   const [username, setUsername] = useState("");
-  const [fetchedPatient, setFetchedPatient] = useState(null);
+  const [fetchedPatient, setFetchedPatient] = useState(
+    selectedPatient ? selectedPatient : null
+  );
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (index, field, value) => {
@@ -283,8 +290,6 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
     }
   };
 
-  
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!patientId) {
@@ -313,13 +318,12 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      alert("Prescription sent successfully!");
+      // alert("Prescription sent successfully!");
 
       showToast(
         `Prescription sent successfully! ID: ${data.prescriptionId}`,
         "success"
       );
-      
 
       if (onSubmit) onSubmit(e);
     } catch (error) {
@@ -341,29 +345,30 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
       animate="visible"
     >
       {/* Username & Fetch */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Patient Username / Contact *
-        </label>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Enter username or contact"
-            className="flex-1 p-3 border rounded-xl"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            disabled={!!selectedPatient}
-          />
-          <Button
-            type="button"
-            onClick={fetchPatientByUsername}
-            size="sm"
-            disabled={loading}
-          >
-            {loading ? "Loading..." : "Get ID"}
-          </Button>
+      {!selectedPatient && (
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Patient Username / Contact *
+          </label>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Enter username or contact"
+              className="flex-1 p-3 border rounded-xl"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <Button
+              type="button"
+              onClick={fetchPatientByUsername}
+              size="sm"
+              disabled={loading}
+            >
+              {loading ? "Loading..." : "Get ID"}
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Patient ID Field */}
       <div className="mb-4">
@@ -372,16 +377,24 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
         </label>
         <input
           type="text"
-          className="w-full p-3.5 border border-gray-200 rounded-xl"
+          className="w-full p-3.5 border border-gray-200 rounded-xl bg-gray-50"
           value={patientId}
           readOnly
           placeholder="Fetch patient first"
           required
         />
-        {fetchedPatient && (
+        {selectedPatient && (
           <p className="mt-2 text-green-600">
-            Patient: {fetchedPatient.user.firstName}{" "}
-            {fetchedPatient.user.lastName} ({fetchedPatient.user.username})
+            Patient: {selectedPatient.firstName} {selectedPatient.lastName}
+            {selectedPatient.phone && ` (${selectedPatient.phone})`}
+          </p>
+        )}
+        {fetchedPatient && !selectedPatient && (
+          <p className="mt-2 text-green-600">
+            Patient:{" "}
+            {fetchedPatient.user?.firstName || fetchedPatient.firstName}{" "}
+            {fetchedPatient.user?.lastName || fetchedPatient.lastName} (
+            {fetchedPatient.user?.username || fetchedPatient.phone})
           </p>
         )}
       </div>
