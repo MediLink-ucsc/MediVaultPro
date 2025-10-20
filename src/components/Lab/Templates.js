@@ -486,7 +486,7 @@ const Templates = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            {/* <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-600">Most Used</p>
@@ -498,7 +498,7 @@ const Templates = () => {
                   <Eye className="w-6 h-6 text-orange-600" />
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <div>
