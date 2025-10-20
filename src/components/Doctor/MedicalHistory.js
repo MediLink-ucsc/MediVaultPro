@@ -448,7 +448,7 @@ const MedicalHistory = ({ patient }) => {
             <div>
               <h3 className="font-medium text-gray-900">{entry.title}</h3>
               <p className="text-sm text-gray-500">
-                {entry.date} • {entry.time}
+                {entry.date} 
               </p>
             </div>
           </div>

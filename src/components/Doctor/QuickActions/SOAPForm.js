@@ -66,7 +66,7 @@ const SOAPForm = ({ selectedPatient, onSubmit }) => {
       }
 
       const payload = {
-        patientId,
+        patientId: String(patientId),
         subjective,
         objective,
         assessment,

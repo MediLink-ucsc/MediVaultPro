@@ -283,6 +283,8 @@ const PrescriptionForm = ({ onSubmit, selectedPatient }) => {
     }
   };
 
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!patientId) {
