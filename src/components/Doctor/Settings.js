@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
 import { 
-  Settings as SettingsIcon, 
   User, 
-  Bell, 
   Shield, 
   Save,
   Info,
   Eye,
-  EyeOff,
-  Check,
-  AlertCircle
+  EyeOff
 } from 'lucide-react';
 import Button from '../Common/Button';
 
@@ -30,26 +26,6 @@ const Settings = () => {
       workingHours: '9:00 AM - 5:00 PM',
       hospital: 'MediVault General Hospital',
       degree: 'MBBS, MD (Cardiology)'
-    },
-    notifications: {
-      calendarReminders: true,
-      labResults: true,
-      emergencyAlerts: true,
-      patientMessages: true,
-      systemUpdates: false,
-      emailNotifications: true,
-      smsNotifications: true,
-      reportGeneration: false
-    },
-    preferences: {
-      theme: 'light',
-      defaultView: 'calendar',
-      itemsPerPage: 20,
-      autoRefresh: true,
-      refreshInterval: 30,
-      language: 'en',
-      timezone: 'Asia/Colombo',
-      calendarEventDuration: 30
     }
   });
 
@@ -63,8 +39,6 @@ const Settings = () => {
 
   const tabs = [
     { id: 'profile', label: 'Profile', icon: User },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'preferences', label: 'Preferences', icon: SettingsIcon },
     { id: 'security', label: 'Security', icon: Shield },
   ];
 
@@ -220,184 +194,6 @@ const Settings = () => {
     </div>
   );
 
-  const renderNotificationSettings = () => (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        {Object.entries(settings.notifications).map(([key, value]) => {
-          const descriptions = {
-            calendarReminders: 'Receive notifications for upcoming calendar events',
-            labResults: 'Get notified when lab results are available',
-            emergencyAlerts: 'Receive immediate alerts for emergency situations',
-            patientMessages: 'Get notified when patients send messages',
-            systemUpdates: 'Receive system maintenance and update notifications',
-            emailNotifications: 'Enable email notifications for all alerts',
-            smsNotifications: 'Enable SMS notifications for urgent alerts',
-            reportGeneration: 'Get notified when reports are generated'
-          };
-
-          return (
-            <div key={key} className="flex items-center justify-between p-5 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200">
-              <div className="flex-1">
-                <h4 className="font-medium text-gray-800 mb-1">
-                  {key.replace(/([A-Z])/g, ' $1').trim().replace(/^\w/, c => c.toUpperCase())}
-                </h4>
-                <p className="text-sm text-gray-600">
-                  {descriptions[key]}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer ml-4">
-                <input
-                  type="checkbox"
-                  checked={value}
-                  onChange={(e) => setSettings({
-                    ...settings,
-                    notifications: { ...settings.notifications, [key]: e.target.checked }
-                  })}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 peer-focus:ring-opacity-50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-teal-600 peer-checked:shadow-lg peer-checked:shadow-teal-200"></div>
-              </label>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-
-  const renderPreferencesSettings = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Theme</label>
-          <select
-            value={settings.preferences.theme}
-            onChange={(e) => setSettings({
-              ...settings,
-              preferences: { ...settings.preferences, theme: e.target.value }
-            })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors duration-200"
-          >
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-            <option value="system">System Default</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Default View</label>
-          <select
-            value={settings.preferences.defaultView}
-            onChange={(e) => setSettings({
-              ...settings,
-              preferences: { ...settings.preferences, defaultView: e.target.value }
-            })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors duration-200"
-          >
-            <option value="calendar">Calendar</option>
-            <option value="patients">Patient List</option>
-            <option value="analytics">Analytics</option>
-            <option value="dashboard">Dashboard</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Items per Page</label>
-          <select
-            value={settings.preferences.itemsPerPage}
-            onChange={(e) => setSettings({
-              ...settings,
-              preferences: { ...settings.preferences, itemsPerPage: parseInt(e.target.value) }
-            })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors duration-200"
-          >
-            <option value={10}>10</option>
-            <option value={20}>20</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
-          <select
-            value={settings.preferences.language}
-            onChange={(e) => setSettings({
-              ...settings,
-              preferences: { ...settings.preferences, language: e.target.value }
-            })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors duration-200"
-          >
-            <option value="en">English</option>
-            <option value="si">Sinhala</option>
-            <option value="ta">Tamil</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Auto Refresh Interval (seconds)</label>
-          <select
-            value={settings.preferences.refreshInterval}
-            onChange={(e) => setSettings({
-              ...settings,
-              preferences: { ...settings.preferences, refreshInterval: parseInt(e.target.value) }
-            })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors duration-200"
-          >
-            <option value={15}>15 seconds</option>
-            <option value={30}>30 seconds</option>
-            <option value={60}>1 minute</option>
-            <option value={300}>5 minutes</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Default Calendar Event Duration</label>
-          <select
-            value={settings.preferences.calendarEventDuration}
-            onChange={(e) => setSettings({
-              ...settings,
-              preferences: { ...settings.preferences, calendarEventDuration: parseInt(e.target.value) }
-            })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors duration-200"
-          >
-            <option value={15}>15 minutes</option>
-            <option value={30}>30 minutes</option>
-            <option value={45}>45 minutes</option>
-            <option value={60}>1 hour</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Timezone</label>
-          <select
-            value={settings.preferences.timezone}
-            onChange={(e) => setSettings({
-              ...settings,
-              preferences: { ...settings.preferences, timezone: e.target.value }
-            })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-colors duration-200"
-          >
-            <option value="Asia/Colombo">Asia/Colombo (UTC+5:30)</option>
-            <option value="UTC">UTC (UTC+0:00)</option>
-            <option value="Asia/Kolkata">Asia/Kolkata (UTC+5:30)</option>
-          </select>
-        </div>
-      </div>
-      
-      <div className="flex items-center justify-between p-5 bg-gray-50 rounded-lg">
-        <div>
-          <h4 className="font-medium text-gray-800 mb-1">Auto Refresh</h4>
-          <p className="text-sm text-gray-600">Automatically refresh data at set intervals</p>
-        </div>
-        <label className="relative inline-flex items-center cursor-pointer">
-          <input
-            type="checkbox"
-            checked={settings.preferences.autoRefresh}
-            onChange={(e) => setSettings({
-              ...settings,
-              preferences: { ...settings.preferences, autoRefresh: e.target.checked }
-            })}
-            className="sr-only peer"
-          />
-          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-teal-300 peer-focus:ring-opacity-50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all after:shadow-sm peer-checked:bg-teal-600 peer-checked:shadow-lg peer-checked:shadow-teal-200"></div>
-        </label>
-      </div>
-    </div>
-  );
 
   const renderSecuritySettings = () => (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -500,10 +296,6 @@ const Settings = () => {
     switch (activeTab) {
       case 'profile':
         return renderProfileSettings();
-      case 'notifications':
-        return renderNotificationSettings();
-      case 'preferences':
-        return renderPreferencesSettings();
       case 'security':
         return renderSecuritySettings();
       default:
