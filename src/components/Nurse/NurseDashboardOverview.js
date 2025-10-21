@@ -110,10 +110,10 @@ const NurseDashboardOverview = () => {
       route: "/nurse/medications",
     },
     {
-      title: "Record Vitals",
+      title: "Give Care Plan",
       icon: Stethoscope,
       color: "teal",
-      description: "Quick vital signs entry",
+      description: "Care plan entry",
       route: "/nurse/patients",
     },
   ];
